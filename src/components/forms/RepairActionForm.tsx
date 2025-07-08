@@ -1,125 +1,29 @@
-import { useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { OriginalRequestInfo } from "./repair-action/OriginalRequestInfo";
 import { RepairDetailsForm } from "./repair-action/RepairDetailsForm";
-import { PartsManagement, Part } from "./repair-action/PartsManagementEnhanced";
+import { PartsManagement } from "./repair-action/PartsManagementEnhanced";
 import { PreventionMeasures } from "./repair-action/PreventionMeasures";
 import { ActionButtons } from "./repair-action/ActionButtons";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Clock, Wrench, AlertTriangle } from "lucide-react";
-
-const mockOriginalRequest = {
-  id: "M-001",
-  machine: "Extruder A",
-  problem: "เสียงดังผิดปกติ จากมอเตอร์หลัก เมื่อเครื่องทำงานนานกว่า 2 ชั่วโมง",
-  reporter: "สมศรี (ฝ่ายผลิต)",
-  reportDate: "07/07/2568 09:30",
-  images: ["image1.jpg", "image2.jpg"],
-};
-
-const engineers = [
-  { id: "eng1", name: "นายสมชาย" },
-  { id: "eng2", name: "นางสาวอร" },
-  { id: "eng3", name: "นายวิชัย" },
-];
-
-// Mock data for previous repair history
-const mockRepairHistory = [
-  {
-    revision: 1,
-    date: "03/07/2568 08:30 - 12:00",
-    engineer: "นายสมชาย",
-    method: "เปลี่ยนแบริ่งมอเตอร์หลัก และปรับแรงดันลมเข้าระบบ",
-    cause: "แบริ่งมอเตอร์สึกหรอเนื่องจากใช้งานมานาน",
-    result: "success",
-    parts: [
-      { name: "แบริ่ง SKF 6308", code: "BRG-001", quantity: 2 },
-      { name: "ซีลยาง", code: "SEAL-001", quantity: 1 }
-    ],
-    status: "ปิดงานแล้ว",
-    notes: "ทดสอบการทำงานปกติแล้ว เสียงดังลดลง"
-  },
-  {
-    revision: 2,
-    date: "20/07/2568 13:00 - 15:30",
-    engineer: "นางสาวอร",
-    method: "เปลี่ยนคัปปลิ้งและปรับตำแหน่งเพลา เนื่องจากเสียงดังกลับมาใหม่",
-    cause: "คัปปลิ้งเก่าไม่แน่น ทำให้เกิดการสั่นสะเทือน",
-    result: "success", 
-    parts: [
-      { name: "คัปปลิ้ง รุ่น C-150", code: "CUP-150", quantity: 1 },
-      { name: "น้ำมันเกียร์", code: "OIL-002", quantity: 2 }
-    ],
-    status: "ปิดงานแล้ว",
-    notes: "เสียงดังหายไป แต่ต้องติดตาม 1 สัปดาห์"
-  },
-  {
-    revision: 3,
-    date: "02/08/2568 09:15 - 11:45",
-    engineer: "นายวิชัย",
-    method: "ปรับความตึงสายพานและเปลี่ยนพูลเล่ย์ เพราะเสียงดังกลับมาอีก",
-    cause: "พูลเล่ย์เก่าไม่สมดุล สายพานหย่อน",
-    result: "success",
-    parts: [
-      { name: "พูลเล่ย์ 8 นิ้ว", code: "PUL-008", quantity: 1 },
-      { name: "สายพาน V-Belt", code: "BELT-V50", quantity: 1 }
-    ],
-    status: "ปิดงานแล้ว",
-    notes: "เปลี่ยนแนวทางการซ่อม มุ่งเน้นที่ระบบขับเคลื่อน"
-  }
-];
+import { RepairHistoryDisplay } from "./repair-action/RepairHistoryDisplay";
+import { mockOriginalRequest, engineers, mockRepairHistory } from "@/data/mockRepairData";
+import { useRepairForm } from "@/hooks/useRepairForm";
 
 export function RepairActionForm() {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
   const isRevision = searchParams.get('revision') === 'true';
-  const [selectedEngineer, setSelectedEngineer] = useState("eng1");
-  const [repairResult, setRepairResult] = useState("");
-  const [parts, setParts] = useState<Part[]>([
-    {
-      id: "1",
-      name: "มอเตอร์ (Motor X)",
-      code: "MOT-001",
-      quantity: 1,
-      type: "stock",
-      status: "เบิกแล้ว",
-    },
-    {
-      id: "2", 
-      name: "เซ็นเซอร์ (Sensor Y)",
-      code: "SEN-002",
-      quantity: 2,
-      type: "purchase",
-      status: "รอรับของ",
-    },
-  ]);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Repair action form submitted");
-  };
-
-  const addPart = () => {
-    const newPart: Part = {
-      id: Date.now().toString(),
-      name: "",
-      code: "",
-      quantity: 1,
-      type: "stock",
-      status: "ใหม่",
-    };
-    setParts([...parts, newPart]);
-  };
-
-  const removePart = (id: string) => {
-    setParts(parts.filter(p => p.id !== id));
-  };
-
-  const handleSave = () => {
-    console.log("Saving repair action for:", id);
-  };
+  
+  const {
+    selectedEngineer,
+    setSelectedEngineer,
+    repairResult,
+    setRepairResult,
+    parts,
+    addPart,
+    removePart,
+    handleSubmit,
+    handleSave,
+  } = useRepairForm();
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6 min-h-screen overflow-y-auto">
@@ -135,63 +39,7 @@ export function RepairActionForm() {
       </div>
 
       {/* แสดงประวัติการซ่อมก่อนหน้าเมื่อเป็นโหมดรีวิชั่น */}
-      {isRevision && (
-        <Card className="shadow-card">
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Clock className="h-5 w-5 text-muted-foreground" />
-              ประวัติการซ่อมก่อนหน้า
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {mockRepairHistory.map((history, index) => (
-              <div key={index} className="border border-border rounded-lg p-4 bg-muted/50">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline">รีวิชั่น {history.revision}</Badge>
-                    <Badge variant="secondary">{history.status}</Badge>
-                  </div>
-                  <span className="text-sm text-muted-foreground">{history.date}</span>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <div className="font-medium text-muted-foreground">ผู้รับผิดชอบ</div>
-                    <div>{history.engineer}</div>
-                  </div>
-                  <div>
-                    <div className="font-medium text-muted-foreground">ผลการซ่อม</div>
-                    <div className="text-status-completed">ซ่อมสำเร็จ</div>
-                  </div>
-                </div>
-                
-                <Separator className="my-3" />
-                
-                <div className="space-y-2 text-sm">
-                  <div>
-                    <div className="font-medium text-muted-foreground">วิธีการซ่อม</div>
-                    <div>{history.method}</div>
-                  </div>
-                  <div>
-                    <div className="font-medium text-muted-foreground">สาเหตุ</div>
-                    <div>{history.cause}</div>
-                  </div>
-                  <div>
-                    <div className="font-medium text-muted-foreground">อะไหล่ที่ใช้</div>
-                    <div className="flex flex-wrap gap-2 mt-1">
-                      {history.parts.map((part, partIndex) => (
-                        <span key={partIndex} className="text-xs bg-background border border-border rounded px-2 py-1">
-                          {part.name} ({part.code}) x{part.quantity}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      )}
+      {isRevision && <RepairHistoryDisplay history={mockRepairHistory} />}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <OriginalRequestInfo request={mockOriginalRequest} />
@@ -215,7 +63,7 @@ export function RepairActionForm() {
         <ActionButtons 
           repairResult={repairResult} 
           repairId={id || mockOriginalRequest.id}
-          onSave={handleSave}
+          onSave={() => handleSave()}
         />
       </form>
     </div>
