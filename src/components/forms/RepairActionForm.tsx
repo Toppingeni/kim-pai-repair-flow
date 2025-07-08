@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { OriginalRequestInfo } from "./repair-action/OriginalRequestInfo";
 import { RepairDetailsForm } from "./repair-action/RepairDetailsForm";
-import { PartsManagement, Part } from "./repair-action/PartsManagement";
+import { PartsManagement, Part } from "./repair-action/PartsManagementEnhanced";
 import { PreventionMeasures } from "./repair-action/PreventionMeasures";
 import { ActionButtons } from "./repair-action/ActionButtons";
 
