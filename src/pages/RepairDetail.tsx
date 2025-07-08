@@ -29,19 +29,20 @@ const mockRepairData: Record<string, any> = {
     requestDate: "07/07/2568 14:30",
     reporter: "สมศรี (ฝ่ายผลิต)",
     workType: "maintenance",
-    status: "progress",
+    status: "completed",
     engineer: "นายสมชาย",
     urgency: "normal",
     images: ["machine-sound.jpg", "motor-close.jpg"],
     notes: "เสียงดังมากขึ้นเรื่อยๆ ต้องการตรวจสอบด่วน",
     repairDetails: {
       startDate: "07/07/2568 15:00",
-      endDate: null,
-      description: "ตรวจสอบแล้วพบว่าเป็นปัญหาจากแบริ่งมอเตอร์ เริ่มสึกหรอ",
+      endDate: "08/07/2568 16:30",
+      description: "เปลี่ยนแบริ่งมอเตอร์หลักและตรวจสอบระบบขับเคลื่อน",
       cause: "แบริ่งมอเตอร์สึกหรอเนื่องจากใช้งานมานาน",
-      result: null,
+      result: "success",
       usedParts: [
-        { name: "แบริ่ง SKF 6308", code: "BRG-001", quantity: 2, status: "ใช้แล้ว" }
+        { name: "แบริ่ง SKF 6308", code: "BRG-001", quantity: 2, status: "ใช้แล้ว" },
+        { name: "น้ำมันเกียร์", code: "OIL-001", quantity: 1, status: "ใช้แล้ว" }
       ]
     }
   },
@@ -67,6 +68,31 @@ const mockRepairData: Record<string, any> = {
       result: "success",
       usedParts: [
         { name: "ซีลยาง", code: "SEAL-002", quantity: 4, status: "ใช้แล้ว" }
+      ]
+    }
+  },
+  "M-003": {
+    id: "M-003",
+    machine: "Conveyor Belt",
+    machineCode: "CONV-001",
+    location: "อาคาร 2, Line 1",
+    problem: "สายพานลื่น ทำให้ขนส่งสินค้าไม่ได้",
+    requestDate: "01/07/2568 08:00",
+    reporter: "สมชาย (ฝ่ายผลิต)",
+    workType: "maintenance",
+    status: "progress",
+    engineer: "นายวิชัย",
+    urgency: "high",
+    images: ["conveyor-belt.jpg"],
+    notes: "ส่งผลกระทบต่อการผลิต",
+    repairDetails: {
+      startDate: "01/07/2568 09:00",
+      endDate: null,
+      description: "ตรวจสอบสายพานและระบบขับเคลื่อน",
+      cause: "สายพานยืดเนื่องจากใช้งานมานาน",
+      result: null,
+      usedParts: [
+        { name: "สายพาน", code: "BELT-001", quantity: 1, status: "รอรับของ" }
       ]
     }
   }
