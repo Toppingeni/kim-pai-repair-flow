@@ -3,7 +3,7 @@ import { RepairActionForm } from "@/components/forms/RepairActionForm";
 
 export function RepairAction() {
   return (
-    <MainLayout userRole="engineering">
+    <MainLayout>
       <RepairActionForm />
     </MainLayout>
   );

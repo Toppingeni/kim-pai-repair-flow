@@ -1,11 +1,11 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
+import { useUserRole } from "@/contexts/UserRoleContext";
 import { 
   ArrowLeft, 
   Calendar, 
@@ -98,21 +98,19 @@ const mockRepairData: Record<string, any> = {
   }
 };
 
-interface RepairDetailProps {
-  userRole?: "production" | "engineering";
-}
+interface RepairDetailProps {}
 
-export function RepairDetail({ userRole = "production" }: RepairDetailProps) {
+export function RepairDetail({}: RepairDetailProps) {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [currentUserRole] = useState<"production" | "engineering">(userRole);
+  const { userRole } = useUserRole();
 
   const repairData = id ? mockRepairData[id] : null;
 
   if (!repairData) {
     return (
-      <MainLayout userRole={currentUserRole}>
+      <MainLayout>
         <div className="flex-1 p-6">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-foreground">ไม่พบข้อมูลใบแจ้งซ่อม</h1>
@@ -159,7 +157,7 @@ export function RepairDetail({ userRole = "production" }: RepairDetailProps) {
   };
 
   const getActionButtons = () => {
-    if (currentUserRole === "production") {
+    if (userRole === "production") {
       if (repairData.status === "waiting") {
         return (
           <div className="flex space-x-4">
@@ -230,7 +228,7 @@ export function RepairDetail({ userRole = "production" }: RepairDetailProps) {
   };
 
   return (
-    <MainLayout userRole={currentUserRole}>
+    <MainLayout>
       <div className="flex-1 p-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>

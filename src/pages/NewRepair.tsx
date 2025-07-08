@@ -3,7 +3,7 @@ import { NewRepairForm } from "@/components/forms/NewRepairForm";
 
 export function NewRepair() {
   return (
-    <MainLayout userRole="production">
+    <MainLayout>
       <NewRepairForm />
     </MainLayout>
   );

@@ -1,10 +1,11 @@
-import { useState } from "react";
 import { Plus, FileText, Calendar, Bell, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SummaryCard } from "@/components/dashboard/SummaryCard";
 import { RepairTable } from "@/components/dashboard/RepairTable";
+import { useUserRole } from "@/contexts/UserRoleContext";
+import { Link } from "react-router-dom";
 
-// Mock data
+// Mock data for repairs
 const mockRepairs = [
   {
     id: "M-001",
@@ -12,46 +13,44 @@ const mockRepairs = [
     problem: "เสียงดังผิดปกติ",
     date: "07/07/2568",
     status: "progress" as const,
-    engineer: "นายสมชาย",
+    reporter: "สมศรี"
   },
   {
     id: "M-002",
     machine: "Packing M/C",
     problem: "แพ็คไม่แน่น",
-    date: "05/07/2568",
+    date: "06/07/2568",
     status: "waiting" as const,
-    engineer: "นางสาวอร",
+    reporter: "สมศรี"
   },
   {
     id: "M-003",
-    machine: "Boiler #1",
-    problem: "แรงดันตก",
-    date: "02/07/2568",
+    machine: "Conveyor Belt",
+    problem: "สายพานขาด",
+    date: "05/07/2568",
     status: "completed" as const,
-    engineer: "นายสมชาย",
+    reporter: "สมศรี"
   },
   {
     id: "M-004",
-    machine: "Compressor",
-    problem: "อุณหภูมิสูง",
-    date: "08/07/2568",
+    machine: "Injection M/C",
+    problem: "อุณหภูมิไม่คงที่",
+    date: "04/07/2568",
     status: "new" as const,
+    reporter: "สมศรี"
   },
   {
     id: "M-005",
-    machine: "Conveyor",
-    problem: "มอเตอร์ไม่หมุน",
-    date: "08/07/2568",
+    machine: "Dryer Unit",
+    problem: "เซ็นเซอร์ขัดข้อง",
+    date: "03/07/2568",
     status: "pending" as const,
-    engineer: "นางสาวอร",
-  },
+    reporter: "สมศรี"
+  }
 ];
 
-interface DashboardProps {
-  userRole: "production" | "engineering";
-}
-
-export function Dashboard({ userRole }: DashboardProps) {
+export function Dashboard() {
+  const { userRole } = useUserRole();
   const getProductionSummaryData = () => [
     {
       title: "กำลังดำเนินการ",
@@ -105,7 +104,7 @@ export function Dashboard({ userRole }: DashboardProps) {
   const tableTitle = userRole === "production" ? "รายการใบแจ้งซ่อมล่าสุด" : "งานแจ้งซ่อมที่ต้องดำเนินการ";
 
   return (
-    <div className="flex-1 p-6 space-y-6">
+    <div className="p-6 space-y-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-foreground">{dashboardTitle}</h1>
       </div>

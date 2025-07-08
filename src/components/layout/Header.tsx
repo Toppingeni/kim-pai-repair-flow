@@ -1,15 +1,11 @@
 import { Bell, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { RoleSwitcher } from "./RoleSwitcher";
+import { useUserRole } from "@/contexts/UserRoleContext";
 
-interface HeaderProps {
-  user: {
-    name: string;
-    department: string;
-  };
-}
-
-export function Header({ user }: HeaderProps) {
+export function Header() {
+  const { userData } = useUserRole();
   return (
     <header className="h-16 bg-card border-b border-border px-6 flex items-center justify-between shadow-card">
       <div className="flex items-center space-x-6">
@@ -25,9 +21,11 @@ export function Header({ user }: HeaderProps) {
       </div>
 
       <div className="flex items-center space-x-4">
+        <RoleSwitcher />
+        
         <div className="text-right">
-          <p className="text-sm font-medium text-foreground">{user.name}</p>
-          <p className="text-xs text-muted-foreground">({user.department})</p>
+          <p className="text-sm font-medium text-foreground">{userData.name}</p>
+          <p className="text-xs text-muted-foreground">({userData.department})</p>
         </div>
 
         <div className="relative">
