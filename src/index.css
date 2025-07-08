@@ -8,7 +8,7 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 0 0% 98%;
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
@@ -17,8 +17,8 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 211 100% 43%;
+    --primary-foreground: 0 0% 98%;
 
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -34,7 +34,32 @@ All colors MUST be HSL.
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 211 100% 43%;
+
+    /* Custom design tokens for maintenance system */
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 98%;
+    --warning: 45 93% 47%;
+    --warning-foreground: 222.2 84% 4.9%;
+    --info: 211 100% 43%;
+    --info-foreground: 0 0% 98%;
+    
+    /* Status colors */
+    --status-new: 211 100% 43%;
+    --status-progress: 45 93% 47%;
+    --status-waiting: 262 83% 58%;
+    --status-completed: 142 76% 36%;
+    --status-pending: 24 100% 50%;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(211 100% 43%), hsl(211 100% 50%));
+    --gradient-success: linear-gradient(135deg, hsl(142 76% 36%), hsl(142 76% 43%));
+    --gradient-warning: linear-gradient(135deg, hsl(45 93% 47%), hsl(45 93% 54%));
+    
+    /* Shadows */
+    --shadow-elegant: 0 4px 6px -1px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.06);
+    --shadow-card: 0 1px 3px 0 hsl(0 0% 0% / 0.1), 0 1px 2px 0 hsl(0 0% 0% / 0.06);
+    --shadow-glow: 0 0 20px hsl(211 100% 43% / 0.3);
 
     --radius: 0.5rem;
 

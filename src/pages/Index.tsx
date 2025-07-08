@@ -1,13 +1,32 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import { MainLayout } from "@/components/layout/MainLayout";
+import { Dashboard } from "./Dashboard";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
+  const [userRole, setUserRole] = useState<"production" | "engineering">("production");
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
+    <MainLayout userRole={userRole}>
+      <div className="p-6">
+        {/* Role switcher for demo purposes */}
+        <div className="mb-4 flex space-x-2">
+          <Button 
+            variant={userRole === "production" ? "default" : "outline"}
+            onClick={() => setUserRole("production")}
+          >
+            ฝ่ายผลิต
+          </Button>
+          <Button 
+            variant={userRole === "engineering" ? "default" : "outline"}
+            onClick={() => setUserRole("engineering")}
+          >
+            ฝ่ายวิศวกรรม
+          </Button>
+        </div>
+        <Dashboard userRole={userRole} />
       </div>
-    </div>
+    </MainLayout>
   );
 };
 
