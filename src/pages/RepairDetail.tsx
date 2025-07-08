@@ -181,6 +181,19 @@ export function RepairDetail({ userRole = "production" }: RepairDetailProps) {
           </div>
         );
       }
+      if (repairData.status === "completed") {
+        return (
+          <div className="flex space-x-4">
+            <Button variant="outline" onClick={() => navigate(-1)}>
+              กลับ
+            </Button>
+            <Button variant="warning" onClick={() => navigate(`/repair-action/${id}?revision=true`)}>
+              <Wrench className="h-4 w-4 mr-2" />
+              ซ่อมใหม่/เพิ่มรีวิชั่น
+            </Button>
+          </div>
+        );
+      }
       return (
         <Button variant="outline" onClick={() => navigate(-1)}>
           <ArrowLeft className="h-4 w-4 mr-2" />

@@ -1,10 +1,14 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { OriginalRequestInfo } from "./repair-action/OriginalRequestInfo";
 import { RepairDetailsForm } from "./repair-action/RepairDetailsForm";
 import { PartsManagement, Part } from "./repair-action/PartsManagementEnhanced";
 import { PreventionMeasures } from "./repair-action/PreventionMeasures";
 import { ActionButtons } from "./repair-action/ActionButtons";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Clock, Wrench, AlertTriangle } from "lucide-react";
 
 const mockOriginalRequest = {
   id: "M-001",
@@ -21,8 +25,26 @@ const engineers = [
   { id: "eng3", name: "นายวิชัย" },
 ];
 
+// Mock data for previous repair history
+const mockRepairHistory = [
+  {
+    revision: 1,
+    date: "05/07/2568 14:00 - 16:30",
+    engineer: "นายสมชาย",
+    method: "เปลี่ยนแบริ่งมอเตอร์หลัก และปรับแรงดันลมเขา้ระบบ",
+    cause: "แบริ่งมอเตอร์สึกหรอเนื่องจากใช้งานมานาน",
+    result: "success",
+    parts: [
+      { name: "แบริ่ง SKF 6308", code: "BRG-001", quantity: 2 }
+    ],
+    status: "ปิดงานแล้ว"
+  }
+];
+
 export function RepairActionForm() {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const isRevision = searchParams.get('revision') === 'true';
   const [selectedEngineer, setSelectedEngineer] = useState("eng1");
   const [repairResult, setRepairResult] = useState("");
   const [parts, setParts] = useState<Part[]>([
@@ -73,9 +95,73 @@ export function RepairActionForm() {
     <div className="max-w-6xl mx-auto p-6 space-y-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-foreground">
-          บันทึกการดำเนินการซ่อม: {id || mockOriginalRequest.id} ({mockOriginalRequest.machine})
+          {isRevision ? 'บันทึกการซ่อมใหม่ (รีวิชั่น)' : 'บันทึกการดำเนินการซ่อม'}: {id || mockOriginalRequest.id} ({mockOriginalRequest.machine})
         </h1>
+        {isRevision && (
+          <p className="text-muted-foreground mt-2">
+            การซ่อมครั้งใหม่เนื่องจากเสียซ้ำที่เดิม
+          </p>
+        )}
       </div>
+
+      {/* แสดงประวัติการซ่อมก่อนหน้าเมื่อเป็นโหมดรีวิชั่น */}
+      {isRevision && (
+        <Card className="shadow-card">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Clock className="h-5 w-5 text-muted-foreground" />
+              ประวัติการซ่อมก่อนหน้า
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {mockRepairHistory.map((history, index) => (
+              <div key={index} className="border border-border rounded-lg p-4 bg-muted/50">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline">รีวิชั่น {history.revision}</Badge>
+                    <Badge variant="secondary">{history.status}</Badge>
+                  </div>
+                  <span className="text-sm text-muted-foreground">{history.date}</span>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <div className="font-medium text-muted-foreground">ผู้รับผิดชอบ</div>
+                    <div>{history.engineer}</div>
+                  </div>
+                  <div>
+                    <div className="font-medium text-muted-foreground">ผลการซ่อม</div>
+                    <div className="text-status-completed">ซ่อมสำเร็จ</div>
+                  </div>
+                </div>
+                
+                <Separator className="my-3" />
+                
+                <div className="space-y-2 text-sm">
+                  <div>
+                    <div className="font-medium text-muted-foreground">วิธีการซ่อม</div>
+                    <div>{history.method}</div>
+                  </div>
+                  <div>
+                    <div className="font-medium text-muted-foreground">สาเหตุ</div>
+                    <div>{history.cause}</div>
+                  </div>
+                  <div>
+                    <div className="font-medium text-muted-foreground">อะไหล่ที่ใช้</div>
+                    <div className="flex flex-wrap gap-2 mt-1">
+                      {history.parts.map((part, partIndex) => (
+                        <span key={partIndex} className="text-xs bg-background border border-border rounded px-2 py-1">
+                          {part.name} ({part.code}) x{part.quantity}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <OriginalRequestInfo request={mockOriginalRequest} />
