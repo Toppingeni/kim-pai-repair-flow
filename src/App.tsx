@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import { NewRepair } from "./pages/NewRepair";
+import { MyRepairs } from "./pages/MyRepairs";
+import { Manual } from "./pages/Manual";
 import { AllRepairs } from "./pages/AllRepairs";
 import { RepairAction } from "./pages/RepairAction";
 import { RepairHistory } from "./pages/RepairHistory";
@@ -22,6 +24,8 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/new-repair" element={<NewRepair />} />
+          <Route path="/my-repairs" element={<MyRepairs />} />
+          <Route path="/manual" element={<Manual />} />
           <Route path="/all-repairs" element={<AllRepairs />} />
           <Route path="/repair-action/:id" element={<RepairAction />} />
           <Route path="/repair-history" element={<RepairHistory />} />
