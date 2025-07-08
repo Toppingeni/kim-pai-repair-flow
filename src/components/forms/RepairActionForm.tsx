@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useParams } from "react-router-dom";
 import { OriginalRequestInfo } from "./repair-action/OriginalRequestInfo";
 import { RepairDetailsForm } from "./repair-action/RepairDetailsForm";
 import { PartsManagement, Part } from "./repair-action/PartsManagement";
@@ -21,6 +22,7 @@ const engineers = [
 ];
 
 export function RepairActionForm() {
+  const { id } = useParams();
   const [selectedEngineer, setSelectedEngineer] = useState("eng1");
   const [repairResult, setRepairResult] = useState("");
   const [parts, setParts] = useState<Part[]>([
@@ -63,11 +65,15 @@ export function RepairActionForm() {
     setParts(parts.filter(p => p.id !== id));
   };
 
+  const handleSave = () => {
+    console.log("Saving repair action for:", id);
+  };
+
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-foreground">
-          บันทึกการดำเนินการซ่อม: {mockOriginalRequest.id} ({mockOriginalRequest.machine})
+          บันทึกการดำเนินการซ่อม: {id || mockOriginalRequest.id} ({mockOriginalRequest.machine})
         </h1>
       </div>
 
@@ -90,7 +96,11 @@ export function RepairActionForm() {
 
         <PreventionMeasures />
 
-        <ActionButtons repairResult={repairResult} />
+        <ActionButtons 
+          repairResult={repairResult} 
+          repairId={id || mockOriginalRequest.id}
+          onSave={handleSave}
+        />
       </form>
     </div>
   );

@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -9,6 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useRepairActions } from "@/hooks/useRepairActions";
 
 interface RepairItem {
   id: string;
@@ -53,30 +56,115 @@ const StatusBadge = ({ status }: { status: keyof typeof statusConfig }) => {
 };
 
 export function RepairTable({ repairs, userRole, title }: RepairTableProps) {
+  const navigate = useNavigate();
+  const { acceptJob, confirmCompletion, loading } = useRepairActions();
+  const handleViewDetail = (repairId: string) => {
+    navigate(`/repair-detail/${repairId}`);
+  };
+
+  const handleAcceptJob = async (repairId: string) => {
+    const result = await acceptJob(repairId, "นายสมชาย");
+    if (result.success) {
+      // In a real app, you would update the repair list here
+      window.location.reload(); // Simple reload for demo
+    }
+  };
+
+  const handleConfirmCompletion = async (repairId: string) => {
+    const result = await confirmCompletion(repairId);
+    if (result.success) {
+      // In a real app, you would update the repair list here
+      window.location.reload(); // Simple reload for demo
+    }
+  };
+
+  const handleStartRepair = (repairId: string) => {
+    navigate(`/repair-action/${repairId}`);
+  };
+
   const getActionButtons = (repair: RepairItem) => {
     if (userRole === "production") {
       if (repair.status === "waiting") {
         return (
           <div className="flex space-x-2">
-            <Button variant="outline" size="sm">ดูรายละเอียด</Button>
-            <Button variant="success" size="sm">ยืนยันปิดงาน</Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => handleViewDetail(repair.id)}
+            >
+              ดูรายละเอียด
+            </Button>
+            <Button 
+              variant="success" 
+              size="sm" 
+              disabled={loading}
+              onClick={() => handleConfirmCompletion(repair.id)}
+            >
+              ยืนยันปิดงาน
+            </Button>
           </div>
         );
       }
-      return <Button variant="outline" size="sm">ดูรายละเอียด</Button>;
+      return (
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={() => handleViewDetail(repair.id)}
+        >
+          ดูรายละเอียด
+        </Button>
+      );
     } else {
       if (repair.status === "new") {
         return (
           <div className="flex space-x-2">
-            <Button variant="outline" size="sm">ดูรายละเอียด</Button>
-            <Button variant="default" size="sm">รับงาน</Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => handleViewDetail(repair.id)}
+            >
+              ดูรายละเอียด
+            </Button>
+            <Button 
+              variant="default" 
+              size="sm" 
+              disabled={loading}
+              onClick={() => handleAcceptJob(repair.id)}
+            >
+              รับงาน
+            </Button>
           </div>
         );
       }
       if (repair.status === "progress") {
-        return <Button variant="info" size="sm">บันทึกการซ่อม</Button>;
+        return (
+          <div className="flex space-x-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => handleViewDetail(repair.id)}
+            >
+              ดูรายละเอียด
+            </Button>
+            <Button 
+              variant="info" 
+              size="sm" 
+              onClick={() => handleStartRepair(repair.id)}
+            >
+              บันทึกการซ่อม
+            </Button>
+          </div>
+        );
       }
-      return <Button variant="outline" size="sm">ดูรายละเอียด</Button>;
+      return (
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={() => handleViewDetail(repair.id)}
+        >
+          ดูรายละเอียด
+        </Button>
+      );
     }
   };
 
