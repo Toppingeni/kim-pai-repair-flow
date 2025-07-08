@@ -27,6 +27,7 @@ export function Sidebar({ userRole }: SidebarProps) {
   const engineeringMenuItems = [
     { title: "Dashboard", url: "/", icon: Search },
     { title: "รายการใบแจ้งซ่อมทั้งหมด", url: "/all-repairs", icon: FileText },
+    { title: "การจัดการ PM", url: "/pm-management", icon: Calendar },
     { title: "ประวัติการซ่อมบำรุง", url: "/repair-history", icon: Calendar },
     { title: "รายงาน", url: "/reports", icon: Bell },
   ];

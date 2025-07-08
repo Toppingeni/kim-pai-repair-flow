@@ -12,6 +12,7 @@ import { RepairAction } from "./pages/RepairAction";
 import { RepairDetail } from "./pages/RepairDetail";
 import { RepairHistory } from "./pages/RepairHistory";
 import { Reports } from "./pages/Reports";
+import { PMManagement } from "./pages/PMManagement";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/all-repairs" element={<AllRepairs />} />
           <Route path="/repair-action/:id" element={<RepairAction />} />
           <Route path="/repair-detail/:id" element={<RepairDetail />} />
+          <Route path="/pm-management" element={<PMManagement />} />
           <Route path="/repair-history" element={<RepairHistory />} />
           <Route path="/reports" element={<Reports />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
