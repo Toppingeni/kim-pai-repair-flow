@@ -16,6 +16,7 @@ import {
   AlertTriangle,
   CheckCircle
 } from "lucide-react";
+import { SparePartsSelectionDialog } from "./SparePartsSelectionDialog";
 
 export interface Part {
   id: string;
@@ -34,11 +35,13 @@ interface PartsManagementProps {
   parts: Part[];
   onAddPart: () => void;
   onRemovePart: (id: string) => void;
+  onPartsSelected?: (parts: Part[]) => void;
 }
 
-export function PartsManagement({ parts, onAddPart, onRemovePart }: PartsManagementProps) {
+export function PartsManagement({ parts, onAddPart, onRemovePart, onPartsSelected }: PartsManagementProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
+  const [showPartsDialog, setShowPartsDialog] = useState(false);
   
   const partTypes = [
     { value: "stock", label: "เบิกจาก Stock", icon: <Package className="h-4 w-4" /> },
@@ -79,16 +82,28 @@ export function PartsManagement({ parts, onAddPart, onRemovePart }: PartsManagem
             <Package className="h-5 w-5" />
             การเบิกใช้อะไหล่และวัสดุ
           </span>
-          <Button 
-            type="button" 
-            variant="outline" 
-            size="sm" 
-            onClick={onAddPart}
-            className="flex items-center gap-2"
-          >
-            <Plus className="h-4 w-4" />
-            เพิ่มอะไหล่
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              type="button" 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setShowPartsDialog(true)}
+              className="flex items-center gap-2"
+            >
+              <Package className="h-4 w-4" />
+              เลือกจากคลัง
+            </Button>
+            <Button 
+              type="button" 
+              variant="outline" 
+              size="sm" 
+              onClick={onAddPart}
+              className="flex items-center gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              เพิ่มใหม่
+            </Button>
+          </div>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -303,6 +318,14 @@ export function PartsManagement({ parts, onAddPart, onRemovePart }: PartsManagem
             </div>
           </div>
         )}
+
+        {/* Spare Parts Selection Dialog */}
+        <SparePartsSelectionDialog
+          open={showPartsDialog}
+          onOpenChange={setShowPartsDialog}
+          selectedParts={parts}
+          onPartsSelected={onPartsSelected || (() => {})}
+        />
       </CardContent>
     </Card>
   );

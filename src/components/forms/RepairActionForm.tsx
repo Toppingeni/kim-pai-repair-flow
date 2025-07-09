@@ -23,6 +23,7 @@ export function RepairActionForm() {
     removePart,
     handleSubmit,
     handleSave,
+    handlePartsSelected,
   } = useRepairForm();
 
   return (
@@ -56,6 +57,7 @@ export function RepairActionForm() {
           parts={parts}
           onAddPart={addPart}
           onRemovePart={removePart}
+          onPartsSelected={handlePartsSelected}
         />
 
         <PreventionMeasures />

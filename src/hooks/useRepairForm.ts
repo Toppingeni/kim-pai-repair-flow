@@ -35,6 +35,10 @@ export function useRepairForm() {
     setParts([...parts, newPart]);
   };
 
+  const handlePartsSelected = (selectedParts: Part[]) => {
+    setParts(selectedParts);
+  };
+
   const removePart = (id: string) => {
     setParts(parts.filter(p => p.id !== id));
   };
@@ -58,5 +62,6 @@ export function useRepairForm() {
     removePart,
     handleSubmit,
     handleSave,
+    handlePartsSelected,
   };
 }
