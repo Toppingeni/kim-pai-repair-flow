@@ -68,6 +68,16 @@ const mockPOs: PurchaseOrder[] = [
         totalPrice: 12500,
         supplier: "ABC Parts Co.,Ltd.",
         status: "รอรับของ"
+      },
+      {
+        id: "po1-3",
+        name: "โซ่ขับ #40",
+        code: "CHAIN-40",
+        quantity: 3,
+        unitPrice: 1200,
+        totalPrice: 3600,
+        supplier: "ABC Parts Co.,Ltd.",
+        status: "รอรับของ"
       }
     ]
   },
@@ -96,6 +106,130 @@ const mockPOs: PurchaseOrder[] = [
         totalPrice: 2500,
         supplier: "XYZ Industrial", 
         status: "รอรับของ"
+      },
+      {
+        id: "po2-3",
+        name: "สายไฮดรอลิก 1/2 นิ้ว",
+        code: "HYD-HOSE-0.5",
+        quantity: 20,
+        unitPrice: 180,
+        totalPrice: 3600,
+        supplier: "XYZ Industrial",
+        status: "รอรับของ"
+      }
+    ]
+  },
+  {
+    poNumber: "PO-2024-003",
+    supplier: "DEF Engineering",
+    date: "2024-01-25",
+    status: "รอรับของ",
+    items: [
+      {
+        id: "po3-1",
+        name: "ปั๊มน้ำมันไฮดรอลิก",
+        code: "HYD-PUMP-001",
+        quantity: 1,
+        unitPrice: 45000,
+        totalPrice: 45000,
+        supplier: "DEF Engineering",
+        status: "รอรับของ"
+      },
+      {
+        id: "po3-2",
+        name: "ซีลยาง O-Ring ขนาด 20mm",
+        code: "ORING-20",
+        quantity: 50,
+        unitPrice: 15,
+        totalPrice: 750,
+        supplier: "DEF Engineering",
+        status: "รอรับของ"
+      },
+      {
+        id: "po3-3",
+        name: "น้ำมันไฮดรอลิก ISO VG46",
+        code: "HYD-OIL-VG46",
+        quantity: 4,
+        unitPrice: 850,
+        totalPrice: 3400,
+        supplier: "DEF Engineering",
+        status: "รอรับของ"
+      }
+    ]
+  },
+  {
+    poNumber: "PO-2024-004",
+    supplier: "GHI Automation",
+    date: "2024-02-01",
+    status: "รอรับของ",
+    items: [
+      {
+        id: "po4-1",
+        name: "PLC Mitsubishi FX3U-32MR",
+        code: "PLC-FX3U-32MR",
+        quantity: 1,
+        unitPrice: 8500,
+        totalPrice: 8500,
+        supplier: "GHI Automation",
+        status: "รอรับของ"
+      },
+      {
+        id: "po4-2",
+        name: "เซ็นเซอร์ความดัน",
+        code: "PRESS-SENSOR-001",
+        quantity: 2,
+        unitPrice: 3200,
+        totalPrice: 6400,
+        supplier: "GHI Automation",
+        status: "รอรับของ"
+      },
+      {
+        id: "po4-3",
+        name: "รีเลย์ 24VDC",
+        code: "RELAY-24VDC",
+        quantity: 10,
+        unitPrice: 120,
+        totalPrice: 1200,
+        supplier: "GHI Automation",
+        status: "รอรับของ"
+      }
+    ]
+  },
+  {
+    poNumber: "PO-2024-005",
+    supplier: "JKL Mechanical",
+    date: "2024-02-05",
+    status: "รับของแล้ว",
+    items: [
+      {
+        id: "po5-1",
+        name: "เฟือง 20 ฟัน โมดูล 2",
+        code: "GEAR-20T-M2",
+        quantity: 4,
+        unitPrice: 650,
+        totalPrice: 2600,
+        supplier: "JKL Mechanical",
+        status: "รับของแล้ว"
+      },
+      {
+        id: "po5-2",
+        name: "สกรูหัวแหลม M8x25",
+        code: "SCREW-M8x25",
+        quantity: 100,
+        unitPrice: 5,
+        totalPrice: 500,
+        supplier: "JKL Mechanical",
+        status: "รับของแล้ว"
+      },
+      {
+        id: "po5-3",
+        name: "น๊อตหกเหลี่ยม M10x30",
+        code: "BOLT-M10x30",
+        quantity: 50,
+        unitPrice: 8,
+        totalPrice: 400,
+        supplier: "JKL Mechanical",
+        status: "รับของแล้ว"
       }
     ]
   }
