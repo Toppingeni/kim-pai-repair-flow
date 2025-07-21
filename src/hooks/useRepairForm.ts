@@ -40,7 +40,16 @@ export function useRepairForm() {
   };
 
   const removePart = (id: string) => {
-    setParts(parts.filter(p => p.id !== id));
+    const partToRemove = parts.find(p => p.id === id);
+    
+    // If part has PO number, remove all parts with the same PO number
+    if (partToRemove && (partToRemove as any).poNumber) {
+      const poNumber = (partToRemove as any).poNumber;
+      setParts(parts.filter(p => (p as any).poNumber !== poNumber));
+    } else {
+      // Regular single part removal
+      setParts(parts.filter(p => p.id !== id));
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {

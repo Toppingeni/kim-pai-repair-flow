@@ -17,6 +17,7 @@ import {
   CheckCircle
 } from "lucide-react";
 import { SparePartsSelectionDialog } from "./SparePartsSelectionDialog";
+import { POSelectionDialog } from "./POSelectionDialog";
 
 export interface Part {
   id: string;
@@ -29,6 +30,7 @@ export interface Part {
   totalPrice?: number;
   supplier?: string;
   notes?: string;
+  poNumber?: string;
 }
 
 interface PartsManagementProps {
@@ -42,6 +44,7 @@ export function PartsManagement({ parts, onAddPart, onRemovePart, onPartsSelecte
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [showPartsDialog, setShowPartsDialog] = useState(false);
+  const [showPODialog, setShowPODialog] = useState(false);
   
   const partTypes = [
     { value: "stock", label: "เบิกจาก Stock", icon: <Package className="h-4 w-4" /> },
@@ -92,6 +95,16 @@ export function PartsManagement({ parts, onAddPart, onRemovePart, onPartsSelecte
             >
               <Package className="h-4 w-4" />
               เลือกจากคลัง
+            </Button>
+            <Button 
+              type="button" 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setShowPODialog(true)}
+              className="flex items-center gap-2"
+            >
+              <ShoppingCart className="h-4 w-4" />
+              เลือกจาก PO
             </Button>
             <Button 
               type="button" 
@@ -323,6 +336,14 @@ export function PartsManagement({ parts, onAddPart, onRemovePart, onPartsSelecte
         <SparePartsSelectionDialog
           open={showPartsDialog}
           onOpenChange={setShowPartsDialog}
+          selectedParts={parts}
+          onPartsSelected={onPartsSelected || (() => {})}
+        />
+
+        {/* PO Selection Dialog */}
+        <POSelectionDialog
+          open={showPODialog}
+          onOpenChange={setShowPODialog}
           selectedParts={parts}
           onPartsSelected={onPartsSelected || (() => {})}
         />
