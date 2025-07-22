@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ScrollArea } from "@/components/ui/scroll-area";
+
 import { Search, Package, ShoppingCart, FileText } from "lucide-react";
 import { Part } from "./PartsManagementEnhanced";
 
@@ -372,7 +372,7 @@ export function POSelectionDialog({
           <Separator />
 
           {/* Search Results */}
-          <ScrollArea className="h-96">
+          <div className="h-96 overflow-y-auto">
             {searchResults.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 <FileText className="h-12 w-12 mx-auto mb-3 opacity-50" />
@@ -436,7 +436,7 @@ export function POSelectionDialog({
                 ))}
               </div>
             )}
-          </ScrollArea>
+          </div>
 
           {/* Actions */}
           <div className="flex justify-between items-center pt-2 border-t">
