@@ -53,6 +53,9 @@ export function PartsManagement({ parts, onAddPart, onRemovePart, onPartsSelecte
     { value: "internal", label: "ขอยืม/โอนภายใน", icon: <Wrench className="h-4 w-4" /> },
   ];
 
+  console.log("partTypeOptions:", partTypeOptions);
+  console.log("partTypes state:", partTypes);
+
   const statusConfig = {
     "ใหม่": { variant: "secondary" as const, icon: <AlertTriangle className="h-3 w-3" /> },
     "เบิกแล้ว": { variant: "outline" as const, icon: <CheckCircle className="h-3 w-3" /> },
