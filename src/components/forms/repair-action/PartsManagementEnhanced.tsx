@@ -45,8 +45,9 @@ export function PartsManagement({ parts, onAddPart, onRemovePart, onPartsSelecte
   const [filterType, setFilterType] = useState("all");
   const [showPartsDialog, setShowPartsDialog] = useState(false);
   const [showPODialog, setShowPODialog] = useState(false);
+  const [partTypes, setPartTypes] = useState<{[key: string]: string}>({});
   
-  const partTypes = [
+  const partTypeOptions = [
     { value: "stock", label: "เบิกจาก Stock", icon: <Package className="h-4 w-4" /> },
     { value: "purchase", label: "สั่งซื้อใหม่", icon: <ShoppingCart className="h-4 w-4" /> },
     { value: "internal", label: "ขอยืม/โอนภายใน", icon: <Wrench className="h-4 w-4" /> },
@@ -68,13 +69,24 @@ export function PartsManagement({ parts, onAddPart, onRemovePart, onPartsSelecte
   });
 
   const getTypeInfo = (type: string) => {
-    return partTypes.find(t => t.value === type) || partTypes[0];
+    return partTypeOptions.find(t => t.value === type) || partTypeOptions[0];
   };
 
   const getTotalCost = () => {
     return parts.reduce((total, part) => {
       return total + (part.totalPrice || (part.unitPrice || 0) * part.quantity);
     }, 0);
+  };
+
+  const getCurrentPartType = (partId: string) => {
+    return partTypes[partId] || parts.find(p => p.id === partId)?.type || "stock";
+  };
+
+  const handleTypeChange = (partId: string, newType: string) => {
+    setPartTypes(prev => ({
+      ...prev,
+      [partId]: newType
+    }));
   };
 
   return (
@@ -139,7 +151,7 @@ export function PartsManagement({ parts, onAddPart, onRemovePart, onPartsSelecte
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">ทั้งหมด</SelectItem>
-                {partTypes.map((type) => (
+                {partTypeOptions.map((type) => (
                   <SelectItem key={type.value} value={type.value}>
                     {type.label}
                   </SelectItem>
@@ -218,12 +230,15 @@ export function PartsManagement({ parts, onAddPart, onRemovePart, onPartsSelecte
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div className="space-y-1">
                           <Label className="text-xs text-muted-foreground">ประเภท</Label>
-                          <Select defaultValue={part.type}>
+                          <Select 
+                            value={getCurrentPartType(part.id)} 
+                            onValueChange={(value) => handleTypeChange(part.id, value)}
+                          >
                             <SelectTrigger className="h-8">
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              {partTypes.map((type) => (
+                              {partTypeOptions.map((type) => (
                                 <SelectItem key={type.value} value={type.value}>
                                   <div className="flex items-center gap-2">
                                     {type.icon}
@@ -249,7 +264,7 @@ export function PartsManagement({ parts, onAddPart, onRemovePart, onPartsSelecte
                       </div>
 
                       {/* Cost Information */}
-                      {part.type === "purchase" && (
+                      {getCurrentPartType(part.id) === "purchase" && (
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                           <div className="space-y-1">
                             <Label className="text-xs text-muted-foreground">ราคาต่อหน่วย (฿)</Label>
