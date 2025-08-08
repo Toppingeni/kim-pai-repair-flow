@@ -10,44 +10,24 @@ import {
   Plus, 
   Link2 
 } from "lucide-react";
-
-type EntityStatus = "Active" | "Inactive";
-
-interface Machine {
-  id: string;
-  name: string;
-  status: EntityStatus;
-  sectionsCount: number;
-  createdAt: string;
-  updatedAt: string;
-  createdBy: string;
-  updatedBy: string;
-}
-
-interface Section {
-  id: string;
-  machineId: string;
-  name: string;
-  status: EntityStatus;
-  componentsCount: number;
-}
-
-interface ComponentItem {
-  id: string;
-  sectionId: string;
-  name: string;
-  status: EntityStatus;
-  sparePartsCount: number;
-}
-
-interface SparePart {
-  id: string;
-  componentId: string;
-  name: string;
-  status: EntityStatus;
-  qty: number;
-  used: number;
-}
+import { AddMachineModal } from "./AddMachineModal";
+import { AddSectionModal } from "./AddSectionModal";
+import { AddComponentModal } from "./AddComponentModal";
+import { AddSparePartModal } from "./AddSparePartModal";
+import {
+  type EntityStatus,
+  type Machine,
+  type Section,
+  type ComponentItem,
+  type SparePart,
+  mockMachines,
+  mockSections,
+  mockComponents,
+  mockSpareParts,
+  updateSectionCount,
+  updateComponentCount,
+  updateSparePartCount
+} from "@/data/masterData";
 
 export function MasterDataManager() {
   // selections
@@ -61,44 +41,17 @@ export function MasterDataManager() {
   const [searchComponents, setSearchComponents] = useState("");
   const [searchParts, setSearchParts] = useState("");
 
-  // mock data (sample like the preview)
-  const machines: Machine[] = [
-    {
-      id: "m1",
-      name: "Apple Watch Series 9",
-      status: "Active",
-      sectionsCount: 2,
-      createdAt: "19/1/2567",
-      updatedAt: "16/1/2567",
-      createdBy: "ภาคิน ชาติกิจ",
-      updatedBy: "ชิงฟง คาร์บ่อน สกำรำ",
-    },
-    {
-      id: "m2",
-      name: "Dell XPS 13",
-      status: "Inactive",
-      sectionsCount: 0,
-      createdAt: "9/1/2567",
-      updatedAt: "24/1/2567",
-      createdBy: "ชิงฟง เคารพ ขอล",
-      updatedBy: "ศิรี่หร์ อสิสา หขั",
-    },
-  ];
+  // modal states
+  const [showAddMachine, setShowAddMachine] = useState(false);
+  const [showAddSection, setShowAddSection] = useState(false);
+  const [showAddComponent, setShowAddComponent] = useState(false);
+  const [showAddSparePart, setShowAddSparePart] = useState(false);
 
-  const sections: Section[] = [
-    { id: "s1", machineId: "m1", name: "กล่อง", status: "Active", componentsCount: 2 },
-    { id: "s2", machineId: "m1", name: "แบตเตอรี่", status: "Active", componentsCount: 0 },
-  ];
-
-  const components: ComponentItem[] = [
-    { id: "c1", sectionId: "s1", name: "กระวิกรอย", status: "Active", sparePartsCount: 1 },
-    { id: "c2", sectionId: "s1", name: "จอภาพ Super Retina XDR", status: "Active", sparePartsCount: 1 },
-  ];
-
-  const spareParts: SparePart[] = [
-    { id: "p1", componentId: "c1", name: "สกรู 2mm", status: "Active", qty: 50, used: 12 },
-    { id: "p2", componentId: "c2", name: "กระจกป้องกัน", status: "Active", qty: 8, used: 2 },
-  ];
+  // ใช้ข้อมูลจาก library กลาง - ในการใช้งานจริงควรใช้ state management
+  const [machines, setMachines] = useState<Machine[]>(mockMachines);
+  const [sections, setSections] = useState<Section[]>(mockSections);
+  const [components, setComponents] = useState<ComponentItem[]>(mockComponents);
+  const [spareParts, setSpareParts] = useState<SparePart[]>(mockSpareParts);
 
   // derived lists
   const filteredMachines = useMemo(
@@ -144,6 +97,81 @@ export function MasterDataManager() {
 
   const canLink = !!(selectedMachineId && selectedSectionId && selectedComponentId);
 
+  // Helper functions to get names for modals
+  const getSelectedMachineName = () => machines.find(m => m.id === selectedMachineId)?.name;
+  const getSelectedSectionName = () => sections.find(s => s.id === selectedSectionId)?.name;
+  const getSelectedComponentName = () => components.find(c => c.id === selectedComponentId)?.name;
+
+  // Add handlers
+  const handleAddMachine = (machineData: { name: string; status: "Active" | "Inactive"; description?: string }) => {
+    const newMachine: Machine = {
+      id: `m${Date.now()}`, // ในการใช้งานจริงควรใช้ UUID
+      name: machineData.name,
+      status: machineData.status,
+      sectionsCount: 0,
+      createdAt: new Date().toLocaleDateString('th-TH'),
+      updatedAt: new Date().toLocaleDateString('th-TH'),
+      createdBy: "ผู้ใช้ปัจจุบัน", // ควรดึงจาก context หรือ auth
+      updatedBy: "ผู้ใช้ปัจจุบัน",
+    };
+    setMachines(prev => [...prev, newMachine]);
+  };
+
+  const handleAddSection = (sectionData: { machineId: string; name: string; status: "Active" | "Inactive"; description?: string }) => {
+    const newSection: Section = {
+      id: `s${Date.now()}`,
+      machineId: sectionData.machineId,
+      name: sectionData.name,
+      status: sectionData.status,
+      componentsCount: 0,
+    };
+    setSections(prev => [...prev, newSection]);
+    
+    // Update machine's sections count
+    setMachines(prev => prev.map(m => 
+      m.id === sectionData.machineId 
+        ? { ...m, sectionsCount: m.sectionsCount + 1, updatedAt: new Date().toLocaleDateString('th-TH') }
+        : m
+    ));
+  };
+
+  const handleAddComponent = (componentData: { sectionId: string; name: string; status: "Active" | "Inactive"; description?: string }) => {
+    const newComponent: ComponentItem = {
+      id: `c${Date.now()}`,
+      sectionId: componentData.sectionId,
+      name: componentData.name,
+      status: componentData.status,
+      sparePartsCount: 0,
+    };
+    setComponents(prev => [...prev, newComponent]);
+    
+    // Update section's components count
+    setSections(prev => prev.map(s => 
+      s.id === componentData.sectionId 
+        ? { ...s, componentsCount: s.componentsCount + 1 }
+        : s
+    ));
+  };
+
+  const handleAddSparePart = (sparePartData: { componentId: string; name: string; status: "Active" | "Inactive"; qty: number; minQty?: number; unit?: string; description?: string }) => {
+    const newSparePart: SparePart = {
+      id: `p${Date.now()}`,
+      componentId: sparePartData.componentId,
+      name: sparePartData.name,
+      status: sparePartData.status,
+      qty: sparePartData.qty,
+      used: 0, // เริ่มต้นที่ 0
+    };
+    setSpareParts(prev => [...prev, newSparePart]);
+    
+    // Update component's spare parts count
+    setComponents(prev => prev.map(c => 
+      c.id === sparePartData.componentId 
+        ? { ...c, sparePartsCount: c.sparePartsCount + 1 }
+        : c
+    ));
+  };
+
   return (
     <div className="space-y-6">
       {/* Toolbar */}
@@ -166,7 +194,6 @@ export function MasterDataManager() {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base">🏭 Machines</CardTitle>
-              <Button size="sm"><Plus className="h-4 w-4 mr-1" />เพิ่ม</Button>
             </div>
             <CardDescription>จัดการเครื่องจักร</CardDescription>
             <div className="relative">
@@ -192,12 +219,6 @@ export function MasterDataManager() {
                         </div>
                         <Badge variant="secondary">{m.status}</Badge>
                       </div>
-                      <div className="mt-2 grid grid-cols-2 gap-2 text-[11px] text-muted-foreground">
-                        <div>สร้าง: {m.createdAt}</div>
-                        <div>แก้ไข: {m.updatedAt}</div>
-                        <div>โดย: {m.createdBy}</div>
-                        <div>โดย: {m.updatedBy}</div>
-                      </div>
                     </button>
                   );
                 })}
@@ -211,7 +232,13 @@ export function MasterDataManager() {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base">⚙️ Sections</CardTitle>
-              <Button size="sm"><Plus className="h-4 w-4 mr-1" />เพิ่ม</Button>
+              <Button 
+                size="sm" 
+                onClick={() => setShowAddSection(true)}
+                disabled={!selectedMachineId}
+              >
+                <Plus className="h-4 w-4 mr-1" />เพิ่ม
+              </Button>
             </div>
             <CardDescription>ส่วนประกอบของเครื่อง</CardDescription>
             <div className="relative">
@@ -253,7 +280,13 @@ export function MasterDataManager() {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base">🔧 Components</CardTitle>
-              <Button size="sm"><Plus className="h-4 w-4 mr-1" />เพิ่ม</Button>
+              <Button 
+                size="sm" 
+                onClick={() => setShowAddComponent(true)}
+                disabled={!selectedSectionId}
+              >
+                <Plus className="h-4 w-4 mr-1" />เพิ่ม
+              </Button>
             </div>
             <CardDescription>ชิ้นส่วนย่อย</CardDescription>
             <div className="relative">
@@ -295,7 +328,13 @@ export function MasterDataManager() {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base">🔩 Spare Parts</CardTitle>
-              <Button size="sm"><Plus className="h-4 w-4 mr-1" />เพิ่ม</Button>
+              <Button 
+                size="sm" 
+                onClick={() => setShowAddSparePart(true)}
+                disabled={!selectedComponentId}
+              >
+                <Plus className="h-4 w-4 mr-1" />เพิ่ม
+              </Button>
             </div>
             <CardDescription>อะไหล่</CardDescription>
             <div className="relative">
@@ -325,6 +364,40 @@ export function MasterDataManager() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Modals */}
+      <AddMachineModal
+        open={showAddMachine}
+        onOpenChange={setShowAddMachine}
+        onAdd={handleAddMachine}
+      />
+
+      <AddSectionModal
+        open={showAddSection}
+        onOpenChange={setShowAddSection}
+        selectedMachineId={selectedMachineId}
+        machineName={getSelectedMachineName()}
+        onAdd={handleAddSection}
+      />
+
+      <AddComponentModal
+        open={showAddComponent}
+        onOpenChange={setShowAddComponent}
+        selectedSectionId={selectedSectionId}
+        sectionName={getSelectedSectionName()}
+        machineName={getSelectedMachineName()}
+        onAdd={handleAddComponent}
+      />
+
+      <AddSparePartModal
+        open={showAddSparePart}
+        onOpenChange={setShowAddSparePart}
+        selectedComponentId={selectedComponentId}
+        componentName={getSelectedComponentName()}
+        sectionName={getSelectedSectionName()}
+        machineName={getSelectedMachineName()}
+        onAdd={handleAddSparePart}
+      />
     </div>
   );
 }
