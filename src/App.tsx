@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,6 +15,7 @@ import { RepairDetail } from "./pages/RepairDetail";
 import { RepairHistory } from "./pages/RepairHistory";
 import { Reports } from "./pages/Reports";
 import { PMManagement } from "./pages/PMManagement";
+import MasterData from "./pages/MasterData";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +38,7 @@ const App = () => (
             <Route path="/pm-management" element={<PMManagement />} />
             <Route path="/repair-history" element={<RepairHistory />} />
             <Route path="/reports" element={<Reports />} />
+            <Route path="/master-data" element={<MasterData />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

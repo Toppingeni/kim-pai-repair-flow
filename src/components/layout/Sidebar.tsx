@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import {
@@ -7,6 +8,7 @@ import {
   Calendar,
   Search,
   Bell,
+  Database,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -22,6 +24,7 @@ export function Sidebar({ userRole }: SidebarProps) {
     { title: "แจ้งซ่อมใหม่", url: "/new-repair", icon: Plus },
     { title: "รายการใบแจ้งซ่อมของฉัน", url: "/my-repairs", icon: User },
     { title: "คู่มือการใช้งาน", url: "/manual", icon: FileText },
+    { title: "ข้อมูล Master", url: "/master-data", icon: Database },
   ];
 
   const engineeringMenuItems = [
@@ -30,6 +33,7 @@ export function Sidebar({ userRole }: SidebarProps) {
     { title: "การจัดการ PM", url: "/pm-management", icon: Calendar },
     { title: "ประวัติการซ่อมบำรุง", url: "/repair-history", icon: Calendar },
     { title: "รายงาน", url: "/reports", icon: Bell },
+    { title: "ข้อมูล Master", url: "/master-data", icon: Database },
   ];
 
   const menuItems = userRole === "production" ? productionMenuItems : engineeringMenuItems;
