@@ -1,6 +1,7 @@
 export const mockOriginalRequest = {
   id: "M-001",
-  machine: "Extruder A",
+  machine: "เครื่องอัดฟิล์ม Extruder Line 1",
+  machineId: "m1", // เพิ่ม machineId ที่ตรงกับ masterData
   problem: "เสียงดังผิดปกติ จากมอเตอร์หลัก เมื่อเครื่องทำงานนานกว่า 2 ชั่วโมง",
   reporter: "สมศรี (ฝ่ายผลิต)",
   reportDate: "07/07/2568 09:30",

@@ -49,6 +49,15 @@ export function SparePartsSelectionDialog({
     setTempSelectedParts(selectedParts);
   }, [selectedParts, open]);
 
+  // Auto-select machine when dialog opens and machineId is provided
+  useEffect(() => {
+    if (open && machineId && machineId !== selectedMachineId) {
+      setSelectedMachineId(machineId);
+      setSelectedSectionId("");
+      setSelectedComponentId("");
+    }
+  }, [open, machineId]);
+
   // ฟิลเตอร์ข้อมูลตามการเลือก
   const availableSections = getSectionsByMachineId(selectedMachineId);
   const availableComponents = getComponentsBySectionId(selectedSectionId);
@@ -107,11 +116,15 @@ export function SparePartsSelectionDialog({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label>เครื่องจักร</Label>
-              <Select value={selectedMachineId} onValueChange={(value) => {
-                setSelectedMachineId(value);
-                setSelectedSectionId("");
-                setSelectedComponentId("");
-              }}>
+              <Select 
+                value={selectedMachineId} 
+                onValueChange={(value) => {
+                  setSelectedMachineId(value);
+                  setSelectedSectionId("");
+                  setSelectedComponentId("");
+                }}
+                disabled={!!machineId} // ปิดการเลือกเมื่อมี machineId ส่งเข้ามา
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="เลือกเครื่องจักร" />
                 </SelectTrigger>

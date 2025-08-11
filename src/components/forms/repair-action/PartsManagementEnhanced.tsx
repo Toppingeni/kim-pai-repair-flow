@@ -38,9 +38,10 @@ interface PartsManagementProps {
   onAddPart: () => void;
   onRemovePart: (id: string) => void;
   onPartsSelected?: (parts: Part[]) => void;
+  machineId?: string; // เครื่องจักรที่แจ้งซ่อม
 }
 
-export function PartsManagement({ parts, onAddPart, onRemovePart, onPartsSelected }: PartsManagementProps) {
+export function PartsManagement({ parts, onAddPart, onRemovePart, onPartsSelected, machineId }: PartsManagementProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [showPartsDialog, setShowPartsDialog] = useState(false);
@@ -356,6 +357,7 @@ export function PartsManagement({ parts, onAddPart, onRemovePart, onPartsSelecte
           onOpenChange={setShowPartsDialog}
           selectedParts={parts}
           onPartsSelected={onPartsSelected || (() => {})}
+          machineId={machineId}
         />
 
         {/* PO Selection Dialog */}

@@ -58,6 +58,7 @@ export function RepairActionForm() {
           onAddPart={addPart}
           onRemovePart={removePart}
           onPartsSelected={handlePartsSelected}
+          machineId={mockOriginalRequest.machineId}
         />
 
         <PreventionMeasures />
