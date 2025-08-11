@@ -127,7 +127,8 @@ export function Reports() {
           </CardContent>
         </Card>
 
-        {/* Key Metrics */}
+        {/* Key Metrics - ซ่อนไว้สำหรับ Phase 2 */}
+        {/*
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card className="shadow-card">
             <CardContent className="p-4">
@@ -197,9 +198,10 @@ export function Reports() {
             </CardContent>
           </Card>
         </div>
+        */}
 
         {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6">
           {/* Machine Breakdown */}
           <Card className="shadow-card">
             <CardHeader>
@@ -242,7 +244,8 @@ export function Reports() {
             </CardContent>
           </Card>
 
-          {/* Engineer Performance */}
+          {/* Engineer Performance - ซ่อนไว้สำหรับ Phase 2 */}
+          {/*
           <Card className="shadow-card">
             <CardHeader>
               <CardTitle className="text-lg">ประสิทธิภาพทีมวิศวกร</CardTitle>
@@ -280,9 +283,11 @@ export function Reports() {
               </Table>
             </CardContent>
           </Card>
+          */}
         </div>
 
-        {/* Cost Analysis */}
+        {/* Cost Analysis - ซ่อนไว้สำหรับ Phase 2 */}
+        {/*
         <Card className="shadow-card">
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
@@ -310,6 +315,7 @@ export function Reports() {
             </div>
           </CardContent>
         </Card>
+        */}
       </div>
     </MainLayout>
   );

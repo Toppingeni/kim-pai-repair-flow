@@ -20,18 +20,18 @@ export function Sidebar({ userRole }: SidebarProps) {
   const currentPath = location.pathname;
 
   const productionMenuItems = [
-    { title: "Dashboard", url: "/", icon: Search },
+    // { title: "Dashboard", url: "/", icon: Search }, // ซ่อนไว้สำหรับ Phase 2
     { title: "แจ้งซ่อมใหม่", url: "/new-repair", icon: Plus },
     { title: "รายการใบแจ้งซ่อมของฉัน", url: "/my-repairs", icon: User },
-    { title: "คู่มือการใช้งาน", url: "/manual", icon: FileText },
-    { title: "ข้อมูล Master", url: "/master-data", icon: Database },
+    // { title: "คู่มือการใช้งาน", url: "/manual", icon: FileText }, // ซ่อนไว้สำหรับ Phase 2
+    // { title: "ข้อมูล Master", url: "/master-data", icon: Database }, // เฉพาะฝ่ายวิศวกรรม
   ];
 
   const engineeringMenuItems = [
-    { title: "Dashboard", url: "/", icon: Search },
+    // { title: "Dashboard", url: "/", icon: Search }, // ซ่อนไว้สำหรับ Phase 2
     { title: "รายการใบแจ้งซ่อมทั้งหมด", url: "/all-repairs", icon: FileText },
-    { title: "การจัดการ PM", url: "/pm-management", icon: Calendar },
-    { title: "ประวัติการซ่อมบำรุง", url: "/repair-history", icon: Calendar },
+    // { title: "การจัดการ PM", url: "/pm-management", icon: Calendar }, // ซ่อนไว้สำหรับ Phase 2
+    // { title: "ประวัติการซ่อมบำรุง", url: "/repair-history", icon: Calendar }, // ซ่อนไว้สำหรับ Phase 2
     { title: "รายงาน", url: "/reports", icon: Bell },
     { title: "ข้อมูล Master", url: "/master-data", icon: Database },
   ];
