@@ -33,9 +33,14 @@ export interface SparePart {
   id: string;
   componentId: string;
   name: string;
+  code: string;
+  category: string;
   status: EntityStatus;
   qty: number;
   used: number;
+  unit: string;
+  defaultUsage: number; // จำนวนใช้งานมาตรฐาน
+  stock: number;
 }
 
 // ข้อมูลเครื่องจักรในโรงงานผลิตฟิล์ม
@@ -100,36 +105,36 @@ export const mockComponents: ComponentItem[] = [
 // ข้อมูลอะไหล่
 export const mockSpareParts: SparePart[] = [
   // มอเตอร์ขับเคลื่อน
-  { id: "p1", componentId: "c1", name: "แบริ่ง มอเตอร์", status: "Active", qty: 10, used: 2 },
-  { id: "p2", componentId: "c1", name: "คาร์บอนแปรง", status: "Active", qty: 20, used: 5 },
-  { id: "p3", componentId: "c1", name: "สายไฟมอเตอร์", status: "Active", qty: 15, used: 3 },
+  { id: "p1", componentId: "c1", name: "แบริ่ง มอเตอร์", code: "BRG-MOT-001", category: "แบริ่ง", status: "Active", qty: 10, used: 2, unit: "ตัว", defaultUsage: 2, stock: 8 },
+  { id: "p2", componentId: "c1", name: "คาร์บอนแปรง", code: "CBN-BRS-002", category: "คาร์บอน", status: "Active", qty: 20, used: 5, unit: "ตัว", defaultUsage: 4, stock: 15 },
+  { id: "p3", componentId: "c1", name: "สายไฟมอเตอร์", code: "CAB-MOT-003", category: "สายไฟ", status: "Active", qty: 15, used: 3, unit: "เมตร", defaultUsage: 2, stock: 12 },
   // เซ็นเซอร์วัดอุณหภูมิ
-  { id: "p4", componentId: "c2", name: "เซ็นเซอร์ PT100", status: "Active", qty: 8, used: 1 },
-  { id: "p5", componentId: "c2", name: "สายสัญญาณ", status: "Active", qty: 25, used: 4 },
+  { id: "p4", componentId: "c2", name: "เซ็นเซอร์ PT100", code: "SEN-PT100-004", category: "เซ็นเซอร์", status: "Active", qty: 8, used: 1, unit: "ตัว", defaultUsage: 1, stock: 7 },
+  { id: "p5", componentId: "c2", name: "สายสัญญาณ", code: "CAB-SIG-005", category: "สายไฟ", status: "Active", qty: 25, used: 4, unit: "เมตร", defaultUsage: 3, stock: 21 },
   // ระบบทำความร้อน
-  { id: "p6", componentId: "c3", name: "ฮีตเตอร์ 220V", status: "Active", qty: 6, used: 1 },
-  { id: "p7", componentId: "c3", name: "เทอร์โมสตัท", status: "Active", qty: 12, used: 2 },
+  { id: "p6", componentId: "c3", name: "ฮีตเตอร์ 220V", code: "HTR-220V-006", category: "ฮีตเตอร์", status: "Active", qty: 6, used: 1, unit: "ตัว", defaultUsage: 1, stock: 5 },
+  { id: "p7", componentId: "c3", name: "เทอร์โมสตัท", code: "THS-007", category: "เทอร์โมสตัท", status: "Active", qty: 12, used: 2, unit: "ตัว", defaultUsage: 1, stock: 10 },
   // หัวฉีดพลาสติก
-  { id: "p8", componentId: "c4", name: "หัวฉีด Nozzle", status: "Active", qty: 5, used: 0 },
-  { id: "p9", componentId: "c4", name: "ยางซีล O-Ring", status: "Active", qty: 50, used: 8 },
+  { id: "p8", componentId: "c4", name: "หัวฉีด Nozzle", code: "NOZ-008", category: "หัวฉีด", status: "Active", qty: 5, used: 0, unit: "ตัว", defaultUsage: 1, stock: 5 },
+  { id: "p9", componentId: "c4", name: "ยางซีล O-Ring", code: "ORG-009", category: "ซีล", status: "Active", qty: 50, used: 8, unit: "ตัว", defaultUsage: 6, stock: 42 },
   // แผ่นกรองพลาสติก
-  { id: "p10", componentId: "c5", name: "ตะแกรงกรอง 100 mesh", status: "Active", qty: 30, used: 5 },
+  { id: "p10", componentId: "c5", name: "ตะแกรงกรอง 100 mesh", code: "FLT-100M-010", category: "ตะแกรง", status: "Active", qty: 30, used: 5, unit: "แผ่น", defaultUsage: 3, stock: 25 },
   // ลูกกลิ้งม้วนฟิล์ม
-  { id: "p11", componentId: "c6", name: "ยางหุ้มลูกกลิ้ง", status: "Active", qty: 8, used: 1 },
-  { id: "p12", componentId: "c6", name: "แบริ่งลูกกลิ้ง", status: "Active", qty: 16, used: 3 },
+  { id: "p11", componentId: "c6", name: "ยางหุ้มลูกกลิ้ง", code: "RBR-ROL-011", category: "ยาง", status: "Active", qty: 8, used: 1, unit: "ตัว", defaultUsage: 1, stock: 7 },
+  { id: "p12", componentId: "c6", name: "แบริ่งลูกกลิ้ง", code: "BRG-ROL-012", category: "แบริ่ง", status: "Active", qty: 16, used: 3, unit: "ตัว", defaultUsage: 2, stock: 13 },
   // มอเตอร์ควบคุมความเร็ว
-  { id: "p13", componentId: "c7", name: "เอ็นโค้เดอร์", status: "Active", qty: 4, used: 0 },
+  { id: "p13", componentId: "c7", name: "เอ็นโค้เดอร์", code: "ENC-013", category: "เอ็นโค้เดอร์", status: "Active", qty: 4, used: 0, unit: "ตัว", defaultUsage: 1, stock: 4 },
   // ใบมีดตัดฟิล์ม
-  { id: "p14", componentId: "c8", name: "ใบมีดคาร์ไบด์", status: "Active", qty: 12, used: 4 },
-  { id: "p15", componentId: "c8", name: "สกรูยึดใบมีด", status: "Active", qty: 40, used: 8 },
-  { id: "p16", componentId: "c8", name: "แผ่นรองใบมีด", status: "Active", qty: 15, used: 2 },
+  { id: "p14", componentId: "c8", name: "ใบมีดคาร์ไบด์", code: "BLD-CRB-014", category: "ใบมีด", status: "Active", qty: 12, used: 4, unit: "ตัว", defaultUsage: 2, stock: 8 },
+  { id: "p15", componentId: "c8", name: "สกรูยึดใบมีด", code: "SCR-BLD-015", category: "สกรู", status: "Active", qty: 40, used: 8, unit: "ตัว", defaultUsage: 4, stock: 32 },
+  { id: "p16", componentId: "c8", name: "แผ่นรองใบมีด", code: "PLT-BLD-016", category: "แผ่นรอง", status: "Active", qty: 15, used: 2, unit: "ตัว", defaultUsage: 1, stock: 13 },
   // ระบบวัดความยาว
-  { id: "p17", componentId: "c9", name: "เซ็นเซอร์วัดระยะ", status: "Active", qty: 6, used: 1 },
+  { id: "p17", componentId: "c9", name: "เซ็นเซอร์วัดระยะ", code: "SEN-DIS-017", category: "เซ็นเซอร์", status: "Active", qty: 6, used: 1, unit: "ตัว", defaultUsage: 1, stock: 5 },
   // หน้าจอควบคุม HMI
-  { id: "p18", componentId: "c10", name: "ฟิล์มป้องกันหน้าจอ", status: "Active", qty: 10, used: 2 },
+  { id: "p18", componentId: "c10", name: "ฟิล์มป้องกันหน้าจอ", code: "FLM-HMI-018", category: "ฟิล์ม", status: "Active", qty: 10, used: 2, unit: "แผ่น", defaultUsage: 1, stock: 8 },
   // หัวพิมพ์สี
-  { id: "p19", componentId: "c11", name: "หัวพิมพ์ Cyan", status: "Inactive", qty: 3, used: 0 },
-  { id: "p20", componentId: "c11", name: "หัวพิมพ์ Magenta", status: "Inactive", qty: 3, used: 0 },
+  { id: "p19", componentId: "c11", name: "หัวพิมพ์ Cyan", code: "PRH-CYN-019", category: "หัวพิมพ์", status: "Inactive", qty: 3, used: 0, unit: "ตัว", defaultUsage: 1, stock: 3 },
+  { id: "p20", componentId: "c11", name: "หัวพิมพ์ Magenta", code: "PRH-MAG-020", category: "หัวพิมพ์", status: "Inactive", qty: 3, used: 0, unit: "ตัว", defaultUsage: 1, stock: 3 },
 ];
 
 // ฟังก์ชันช่วยในการจัดการข้อมูล

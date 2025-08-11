@@ -1,32 +1,35 @@
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Search, Package } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { Search, Package, AlertCircle } from "lucide-react";
 import { Part } from "./PartsManagementEnhanced";
-
-// Mock spare parts data
-const mockSpareParts = [
-  { id: "SP001", name: "มอเตอร์ X5", code: "MOT-X5-001", category: "มอเตอร์", stock: 15, unit: "ตัว" },
-  { id: "SP002", name: "เซ็นเซอร์ Y2", code: "SEN-Y2-002", category: "เซ็นเซอร์", stock: 25, unit: "ตัว" },
-  { id: "SP003", name: "สายไฟ 3 เมตร", code: "CAB-3M-003", category: "สายไฟ", stock: 50, unit: "เส้น" },
-  { id: "SP004", name: "สกรูยึด M6", code: "SCR-M6-004", category: "น็อต/สกรู", stock: 200, unit: "ตัว" },
-  { id: "SP005", name: "เฟืองขนาดเล็ก", code: "GER-SM-005", category: "เฟือง", stock: 8, unit: "ตัว" },
-  { id: "SP006", name: "ลูกปืน 608ZZ", code: "BRG-608-006", category: "ลูกปืน", stock: 30, unit: "ตัว" },
-  { id: "SP007", name: "สายพาน A-50", code: "BLT-A50-007", category: "สายพาน", stock: 12, unit: "เส้น" },
-  { id: "SP008", name: "ปั๊มน้ำมัน", code: "PMP-OIL-008", category: "ปั๊ม", stock: 5, unit: "ตัว" },
-  { id: "SP009", name: "วาล์วลม", code: "VAL-AIR-009", category: "วาล์ว", stock: 18, unit: "ตัว" },
-  { id: "SP010", name: "หลอดไฟ LED 24V", code: "LED-24V-010", category: "ไฟ", stock: 40, unit: "หลอด" },
-];
+import { 
+  mockMachines, 
+  mockSections, 
+  mockComponents, 
+  mockSpareParts,
+  getSectionsByMachineId,
+  getComponentsBySectionId,
+  getSparePartsByComponentId,
+  type Machine,
+  type Section,
+  type ComponentItem,
+  type SparePart
+} from "@/data/masterData";
 
 interface SparePartsSelectionDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   selectedParts: Part[];
   onPartsSelected: (parts: Part[]) => void;
+  machineId?: string; // เครื่องจักรที่แจ้งซ่อม
 }
 
 export function SparePartsSelectionDialog({
@@ -34,36 +37,48 @@ export function SparePartsSelectionDialog({
   onOpenChange,
   selectedParts,
   onPartsSelected,
+  machineId,
 }: SparePartsSelectionDialogProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [tempSelectedParts, setTempSelectedParts] = useState<Part[]>(selectedParts);
+  const [selectedMachineId, setSelectedMachineId] = useState<string>(machineId || "");
+  const [selectedSectionId, setSelectedSectionId] = useState<string>("");
+  const [selectedComponentId, setSelectedComponentId] = useState<string>("");
 
   useEffect(() => {
     setTempSelectedParts(selectedParts);
   }, [selectedParts, open]);
 
-  const filteredParts = mockSpareParts.filter(part => 
+  // ฟิลเตอร์ข้อมูลตามการเลือก
+  const availableSections = getSectionsByMachineId(selectedMachineId);
+  const availableComponents = getComponentsBySectionId(selectedSectionId);
+  const availableParts = getSparePartsByComponentId(selectedComponentId);
+
+  // ฟิลเตอร์อะไหล่ตามคำค้นหา
+  const filteredParts = availableParts.filter((part) =>
     part.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     part.code.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const isPartSelected = (partId: string) => {
-    return tempSelectedParts.some(p => p.code === partId);
+    return tempSelectedParts.some(p => p.id === partId);
   };
 
-  const handlePartToggle = (sparePart: typeof mockSpareParts[0], checked: boolean) => {
-    if (checked) {
+  const handlePartToggle = (part: SparePart) => {
+    const existingPart = tempSelectedParts.find(p => p.id === part.id);
+    
+    if (existingPart) {
+      setTempSelectedParts(prev => prev.filter(p => p.id !== part.id));
+    } else {
       const newPart: Part = {
-        id: Date.now().toString(),
-        name: sparePart.name,
-        code: sparePart.code,
-        quantity: 1,
+        id: part.id,
+        name: part.name,
+        code: part.code,
+        quantity: part.defaultUsage, // ใช้ defaultUsage แทน 1
         type: "stock",
         status: "ใหม่",
       };
-      setTempSelectedParts([...tempSelectedParts, newPart]);
-    } else {
-      setTempSelectedParts(tempSelectedParts.filter(p => p.code !== sparePart.code));
+      setTempSelectedParts(prev => [...prev, newPart]);
     }
   };
 
@@ -79,7 +94,7 @@ export function SparePartsSelectionDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Package className="h-5 w-5" />
@@ -87,7 +102,75 @@ export function SparePartsSelectionDialog({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="space-y-4 flex-1 overflow-hidden flex flex-col">
+          {/* Machine, Section, Component Selection */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <Label>เครื่องจักร</Label>
+              <Select value={selectedMachineId} onValueChange={(value) => {
+                setSelectedMachineId(value);
+                setSelectedSectionId("");
+                setSelectedComponentId("");
+              }}>
+                <SelectTrigger>
+                  <SelectValue placeholder="เลือกเครื่องจักร" />
+                </SelectTrigger>
+                <SelectContent>
+                  {mockMachines.map((machine) => (
+                    <SelectItem key={machine.id} value={machine.id}>
+                      {machine.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>ส่วนประกอบ (Section)</Label>
+              <Select 
+                value={selectedSectionId} 
+                onValueChange={(value) => {
+                  setSelectedSectionId(value);
+                  setSelectedComponentId("");
+                }}
+                disabled={!selectedMachineId}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="เลือกส่วนประกอบ" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableSections.map((section) => (
+                    <SelectItem key={section.id} value={section.id}>
+                      {section.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>ชิ้นส่วน (Component)</Label>
+              <Select 
+                value={selectedComponentId} 
+                onValueChange={setSelectedComponentId}
+                disabled={!selectedSectionId}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="เลือกชิ้นส่วน" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableComponents.map((component) => (
+                    <SelectItem key={component.id} value={component.id}>
+                      {component.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <Separator />
+
           {/* Search */}
           <div className="space-y-2">
             <Label htmlFor="search">ค้นหาอะไหล่</Label>
@@ -99,72 +182,83 @@ export function SparePartsSelectionDialog({
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
+                disabled={!selectedComponentId}
               />
             </div>
           </div>
 
-          {/* Selected parts summary */}
-          {tempSelectedParts.length > 0 && (
-            <div className="p-3 bg-muted/50 rounded-lg">
-              <Label className="text-sm font-medium mb-2 block">
-                อะไหล่ที่เลือก ({tempSelectedParts.length} รายการ)
-              </Label>
-              <div className="flex flex-wrap gap-2">
-                {tempSelectedParts.map((part) => (
-                  <Badge key={part.id} variant="secondary" className="text-xs">
-                    {part.name} ({part.code})
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
+
 
           {/* Parts list */}
-          <div className="border rounded-lg max-h-[400px] overflow-y-auto">
-            <div className="p-4 space-y-3">
-              {filteredParts.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Package className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                  <p>ไม่พบอะไหล่ที่ค้นหา</p>
+          <div className="space-y-2 flex-1 flex flex-col">
+            <Label>รายการอะไหล่ ({filteredParts.length} รายการ)</Label>
+            {!selectedComponentId ? (
+              <div className="h-64 border border-border rounded-lg flex items-center justify-center">
+                <div className="text-center text-muted-foreground">
+                  <Package className="mx-auto h-12 w-12 mb-2" />
+                  <p>กรุณาเลือกเครื่องจักร ส่วนประกอบ และชิ้นส่วนก่อน</p>
                 </div>
-              ) : (
-                filteredParts.map((part) => (
-                  <div key={part.id} className="flex items-start space-x-3 p-3 border border-border rounded-lg hover:bg-muted/50">
-                    <Checkbox
-                      checked={isPartSelected(part.code)}
-                      onCheckedChange={(checked) => handlePartToggle(part, checked as boolean)}
-                      className="mt-1"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between">
-                        <div className="space-y-1">
-                          <h4 className="font-medium text-sm">{part.name}</h4>
-                          <p className="text-xs text-muted-foreground">รหัส: {part.code}</p>
-                          <p className="text-xs text-muted-foreground">หมวดหมู่: {part.category}</p>
-                        </div>
-                        <div className="text-right space-y-1">
-                          <Badge variant={part.stock > 10 ? "outline" : "destructive"} className="text-xs">
-                            คงเหลือ: {part.stock} {part.unit}
-                          </Badge>
-                        </div>
-                      </div>
+              </div>
+            ) : (
+              <ScrollArea className="h-64 border border-border rounded-lg">
+                <div className="p-4 space-y-3">
+                  {filteredParts.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Package className="mx-auto h-12 w-12 mb-2" />
+                      <p>ไม่พบอะไหล่ที่ค้นหา</p>
                     </div>
-                  </div>
-                ))
-              )}
-            </div>
+                  ) : (
+                    filteredParts.map((part) => {
+                      const remainingStock = part.stock - part.used;
+                      const isLowStock = remainingStock < part.defaultUsage;
+                      
+                      return (
+                        <div key={part.id} className="flex items-start space-x-3 p-3 border border-border rounded-lg hover:bg-muted/50">
+                          <Checkbox
+                            checked={isPartSelected(part.id)}
+                            onCheckedChange={() => handlePartToggle(part)}
+                            className="mt-1"
+                            disabled={remainingStock < part.defaultUsage}
+                          />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between">
+                              <h4 className="font-medium text-sm">{part.name}</h4>
+                              <Badge variant="outline" className="text-xs">
+                                {part.code}
+                              </Badge>
+                            </div>
+                            <div className="mt-1 flex items-center space-x-4 text-xs text-muted-foreground">
+                              <span className={isLowStock ? "text-red-500 font-medium" : ""}>
+                                คงเหลือ: {remainingStock} {part.unit}
+                              </span>
+                              <span>ใช้งาน: {part.defaultUsage} {part.unit}</span>
+                              {isLowStock && (
+                                <div className="flex items-center text-red-500">
+                                  <AlertCircle className="h-3 w-3 mr-1" />
+                                  <span>ไม่เพียงพอ</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </ScrollArea>
+            )}
           </div>
 
-          {/* Action buttons */}
-          <div className="flex justify-end space-x-2 pt-4 border-t">
-            <Button variant="outline" onClick={handleCancel}>
-              ยกเลิก
-            </Button>
-            <Button onClick={handleConfirm}>
-              ยืนยันการเลือก ({tempSelectedParts.length} รายการ)
-            </Button>
-          </div>
         </div>
+        
+        <DialogFooter className="mt-4">
+        <Button variant="outline" onClick={handleCancel}>
+          ยกเลิก
+        </Button>
+        <Button onClick={handleConfirm}>
+          ยืนยันการเลือก ({tempSelectedParts.length} รายการ)
+        </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
