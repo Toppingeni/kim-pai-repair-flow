@@ -59,7 +59,7 @@ export function Dashboard() {
       variant: "progress" as const,
     },
     {
-      title: "รอคุณยืนยัน",
+      title: "รอยืนยันปิดงาน",
       value: mockRepairs.filter(r => r.status === "waiting").length,
       icon: <Bell className="h-8 w-8" />,
       variant: "waiting" as const,

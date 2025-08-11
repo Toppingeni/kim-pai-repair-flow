@@ -24,7 +24,7 @@ export interface Part {
   name: string;
   code: string;
   quantity: number;
-  type: "stock" | "purchase" | "internal";
+  type: "stock" | "purchase";
   status: string;
   unitPrice?: number;
   totalPrice?: number;
@@ -51,7 +51,6 @@ export function PartsManagement({ parts, onAddPart, onRemovePart, onPartsSelecte
   const partTypeOptions = [
     { value: "stock", label: "เบิกจาก Stock", icon: <Package className="h-4 w-4" /> },
     { value: "purchase", label: "สั่งซื้อใหม่", icon: <ShoppingCart className="h-4 w-4" /> },
-    { value: "internal", label: "ขอยืม/โอนภายใน", icon: <Wrench className="h-4 w-4" /> },
   ];
 
   console.log("partTypeOptions:", partTypeOptions);

@@ -31,7 +31,7 @@ interface RepairTableProps {
 const statusConfig = {
   new: { label: "งานใหม่", variant: "new" as const },
   progress: { label: "กำลังซ่อม", variant: "progress" as const },
-  waiting: { label: "รอคุณยืนยัน", variant: "waiting" as const },
+  waiting: { label: "รอยืนยันปิดงาน", variant: "waiting" as const },
   completed: { label: "ปิดงานแล้ว", variant: "completed" as const },
   pending: { label: "รออะไหล่", variant: "pending" as const },
 };

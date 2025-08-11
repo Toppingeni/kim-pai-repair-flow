@@ -12,14 +12,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { mockMachines } from "@/data/masterData";
 
-const machines = [
-  { id: "EXT-001", name: "Extruder A", location: "อาคาร 1, Line 1" },
-  { id: "EXT-002", name: "Extruder B", location: "อาคาร 2, Line 3" },
-  { id: "PACK-001", name: "Packing Machine 1", location: "อาคาร 1, Line 2" },
-  { id: "COMP-001", name: "Compressor", location: "อาคาร 2, Utility" },
-  { id: "CONV-001", name: "Conveyor", location: "อาคาร 1, Line 1" },
-];
+// แปลงข้อมูลจาก masterData ให้มีข้อมูลสถานที่ตั้ง
+const machines = mockMachines
+  .filter(machine => machine.status === "Active")
+  .map(machine => ({
+    id: machine.id,
+    name: machine.name,
+    location: getLocationByMachineId(machine.id), // ฟังก์ชันสำหรับกำหนดสถานที่ตั้ง
+  }));
+
+// ฟังก์ชันสำหรับกำหนดสถานที่ตั้งตาม machine id
+function getLocationByMachineId(machineId: string): string {
+  const locationMap: { [key: string]: string } = {
+    "m1": "อาคาร 1, Line 1", // เครื่องอัดฟิล์ม Extruder Line 1
+    "m2": "อาคาร 1, Line 2", // เครื่องตัดฟิล์ม Slitting Machine A
+    "m3": "อาคาร 2, Line 1", // เครื่องพิมพ์ฟิล์ม Printing Press B
+  };
+  return locationMap[machineId] || "ไม่ระบุสถานที่";
+}
 
 export function NewRepairForm() {
   const [selectedMachine, setSelectedMachine] = useState("");
