@@ -83,17 +83,32 @@ export function MasterDataManager() {
     [spareParts, selectedComponentId, searchParts]
   );
 
-  // handlers
+  // handlers with cascade clearing
   const selectMachine = (id: string) => {
     setSelectedMachineId(id);
+    // เคลียร์ section, component, spare part เมื่อเลือก machine ใหม่
     setSelectedSectionId(null);
     setSelectedComponentId(null);
+    // เคลียร์ search filters ด้วย
+    setSearchSections("");
+    setSearchComponents("");
+    setSearchParts("");
   };
+  
   const selectSection = (id: string) => {
     setSelectedSectionId(id);
+    // เคลียร์ component และ spare part เมื่อเลือก section ใหม่
     setSelectedComponentId(null);
+    // เคลียร์ search filters ด้วย
+    setSearchComponents("");
+    setSearchParts("");
   };
-  const selectComponent = (id: string) => setSelectedComponentId(id);
+  
+  const selectComponent = (id: string) => {
+    setSelectedComponentId(id);
+    // เคลียร์ search filter สำหรับ spare parts
+    setSearchParts("");
+  };
 
   const canLink = !!(selectedMachineId && selectedSectionId && selectedComponentId);
 
@@ -158,9 +173,14 @@ export function MasterDataManager() {
       id: `p${Date.now()}`,
       componentId: sparePartData.componentId,
       name: sparePartData.name,
+      code: `SP-${Date.now()}`, // สร้าง code อัตโนมัติ
+      category: "อื่นๆ", // ค่าเริ่มต้น
       status: sparePartData.status,
       qty: sparePartData.qty,
       used: 0, // เริ่มต้นที่ 0
+      unit: sparePartData.unit || "ตัว", // ค่าเริ่มต้น
+      defaultUsage: 1, // ค่าเริ่มต้น
+      stock: sparePartData.qty, // stock เท่ากับ qty เริ่มต้น
     };
     setSpareParts(prev => [...prev, newSparePart]);
     
@@ -188,38 +208,52 @@ export function MasterDataManager() {
       </div>
 
       {/* 4 Columns */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Machines */}
         <Card>
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base">🏭 Machines</CardTitle>
+              <CardTitle className="text-lg">เครื่องจักร</CardTitle>
+              <Button size="sm" onClick={() => setShowAddMachine(true)}>
+                <Plus className="h-4 w-4 mr-1" /> เพิ่ม
+              </Button>
             </div>
-            <CardDescription>จัดการเครื่องจักร</CardDescription>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input value={searchMachines} onChange={(e)=>setSearchMachines(e.target.value)} placeholder="ค้นหาเครื่องจักร..." className="pl-9" />
-            </div>
+            <CardDescription>เลือกเครื่องจักรที่ต้องการจัดการ</CardDescription>
           </CardHeader>
-          <CardContent>
-            <ScrollArea className="h-[60vh] pr-2">
+          <CardContent className="space-y-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Input
+                placeholder="ค้นหาเครื่องจักร..."
+                value={searchMachines}
+                onChange={(e) => setSearchMachines(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+            <ScrollArea className="h-[400px]">
               <div className="space-y-2">
                 {filteredMachines.map((m) => {
-                  const selected = m.id === selectedMachineId;
+                  const isSelected = selectedMachineId === m.id;
                   return (
-                    <button
+                    <div
                       key={m.id}
-                      className={`w-full text-left rounded-md border p-3 transition-colors ${selected ? "border-primary bg-primary/10" : "border-transparent hover:bg-muted"}`}
+                      className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                        isSelected
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "hover:bg-muted border-border"
+                      }`}
                       onClick={() => selectMachine(m.id)}
                     >
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <div className="font-medium">{m.name}</div>
-                          <div className="text-xs text-muted-foreground">{m.sectionsCount} sections</div>
-                        </div>
-                        <Badge variant="secondary">{m.status}</Badge>
+                      <div className="flex items-center justify-between">
+                        <div className="font-medium">{m.name}</div>
+                        <Badge variant={m.status === "Active" ? "default" : "secondary"}>
+                          {m.status === "Active" ? "ใช้งาน" : "ไม่ใช้งาน"}
+                        </Badge>
                       </div>
-                    </button>
+                      <div className="text-sm text-muted-foreground mt-1">
+                        Sections: {m.sectionsCount}
+                      </div>
+                    </div>
                   );
                 })}
               </div>
@@ -231,45 +265,60 @@ export function MasterDataManager() {
         <Card>
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base">⚙️ Sections</CardTitle>
+              <CardTitle className="text-lg">ส่วนประกอบ</CardTitle>
               <Button 
                 size="sm" 
                 onClick={() => setShowAddSection(true)}
                 disabled={!selectedMachineId}
               >
-                <Plus className="h-4 w-4 mr-1" />เพิ่ม
+                <Plus className="h-4 w-4 mr-1" /> เพิ่ม
               </Button>
             </div>
-            <CardDescription>ส่วนประกอบของเครื่อง</CardDescription>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input value={searchSections} onChange={(e)=>setSearchSections(e.target.value)} placeholder="ค้นหาส่วน..." className="pl-9" />
-            </div>
+            <CardDescription>เลือกส่วนประกอบของเครื่องจักร</CardDescription>
           </CardHeader>
-          <CardContent>
-            <ScrollArea className="h-[60vh] pr-2">
+          <CardContent className="space-y-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Input
+                placeholder="ค้นหาส่วนประกอบ..."
+                value={searchSections}
+                onChange={(e) => setSearchSections(e.target.value)}
+                className="pl-9"
+                disabled={!selectedMachineId}
+              />
+            </div>
+            <ScrollArea className="h-[400px]">
               <div className="space-y-2">
-                {filteredSections.length === 0 && (
-                  <div className="text-sm text-muted-foreground">เลือกเครื่องจักรก่อน</div>
-                )}
-                {filteredSections.map((s) => {
-                  const selected = s.id === selectedSectionId;
-                  return (
-                    <button
-                      key={s.id}
-                      className={`w-full text-left rounded-md border p-3 transition-colors ${selected ? "border-primary bg-primary/10" : "border-transparent hover:bg-muted"}`}
-                      onClick={() => selectSection(s.id)}
-                    >
-                      <div className="flex items-start justify-between">
-                        <div>
+                {!selectedMachineId ? (
+                  <div className="text-center text-muted-foreground py-8">เลือกเครื่องจักรก่อน</div>
+                ) : filteredSections.length === 0 ? (
+                  <div className="text-center text-muted-foreground py-8">ไม่พบข้อมูล Section</div>
+                ) : (
+                  filteredSections.map((s) => {
+                    const isSelected = selectedSectionId === s.id;
+                    return (
+                      <div
+                        key={s.id}
+                        className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                          isSelected
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "hover:bg-muted border-border"
+                        }`}
+                        onClick={() => selectSection(s.id)}
+                      >
+                        <div className="flex items-center justify-between">
                           <div className="font-medium">{s.name}</div>
-                          <div className="text-xs text-muted-foreground">{s.componentsCount} components</div>
+                          <Badge variant={s.status === "Active" ? "default" : "secondary"}>
+                            {s.status === "Active" ? "ใช้งาน" : "ไม่ใช้งาน"}
+                          </Badge>
                         </div>
-                        <Badge variant="secondary">{s.status}</Badge>
+                        <div className="text-sm text-muted-foreground mt-1">
+                          Components: {s.componentsCount}
+                        </div>
                       </div>
-                    </button>
-                  );
-                })}
+                    );
+                  })
+                )}
               </div>
             </ScrollArea>
           </CardContent>
@@ -279,45 +328,60 @@ export function MasterDataManager() {
         <Card>
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base">🔧 Components</CardTitle>
+              <CardTitle className="text-lg">ชิ้นส่วน</CardTitle>
               <Button 
                 size="sm" 
                 onClick={() => setShowAddComponent(true)}
                 disabled={!selectedSectionId}
               >
-                <Plus className="h-4 w-4 mr-1" />เพิ่ม
+                <Plus className="h-4 w-4 mr-1" /> เพิ่ม
               </Button>
             </div>
-            <CardDescription>ชิ้นส่วนย่อย</CardDescription>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input value={searchComponents} onChange={(e)=>setSearchComponents(e.target.value)} placeholder="ค้นหา component..." className="pl-9" />
-            </div>
+            <CardDescription>เลือกชิ้นส่วนที่ต้องการจัดการ</CardDescription>
           </CardHeader>
-          <CardContent>
-            <ScrollArea className="h-[60vh] pr-2">
+          <CardContent className="space-y-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Input
+                placeholder="ค้นหาชิ้นส่วน..."
+                value={searchComponents}
+                onChange={(e) => setSearchComponents(e.target.value)}
+                className="pl-9"
+                disabled={!selectedSectionId}
+              />
+            </div>
+            <ScrollArea className="h-[400px]">
               <div className="space-y-2">
-                {filteredComponents.length === 0 && (
-                  <div className="text-sm text-muted-foreground">เลือกส่วน (Section) ก่อน</div>
-                )}
-                {filteredComponents.map((c) => {
-                  const selected = c.id === selectedComponentId;
-                  return (
-                    <button
-                      key={c.id}
-                      className={`w-full text-left rounded-md border p-3 transition-colors ${selected ? "border-primary bg-primary/10" : "border-transparent hover:bg-muted"}`}
-                      onClick={() => selectComponent(c.id)}
-                    >
-                      <div className="flex items-start justify-between">
-                        <div>
+                {!selectedSectionId ? (
+                  <div className="text-center text-muted-foreground py-8">เลือก Section ก่อน</div>
+                ) : filteredComponents.length === 0 ? (
+                  <div className="text-center text-muted-foreground py-8">ไม่พบข้อมูล Component</div>
+                ) : (
+                  filteredComponents.map((c) => {
+                    const isSelected = selectedComponentId === c.id;
+                    return (
+                      <div
+                        key={c.id}
+                        className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                          isSelected
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "hover:bg-muted border-border"
+                        }`}
+                        onClick={() => selectComponent(c.id)}
+                      >
+                        <div className="flex items-center justify-between">
                           <div className="font-medium">{c.name}</div>
-                          <div className="text-xs text-muted-foreground">{c.sparePartsCount} spare parts</div>
+                          <Badge variant={c.status === "Active" ? "default" : "secondary"}>
+                            {c.status === "Active" ? "ใช้งาน" : "ไม่ใช้งาน"}
+                          </Badge>
                         </div>
-                        <Badge variant="secondary">{c.status}</Badge>
+                        <div className="text-sm text-muted-foreground mt-1">
+                          Spare Parts: {c.sparePartsCount}
+                        </div>
                       </div>
-                    </button>
-                  );
-                })}
+                    );
+                  })
+                )}
               </div>
             </ScrollArea>
           </CardContent>
@@ -327,38 +391,52 @@ export function MasterDataManager() {
         <Card>
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base">🔩 Spare Parts</CardTitle>
+              <CardTitle className="text-lg">อะไหล่</CardTitle>
               <Button 
                 size="sm" 
                 onClick={() => setShowAddSparePart(true)}
                 disabled={!selectedComponentId}
               >
-                <Plus className="h-4 w-4 mr-1" />เพิ่ม
+                <Plus className="h-4 w-4 mr-1" /> เพิ่ม
               </Button>
             </div>
-            <CardDescription>อะไหล่</CardDescription>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input value={searchParts} onChange={(e)=>setSearchParts(e.target.value)} placeholder="ค้นหาอะไหล่..." className="pl-9" />
-            </div>
+            <CardDescription>จัดการอะไหล่ของชิ้นส่วน</CardDescription>
           </CardHeader>
-          <CardContent>
-            <ScrollArea className="h-[60vh] pr-2">
+          <CardContent className="space-y-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Input
+                placeholder="ค้นหาอะไหล่..."
+                value={searchParts}
+                onChange={(e) => setSearchParts(e.target.value)}
+                className="pl-9"
+                disabled={!selectedComponentId}
+              />
+            </div>
+            <ScrollArea className="h-[400px]">
               <div className="space-y-2">
-                {filteredParts.length === 0 && (
-                  <div className="text-sm text-muted-foreground">เลือก Component ก่อน</div>
-                )}
-                {filteredParts.map((p) => (
-                  <div key={p.id} className="rounded-md border p-3">
-                    <div className="flex items-start justify-between">
-                      <div>
+                {!selectedComponentId ? (
+                  <div className="text-center text-muted-foreground py-8">เลือก Component ก่อน</div>
+                ) : filteredParts.length === 0 ? (
+                  <div className="text-center text-muted-foreground py-8">ไม่พบข้อมูลอะไหล่</div>
+                ) : (
+                  filteredParts.map((p) => (
+                    <div
+                      key={p.id}
+                      className="p-3 rounded-lg border hover:bg-muted transition-colors"
+                    >
+                      <div className="flex items-center justify-between">
                         <div className="font-medium">{p.name}</div>
-                        <div className="text-xs text-muted-foreground">คงเหลือ: {p.qty} • ใช้งาน: {p.used}</div>
+                        <Badge variant={p.status === "Active" ? "default" : "secondary"}>
+                          {p.status === "Active" ? "ใช้งาน" : "ไม่ใช้งาน"}
+                        </Badge>
                       </div>
-                      <Badge variant="secondary">{p.status}</Badge>
+                      <div className="text-sm text-muted-foreground mt-1">
+                        คงเหลือ: {p.qty} {p.unit} • ใช้งาน: {p.used} {p.unit}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </ScrollArea>
           </CardContent>
