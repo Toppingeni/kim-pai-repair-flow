@@ -38,38 +38,53 @@ jobs:
             appName: ${{ github.event.repository.name }}
 
         steps:
-            - name: Set destination path and script
+            - name: Set destination path
               run: |
                   $destination = "E:\Deploy\Pm2\${{ github.event.repository.name }}"
                   mkdir -Force $destination | Out-Null
                   echo "destination=$destination" >> $env:GITHUB_ENV
-                  echo "deploy_script=deploy.bat" >> $env:GITHUB_ENV
 
             - name: Stop application
-              run: ./deploy.bat stop ${{env.appName}}
+              run: |
+                  pm2 stop ${{env.appName}} 2>$null || echo "App not running or already stopped"
 
             - name: Create directories and copy files
               run: |
                   mkdir -Force "$env:destination\dist"
-                  mkdir -Force "$env:destination\node_modules"
                   Copy-Item -Path ".\dist\*" -Destination "$env:destination\dist\" -Recurse -Force
-                  Copy-Item -Path ".\node_modules\*" -Destination "$env:destination\node_modules\" -Recurse -Force
                   Copy-Item -Path ".\package.json" -Destination "$env:destination\" -Force
-                  Copy-Item -Path ".\vite.config.ts" -Destination "$env:destination\" -Force
                   if (Test-Path ".env") {
                       Copy-Item -Path ".env" -Destination "$env:destination\" -Force
                   }
 
-            - name: Copy deploy script
-              run: Copy-Item -Path ".\deploy.bat" -Destination "$env:destination\" -Force
-
             - name: Install serve globally
               run: npm install -g serve
 
-            - name: Start application
+            - name: Create PM2 ecosystem file
+              run: |
+                  $ecosystemContent = @"
+                  module.exports = {
+                    apps: [{
+                      name: '${{env.appName}}',
+                      script: 'serve',
+                      args: '-s dist -l ' + (process.env.PORT || 3000),
+                      cwd: '$env:destination',
+                      instances: 1,
+                      autorestart: true,
+                      watch: false,
+                      max_memory_restart: '1G',
+                      env: {
+                        NODE_ENV: 'production'
+                      }
+                    }]
+                  };
+                  "@
+                  $ecosystemContent | Out-File -FilePath "$env:destination\ecosystem.config.js" -Encoding UTF8
+
+            - name: Start application with PM2
               run: |
                   cd "$env:destination"
-                  ./deploy.bat start ${{env.appName}}
+                  pm2 start ecosystem.config.js
 
             - name: Save Pm2
               run: |
