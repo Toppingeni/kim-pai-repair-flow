@@ -151,7 +151,7 @@ export function AddSparePartModal({
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="part-min-qty">จำนวนขั้นต่ำ</Label>
+                  <Label htmlFor="part-min-qty">จำนวนใช้</Label>
                   <Input
                     id="part-min-qty"
                     type="number"
