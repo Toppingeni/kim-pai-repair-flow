@@ -21,6 +21,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { type EntityStatus } from "@/data/masterData";
+import { SubSparePartSelector, type SelectedSubPart } from "./SubSparePartSelector";
 
 interface AddSparePartModalProps {
   open: boolean;
@@ -37,6 +38,7 @@ interface AddSparePartModalProps {
     minQty?: number;
     unit?: string;
     description?: string;
+    subParts?: SelectedSubPart[];
   }) => void;
 }
 
@@ -57,6 +59,8 @@ export function AddSparePartModal({
     unit: "",
     description: "",
   });
+  
+  const [selectedSubParts, setSelectedSubParts] = useState<SelectedSubPart[]>([]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,6 +74,7 @@ export function AddSparePartModal({
       minQty: formData.minQty > 0 ? formData.minQty : undefined,
       unit: formData.unit.trim() || undefined,
       description: formData.description.trim() || undefined,
+      subParts: selectedSubParts.length > 0 ? selectedSubParts : undefined,
     });
     
     // Reset form
@@ -81,6 +86,7 @@ export function AddSparePartModal({
       unit: "",
       description: "",
     });
+    setSelectedSubParts([]);
     
     onOpenChange(false);
   };
@@ -94,12 +100,13 @@ export function AddSparePartModal({
       unit: "",
       description: "",
     });
+    setSelectedSubParts([]);
     onOpenChange(false);
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="w-[90vw] max-w-[90vw] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>เพิ่มอะไหล่ใหม่</DialogTitle>
           <DialogDescription>
@@ -116,102 +123,123 @@ export function AddSparePartModal({
           </Alert>
         ) : (
           <>
-            <div className="bg-muted p-3 rounded-md space-y-1">
-              <p className="text-sm text-muted-foreground">เครื่องจักร:</p>
-              <p className="font-medium">{machineName}</p>
-              <p className="text-sm text-muted-foreground">ส่วนประกอบ:</p>
-              <p className="font-medium">{sectionName}</p>
-              <p className="text-sm text-muted-foreground">ชิ้นส่วน:</p>
-              <p className="font-medium">{componentName}</p>
+            <div className="flex gap-6 h-full min-h-[500px]">
+              {/* ทางซ้าย - ข้อมูลเครื่องจักรและอะไหล่หลัก */}
+              <div className="w-[400px] flex-shrink-0 flex flex-col space-y-4 min-h-0">
+                {/* กล่องข้อมูลเครื่องจักร */}
+                <div className="bg-muted p-3 rounded-md space-y-1">
+                  <p className="text-sm text-muted-foreground">เครื่องจักร:</p>
+                  <p className="font-medium">{machineName}</p>
+                  <p className="text-sm text-muted-foreground">ส่วนประกอบ:</p>
+                  <p className="font-medium">{sectionName}</p>
+                  <p className="text-sm text-muted-foreground">ชิ้นส่วน:</p>
+                  <p className="font-medium">{componentName}</p>
+                </div>
+                
+                {/* กล่องข้อมูลอะไหล่หลัก */}
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">ข้อมูลอะไหล่หลัก</h3>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="part-name">ชื่ออะไหล่ *</Label>
+                    <Input
+                      id="part-name"
+                      value={formData.name}
+                      onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                      placeholder="ชื่ออะไหล่"
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="part-status">สถานะ</Label>
+                    <Select
+                      value={formData.status}
+                      onValueChange={(value: EntityStatus) => 
+                        setFormData(prev => ({ ...prev, status: value }))
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Active">ใช้งาน</SelectItem>
+                        <SelectItem value="Inactive">ไม่ใช้งาน</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="part-qty">จำนวนคงเหลือ *</Label>
+                      <Input
+                        id="part-qty"
+                        type="number"
+                        min="0"
+                        value={formData.qty}
+                        onChange={(e) => setFormData(prev => ({ ...prev, qty: parseInt(e.target.value) || 0 }))}
+                        placeholder="จำนวน"
+                        required
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="part-min-qty">จำนวนใช้</Label>
+                      <Input
+                        id="part-min-qty"
+                        type="number"
+                        min="0"
+                        value={formData.minQty}
+                        onChange={(e) => setFormData(prev => ({ ...prev, minQty: parseInt(e.target.value) || 0 }))}
+                        placeholder="จำนวนขั้นต่ำ"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="part-unit">หน่วย</Label>
+                    <Input
+                      id="part-unit"
+                      value={formData.unit}
+                      onChange={(e) => setFormData(prev => ({ ...prev, unit: e.target.value }))}
+                      placeholder="ชิ้น, กิโลกรัม, ลิตร"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="part-description">คำอธิบาย</Label>
+                    <Textarea
+                      id="part-description"
+                      value={formData.description}
+                      onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                      placeholder="รายละเอียดเพิ่มเติมเกี่ยวกับอะไหล่นี้"
+                      rows={3}
+                    />
+                  </div>
+                  
+                  <DialogFooter>
+                    <Button type="button" variant="outline" onClick={handleCancel}>
+                      ยกเลิก
+                    </Button>
+                    <Button type="submit" disabled={!formData.name.trim() || formData.qty < 0}>
+                      เพิ่มอะไหล่
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </div>
+              
+              {/* ทางขวา - Sub อะไหล่ */}
+              <div className="flex-1 flex flex-col space-y-4 min-h-0">
+                <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Sub อะไหล่</h3>
+                <div className="flex-1 min-h-0">
+                  <SubSparePartSelector
+                    selectedSubParts={selectedSubParts}
+                    onSubPartsChange={setSelectedSubParts}
+                  />
+                </div>
+              </div>
             </div>
-            
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="part-name">ชื่ออะไหล่ *</Label>
-                <Input
-                  id="part-name"
-                  value={formData.name}
-                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="เช่น สกรู 2mm, กระจกป้องกัน"
-                  required
-                />
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="part-qty">จำนวนคงเหลือ *</Label>
-                  <Input
-                    id="part-qty"
-                    type="number"
-                    min="0"
-                    value={formData.qty}
-                    onChange={(e) => setFormData(prev => ({ ...prev, qty: parseInt(e.target.value) || 0 }))}
-                    required
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="part-min-qty">จำนวนใช้</Label>
-                  <Input
-                    id="part-min-qty"
-                    type="number"
-                    min="0"
-                    value={formData.minQty}
-                    onChange={(e) => setFormData(prev => ({ ...prev, minQty: parseInt(e.target.value) || 0 }))}
-                  />
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="part-unit">หน่วย</Label>
-                  <Input
-                    id="part-unit"
-                    value={formData.unit}
-                    onChange={(e) => setFormData(prev => ({ ...prev, unit: e.target.value }))}
-                    placeholder="เช่น ชิ้น, กิโลกรัม"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="part-status">สถานะ</Label>
-                  <Select
-                    value={formData.status}
-                    onValueChange={(value: EntityStatus) => 
-                      setFormData(prev => ({ ...prev, status: value }))
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Active">Active</SelectItem>
-                      <SelectItem value="Inactive">Inactive</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="part-description">คำอธิบาย</Label>
-                <Textarea
-                  id="part-description"
-                  value={formData.description}
-                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                  placeholder="รายละเอียดเพิ่มเติมเกี่ยวกับอะไหล่นี้"
-                  rows={3}
-                />
-              </div>
-              
-              <DialogFooter>
-                <Button type="button" variant="outline" onClick={handleCancel}>
-                  ยกเลิก
-                </Button>
-                <Button type="submit" disabled={!formData.name.trim() || formData.qty < 0}>
-                  เพิ่มอะไหล่
-                </Button>
-              </DialogFooter>
-            </form>
+
           </>
         )}
       </DialogContent>

@@ -8,12 +8,15 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { 
   Search, 
   Plus, 
-  Link2 
+  Link2,
+  Edit
 } from "lucide-react";
 import { AddMachineModal } from "./AddMachineModal";
 import { AddSectionModal } from "./AddSectionModal";
 import { AddComponentModal } from "./AddComponentModal";
 import { AddSparePartModal } from "./AddSparePartModal";
+import { EditSparePartModal } from "./EditSparePartModal";
+import { type SelectedSubPart } from "./SubSparePartSelector";
 import {
   type EntityStatus,
   type Machine,
@@ -46,6 +49,8 @@ export function MasterDataManager() {
   const [showAddSection, setShowAddSection] = useState(false);
   const [showAddComponent, setShowAddComponent] = useState(false);
   const [showAddSparePart, setShowAddSparePart] = useState(false);
+  const [showEditSparePart, setShowEditSparePart] = useState(false);
+  const [editingSparePart, setEditingSparePart] = useState<SparePart | null>(null);
 
   // ใช้ข้อมูลจาก library กลาง - ในการใช้งานจริงควรใช้ state management
   const [machines, setMachines] = useState<Machine[]>(mockMachines);
@@ -189,6 +194,30 @@ export function MasterDataManager() {
       c.id === sparePartData.componentId 
         ? { ...c, sparePartsCount: c.sparePartsCount + 1 }
         : c
+    ));
+  };
+
+  const handleUpdateSparePart = (sparePartId: string, updatedData: {
+    name: string;
+    status: EntityStatus;
+    qty: number;
+    minQty?: number;
+    unit?: string;
+    description?: string;
+    subParts?: SelectedSubPart[];
+  }) => {
+    setSpareParts(prev => prev.map(part => 
+      part.id === sparePartId 
+        ? { 
+            ...part, 
+            name: updatedData.name,
+            status: updatedData.status,
+            qty: updatedData.qty,
+            unit: updatedData.unit || part.unit,
+            stock: updatedData.qty, // อัปเดต stock ตาม qty ใหม่
+            // Note: subParts จะต้องจัดการแยกต่างหาก เนื่องจาก SparePart interface ยังไม่รองรับ
+          }
+        : part
     ));
   };
 
@@ -427,9 +456,21 @@ export function MasterDataManager() {
                     >
                       <div className="flex items-center justify-between">
                         <div className="font-medium">{p.name}</div>
-                        <Badge variant={p.status === "Active" ? "default" : "secondary"}>
-                          {p.status === "Active" ? "ใช้งาน" : "ไม่ใช้งาน"}
-                        </Badge>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setEditingSparePart(p);
+                              setShowEditSparePart(true);
+                            }}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Badge variant={p.status === "Active" ? "default" : "secondary"}>
+                            {p.status === "Active" ? "ใช้งาน" : "ไม่ใช้งาน"}
+                          </Badge>
+                        </div>
                       </div>
                       <div className="text-sm text-muted-foreground mt-1">
                         คงเหลือ: {p.qty} {p.unit} • ใช้งาน: {p.used} {p.unit}
@@ -475,6 +516,16 @@ export function MasterDataManager() {
         sectionName={getSelectedSectionName()}
         machineName={getSelectedMachineName()}
         onAdd={handleAddSparePart}
+      />
+
+      <EditSparePartModal
+        open={showEditSparePart}
+        onOpenChange={setShowEditSparePart}
+        sparePart={editingSparePart}
+        componentName={getSelectedComponentName()}
+        sectionName={getSelectedSectionName()}
+        machineName={getSelectedMachineName()}
+        onUpdate={handleUpdateSparePart}
       />
     </div>
   );

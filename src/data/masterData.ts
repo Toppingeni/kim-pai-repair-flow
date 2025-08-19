@@ -41,6 +41,20 @@ export interface SparePart {
   unit: string;
   defaultUsage: number; // จำนวนใช้งานมาตรฐาน
   stock: number;
+  subParts?: SubSparePart[]; // อะไหล่ย่อย
+}
+
+export interface SubSparePart {
+  id: string;
+  sparePartId: string; // อ้างอิงไปยังอะไหล่หลัก
+  name: string;
+  code: string;
+  category: string;
+  status: EntityStatus;
+  qty: number;
+  used: number;
+  unit: string;
+  description?: string;
 }
 
 // ข้อมูลเครื่องจักรในโรงงานผลิตฟิล์ม
@@ -137,6 +151,22 @@ export const mockSpareParts: SparePart[] = [
   { id: "p20", componentId: "c11", name: "หัวพิมพ์ Magenta", code: "PRH-MAG-020", category: "หัวพิมพ์", status: "Inactive", qty: 3, used: 0, unit: "ตัว", defaultUsage: 1, stock: 3 },
 ];
 
+// ข้อมูล Sub อะไหล่
+export const mockSubSpareParts: SubSparePart[] = [
+  // Sub parts สำหรับแบริ่ง มอเตอร์ (p1)
+  { id: "sp1", sparePartId: "p1", name: "ลูกปืน", code: "BALL-001", category: "ลูกปืน", status: "Active", qty: 20, used: 4, unit: "ตัว", description: "ลูกปืนสำหรับแบริ่งมอเตอร์" },
+  { id: "sp2", sparePartId: "p1", name: "ยางซีลแบริ่ง", code: "SEAL-002", category: "ซีล", status: "Active", qty: 15, used: 2, unit: "ตัว", description: "ยางซีลป้องกันฝุ่นและน้ำมัน" },
+  { id: "sp3", sparePartId: "p1", name: "กรีสหล่อลื่น", code: "GREASE-003", category: "หล่อลื่น", status: "Active", qty: 5, used: 1, unit: "หลอด", description: "กรีสสำหรับหล่อลื่นแบริ่ง" },
+  
+  // Sub parts สำหรับยางซีล O-Ring (p9)
+  { id: "sp4", sparePartId: "p9", name: "ยาง NBR", code: "NBR-004", category: "ยาง", status: "Active", qty: 100, used: 15, unit: "ตัว", description: "ยาง NBR สำหรับทำ O-Ring" },
+  { id: "sp5", sparePartId: "p9", name: "สารเคลือบผิว", code: "COAT-005", category: "สารเคลือบ", status: "Active", qty: 10, used: 2, unit: "ขวด", description: "สารเคลือบผิวป้องกันการสึกหรอ" },
+  
+  // Sub parts สำหรับใบมีดคาร์ไบด์ (p14)
+  { id: "sp6", sparePartId: "p14", name: "คาร์ไบด์ทังสเตน", code: "WC-006", category: "คาร์ไบด์", status: "Active", qty: 8, used: 2, unit: "แผ่น", description: "วัสดุคาร์ไบด์ทังสเตนสำหรับใบมีด" },
+  { id: "sp7", sparePartId: "p14", name: "สกรูยึด", code: "SCREW-007", category: "สกรู", status: "Active", qty: 50, used: 8, unit: "ตัว", description: "สกรูยึดใบมีดกับฐาน" },
+];
+
 // ฟังก์ชันช่วยในการจัดการข้อมูล
 export const getMachineById = (id: string): Machine | undefined => {
   return mockMachines.find(machine => machine.id === id);
@@ -164,5 +194,23 @@ export const updateComponentCount = (sectionId: string, components: ComponentIte
 };
 
 export const updateSparePartCount = (componentId: string, spareParts: SparePart[]): number => {
-  return spareParts.filter(sparePart => sparePart.componentId === componentId).length;
+  return spareParts.filter(part => part.componentId === componentId).length;
+};
+
+// ฟังก์ชันสำหรับจัดการ Sub อะไหล่
+export const getSubSparePartsBySparePartId = (sparePartId: string): SubSparePart[] => {
+  return mockSubSpareParts.filter(subPart => subPart.sparePartId === sparePartId);
+};
+
+export const getAllSubSpareParts = (): SubSparePart[] => {
+  return mockSubSpareParts;
+};
+
+export const searchSubSpareParts = (query: string): SubSparePart[] => {
+  const lowerQuery = query.toLowerCase();
+  return mockSubSpareParts.filter(subPart => 
+    subPart.name.toLowerCase().includes(lowerQuery) ||
+    subPart.code.toLowerCase().includes(lowerQuery) ||
+    subPart.category.toLowerCase().includes(lowerQuery)
+  );
 };
