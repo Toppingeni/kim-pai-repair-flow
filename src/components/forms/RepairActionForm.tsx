@@ -5,70 +5,76 @@ import { PartsManagement } from "./repair-action/PartsManagementEnhanced";
 import { PreventionMeasures } from "./repair-action/PreventionMeasures";
 import { ActionButtons } from "./repair-action/ActionButtons";
 import { RepairHistoryDisplay } from "./repair-action/RepairHistoryDisplay";
-import { mockOriginalRequest, engineers, mockRepairHistory } from "@/data/mockRepairData";
+import {
+    mockOriginalRequest,
+    engineers,
+    mockRepairHistory,
+} from "@/data/mockRepairData";
 import { useRepairForm } from "@/hooks/useRepairForm";
 
 export function RepairActionForm() {
-  const { id } = useParams();
-  const [searchParams] = useSearchParams();
-  const isRevision = searchParams.get('revision') === 'true';
-  
-  const {
-    selectedEngineer,
-    setSelectedEngineer,
-    repairResult,
-    setRepairResult,
-    parts,
-    addPart,
-    removePart,
-    handleSubmit,
-    handleSave,
-    handlePartsSelected,
-  } = useRepairForm();
+    const { id } = useParams();
+    const [searchParams] = useSearchParams();
+    const isRevision = searchParams.get("revision") === "true";
 
-  return (
-    <div className="max-w-6xl mx-auto p-6 space-y-6 min-h-screen overflow-y-auto">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-foreground">
-          {isRevision ? 'บันทึกการซ่อมใหม่ (รีวิชั่น)' : 'บันทึกการดำเนินการซ่อม'}: {id || mockOriginalRequest.id} ({mockOriginalRequest.machine})
-        </h1>
-        {isRevision && (
-          <p className="text-muted-foreground mt-2">
-            การซ่อมครั้งใหม่เนื่องจากเสียซ้ำที่เดิม
-          </p>
-        )}
-      </div>
+    const {
+        selectedEngineer,
+        setSelectedEngineer,
+        repairResult,
+        setRepairResult,
+        parts,
+        addPart,
+        removePart,
+        handleSubmit,
+        handleSave,
+        handlePartsSelected,
+    } = useRepairForm();
 
-      {/* แสดงประวัติการซ่อมก่อนหน้าเมื่อเป็นโหมดรีวิชั่น */}
-      {isRevision && <RepairHistoryDisplay history={mockRepairHistory} />}
+    return (
+        <div className="max-w-6xl mx-auto p-6 space-y-6 min-h-screen overflow-y-auto">
+            <div className="mb-6">
+                <h1 className="text-2xl font-bold text-foreground">
+                    {isRevision
+                        ? "บันทึกการซ่อมใหม่ (รีวิชั่น)"
+                        : "บันทึกการดำเนินการซ่อม"}
+                    : {id || mockOriginalRequest.id} (
+                    {mockOriginalRequest.machine})
+                </h1>
+                {isRevision && (
+                    <p className="text-muted-foreground mt-2">
+                        การซ่อมครั้งใหม่เนื่องจากเสียซ้ำที่เดิม
+                    </p>
+                )}
+            </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <OriginalRequestInfo request={mockOriginalRequest} />
+            {/* แสดงประวัติการซ่อมก่อนหน้าเมื่อเป็นโหมดรีวิชั่น */}
+            {isRevision && <RepairHistoryDisplay history={mockRepairHistory} />}
 
-        <RepairDetailsForm
-          selectedEngineer={selectedEngineer}
-          onEngineerChange={setSelectedEngineer}
-          repairResult={repairResult}
-          onRepairResultChange={setRepairResult}
-          engineers={engineers}
-        />
+            <form onSubmit={handleSubmit} className="space-y-6">
+                <OriginalRequestInfo request={mockOriginalRequest} />
 
-        <PartsManagement
-          parts={parts}
-          onAddPart={addPart}
-          onRemovePart={removePart}
-          onPartsSelected={handlePartsSelected}
-          machineId={mockOriginalRequest.machineId}
-        />
+                <RepairDetailsForm
+                    selectedEngineer={selectedEngineer}
+                    onEngineerChange={setSelectedEngineer}
+                    repairResult={repairResult}
+                    onRepairResultChange={setRepairResult}
+                    engineers={engineers}
+                />
 
-        <PreventionMeasures />
+                <PartsManagement
+                    parts={parts}
+                    onAddPart={addPart}
+                    onRemovePart={removePart}
+                    onPartsSelected={handlePartsSelected}
+                    machineId={mockOriginalRequest.machineId}
+                />
 
-        <ActionButtons 
-          repairResult={repairResult} 
-          repairId={id || mockOriginalRequest.id}
-          onSave={() => handleSave()}
-        />
-      </form>
-    </div>
-  );
+                <ActionButtons
+                    repairResult={repairResult}
+                    repairId={id || mockOriginalRequest.id}
+                    onSave={() => handleSave()}
+                />
+            </form>
+        </div>
+    );
 }

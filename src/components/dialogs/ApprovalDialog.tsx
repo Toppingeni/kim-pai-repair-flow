@@ -25,6 +25,7 @@ import {
     getPriorityLevelById,
     getAllTechnicians,
     getTechniciansByIds,
+    getAllWorkTypes,
     Technician,
 } from "@/data/masterData";
 import { RepairRequestInfo } from "@/components/shared/RepairRequestInfo";
@@ -260,13 +261,11 @@ export function ApprovalDialog({
                                                 <SelectValue placeholder="เลือกประเภทงาน" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="BM">
-                                                    BM (Break Down Maintenance)
-                                                </SelectItem>
-                                                <SelectItem value="CBM">
-                                                    CBM (Condition-Based
-                                                    Maintenance)
-                                                </SelectItem>
+                                                {getAllWorkTypes().map((workType) => (
+                                                    <SelectItem key={workType.id} value={workType.id}>
+                                                        {workType.name}
+                                                    </SelectItem>
+                                                ))}
                                             </SelectContent>
                                         </Select>
                                     </div>

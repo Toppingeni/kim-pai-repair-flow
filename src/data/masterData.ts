@@ -80,6 +80,26 @@ export interface Technician {
     updatedAt: string;
 }
 
+// ประเภทงานซ่อม
+export interface WorkType {
+    id: string;
+    name: string;
+    description?: string;
+    status: EntityStatus;
+    createdAt: string;
+    updatedAt: string;
+}
+
+// สาเหตุของปัญหา
+export interface ProblemCause {
+    id: string;
+    name: string;
+    description?: string;
+    status: EntityStatus;
+    createdAt: string;
+    updatedAt: string;
+}
+
 // ใบร้องของงานซ่อม (Request) - รหัสขึ้นต้นด้วย R
 export interface RepairRequest {
     id: string; // รหัสใบร้องของงานซ่อม เช่น R24070001
@@ -697,6 +717,78 @@ export const mockPriorityLevels: PriorityLevel[] = [
     },
 ];
 
+// Mock data สำหรับประเภทงานซ่อม
+export const mockWorkTypes: WorkType[] = [
+    {
+        id: "wt1",
+        name: "BM (Break Down Maintenance)",
+        description: "การซ่อมแซมเมื่อเครื่องจักรเสียหายหรือหยุดทำงาน",
+        status: "Active",
+        createdAt: "1/1/2567",
+        updatedAt: "1/1/2567",
+    },
+    {
+        id: "wt2",
+        name: "CBM (Condition-Based Maintenance)",
+        description: "การซ่อมแซมตามสภาพการใช้งานจริงของเครื่องจักร",
+        status: "Active",
+        createdAt: "1/1/2567",
+        updatedAt: "1/1/2567",
+    },
+];
+
+// Mock data สำหรับสาเหตุของปัญหา
+export const mockProblemCauses: ProblemCause[] = [
+    {
+        id: "pc1",
+        name: "ใช้งานไม่ถูกวิธี",
+        description: "การใช้งานเครื่องจักรไม่ถูกต้องตามคู่มือ",
+        status: "Active",
+        createdAt: "1/1/2567",
+        updatedAt: "1/1/2567",
+    },
+    {
+        id: "pc2",
+        name: "อุปกรณ์เสื่อมสภาพก่อนกำหนด",
+        description: "อุปกรณ์เสื่อมสภาพเร็วกว่าที่คาดไว้",
+        status: "Active",
+        createdAt: "1/1/2567",
+        updatedAt: "1/1/2567",
+    },
+    {
+        id: "pc3",
+        name: "ติดตั้งไม่ถูกวิธี",
+        description: "การติดตั้งอุปกรณ์ไม่ถูกต้องตามมาตรฐาน",
+        status: "Active",
+        createdAt: "1/1/2567",
+        updatedAt: "1/1/2567",
+    },
+    {
+        id: "pc4",
+        name: "ขาดการหล่อลื่น",
+        description: "ไม่มีการหล่อลื่นหรือหล่อลื่นไม่เพียงพอ",
+        status: "Active",
+        createdAt: "1/1/2567",
+        updatedAt: "1/1/2567",
+    },
+    {
+        id: "pc5",
+        name: "Overload",
+        description: "การใช้งานเกินกำลังที่กำหนด",
+        status: "Active",
+        createdAt: "1/1/2567",
+        updatedAt: "1/1/2567",
+    },
+    {
+        id: "pc6",
+        name: "ขาดการบำรุงรักษาตามกำหนด",
+        description: "ไม่มีการบำรุงรักษาตามแผนที่กำหนดไว้",
+        status: "Active",
+        createdAt: "1/1/2567",
+        updatedAt: "1/1/2567",
+    },
+];
+
 // ข้อมูลช่างเทคนิค
 export const mockTechnicians: Technician[] = [
     {
@@ -1125,4 +1217,22 @@ export const getRepairRequestWithProcess = (requestId: string): { request: Repai
     const request = getRepairRequestById(requestId);
     const process = getRepairProcessByRequestId(requestId);
     return { request, process };
+};
+
+// ฟังก์ชันสำหรับประเภทงานซ่อม
+export const getAllWorkTypes = (): WorkType[] => {
+    return mockWorkTypes.filter(wt => wt.status === "Active");
+};
+
+export const getWorkTypeById = (id: string): WorkType | undefined => {
+    return mockWorkTypes.find(wt => wt.id === id);
+};
+
+// ฟังก์ชันสำหรับสาเหตุของปัญหา
+export const getAllProblemCauses = (): ProblemCause[] => {
+    return mockProblemCauses.filter(pc => pc.status === "Active");
+};
+
+export const getProblemCauseById = (id: string): ProblemCause | undefined => {
+    return mockProblemCauses.find(pc => pc.id === id);
 };

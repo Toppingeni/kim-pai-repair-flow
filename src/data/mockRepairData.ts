@@ -25,6 +25,31 @@ export const engineers = [
     { id: "eng3", name: "นายวิชัย" },
 ];
 
+// ข้อมูล mock สำหรับการอนุมัติใบสั่งงานซ่อม
+export const mockWorkOrderApproval = {
+    id: "WO24070001",
+    repairRequestId: "R24070001",
+    workType: "wt1", // อ้างอิงจาก masterData WorkType
+    workTypeLabel: "BM (Break Down Maintenance)",
+    plannedStartDate: "16/07/2567",
+    plannedStartTime: "08:00",
+    plannedEndDate: "16/07/2567",
+    plannedEndTime: "16:00",
+    plannedDurationHours: 8,
+    plannedDurationMinutes: 0,
+    approvedBy: "ผู้จัดการฝ่ายวิศวกรรม",
+    approvedDate: "15/07/2567",
+    approvedTime: "16:00",
+    estimatedCost: 15000,
+    priority: "level2",
+    assignedEngineers: ["eng1", "eng2"],
+    requiredParts: [
+        { partId: "BRG-001", quantity: 2, estimatedCost: 5000 },
+        { partId: "SEAL-001", quantity: 1, estimatedCost: 1500 }
+    ],
+    notes: "ต้องหยุดเครื่องจักรในช่วงเวลาดังกล่าว และเตรียมอะไหล่ล่วงหน้า"
+};
+
 export const mockRepairHistory = [
     {
         revision: 1,
