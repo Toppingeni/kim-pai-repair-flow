@@ -84,11 +84,31 @@ export function ApprovalDialog({
         Technician[]
     >([]);
     const [showTechnicianDropdown, setShowTechnicianDropdown] = useState(false);
+    const [technicianSearchQuery, setTechnicianSearchQuery] = useState("");
+    const [filteredTechnicians, setFilteredTechnicians] = useState<Technician[]>([]);
 
     // โหลดข้อมูลช่างเทคนิค
     useEffect(() => {
-        setAvailableTechnicians(getAllTechnicians());
+        const technicians = getAllTechnicians();
+        setAvailableTechnicians(technicians);
+        setFilteredTechnicians(technicians);
     }, []);
+
+    // กรองช่างตามคำค้นหา
+    useEffect(() => {
+        if (technicianSearchQuery.trim() === "") {
+            setFilteredTechnicians(availableTechnicians.filter(tech => !formData.technicians.includes(tech.id)));
+        } else {
+            const filtered = availableTechnicians.filter(tech => 
+                !formData.technicians.includes(tech.id) && (
+                    tech.name.toLowerCase().includes(technicianSearchQuery.toLowerCase()) ||
+                    tech.employeeId.toLowerCase().includes(technicianSearchQuery.toLowerCase()) ||
+                    tech.specialization.some(spec => spec.toLowerCase().includes(technicianSearchQuery.toLowerCase()))
+                )
+            );
+            setFilteredTechnicians(filtered);
+        }
+    }, [technicianSearchQuery, availableTechnicians, formData.technicians]);
 
     // ปิด dropdown เมื่อคลิกข้างนอก
     useEffect(() => {
@@ -96,6 +116,7 @@ export function ApprovalDialog({
             const target = event.target as Element;
             if (!target.closest("[data-technician-dropdown]")) {
                 setShowTechnicianDropdown(false);
+                setTechnicianSearchQuery("");
             }
         };
 
@@ -143,6 +164,7 @@ export function ApprovalDialog({
             technicians: [...prev.technicians, technicianId],
         }));
         setShowTechnicianDropdown(false);
+        setTechnicianSearchQuery("");
     };
 
     const handleRemoveTechnician = (technicianId: string) => {
@@ -411,23 +433,25 @@ export function ApprovalDialog({
                                                 )}
                                             </div>
                                             {showTechnicianDropdown && (
-                                                <div className="absolute z-50 w-full mt-1 bg-popover border rounded-md shadow-md max-h-60 overflow-auto">
-                                                    {availableTechnicians
-                                                        .filter(
-                                                            (tech) =>
-                                                                !formData.technicians.includes(
-                                                                    tech.id
-                                                                )
-                                                        )
-                                                        .map((tech) => (
+                                                <div className="absolute z-50 w-full mt-1 bg-popover border rounded-md shadow-md max-h-60 overflow-hidden">
+                                                    <div className="p-2 border-b">
+                                                        <Input
+                                                            placeholder="ค้นหาช่าง..."
+                                                            value={technicianSearchQuery}
+                                                            onChange={(e) => setTechnicianSearchQuery(e.target.value)}
+                                                            className="h-8 text-sm"
+                                                            autoFocus
+                                                        />
+                                                    </div>
+                                                    <div className="max-h-48 overflow-auto">
+                                                        {filteredTechnicians.map((tech) => (
                                                             <div
                                                                 key={tech.id}
                                                                 className="px-3 py-2 hover:bg-accent cursor-pointer text-sm"
-                                                                onClick={() =>
-                                                                    handleAddTechnician(
-                                                                        tech.id
-                                                                    )
-                                                                }
+                                                                onClick={() => {
+                                                                    handleAddTechnician(tech.id);
+                                                                    setTechnicianSearchQuery("");
+                                                                }}
                                                             >
                                                                 <div className="font-medium">
                                                                     {tech.name}
@@ -439,16 +463,12 @@ export function ApprovalDialog({
                                                                 </div>
                                                             </div>
                                                         ))}
-                                                    {availableTechnicians.filter(
-                                                        (tech) =>
-                                                            !formData.technicians.includes(
-                                                                tech.id
-                                                            )
-                                                    ).length === 0 && (
-                                                        <div className="px-3 py-2 text-sm text-muted-foreground">
-                                                            ไม่มีช่างที่สามารถเลือกได้
-                                                        </div>
-                                                    )}
+                                                        {filteredTechnicians.length === 0 && (
+                                                            <div className="px-3 py-2 text-sm text-muted-foreground">
+                                                                {technicianSearchQuery ? "ไม่พบช่างที่ตรงกับการค้นหา" : "ไม่มีช่างที่สามารถเลือกได้"}
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             )}
                                         </div>
