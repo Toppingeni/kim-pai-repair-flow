@@ -80,6 +80,59 @@ export interface Technician {
     updatedAt: string;
 }
 
+// ใบร้องของงานซ่อม (Request) - รหัสขึ้นต้นด้วย R
+export interface RepairRequest {
+    id: string; // รหัสใบร้องของงานซ่อม เช่น R24070001
+    documentNumber: string;
+    machineId: string;
+    machine: string;
+    location: string;
+    section: string;
+    problem: string;
+    reporter: string;
+    reportDate: string;
+    reportTime: string;
+    priority: string; // อ้างอิงจาก PriorityLevel.id
+    priorityLabel: string;
+    contactNumber?: string;
+    additionalDetails?: string;
+    images?: string[];
+    status: "pending" | "accepted" | "rejected"; // สถานะของใบร้องของงาน
+    createdAt: string;
+    updatedAt: string;
+    createdBy: string;
+    updatedBy?: string;
+}
+
+// ใบแจ้งซ่อม (Process) - รหัสขึ้นต้นด้วย P
+export interface RepairProcess {
+    id: string; // รหัสใบแจ้งซ่อม เช่น P24070001
+    requestId: string; // อ้างอิงไปยัง RepairRequest.id (ความสัมพันธ์ 1-1)
+    documentNumber: string;
+    assignedTechnicians: string[]; // อ้างอิงไปยัง Technician.id
+    estimatedStartDate?: string;
+    estimatedEndDate?: string;
+    actualStartDate?: string;
+    actualEndDate?: string;
+    repairMethod?: string;
+    cause?: string;
+    usedParts?: {
+        partId: string;
+        partName: string;
+        partCode: string;
+        quantity: number;
+        unit: string;
+    }[];
+    status: "assigned" | "in_progress" | "waiting_parts" | "waiting_approval" | "completed" | "cancelled";
+    notes?: string;
+    approvedBy?: string;
+    approvedAt?: string;
+    createdAt: string;
+    updatedAt: string;
+    createdBy: string;
+    updatedBy?: string;
+}
+
 // ข้อมูลเครื่องจักรในโรงงานผลิตฟิล์ม
 export const mockMachines: Machine[] = [
     {
@@ -732,6 +785,174 @@ export const mockTechnicians: Technician[] = [
     },
 ];
 
+// ข้อมูลใบร้องของงานซ่อม (Request)
+export const mockRepairRequests: RepairRequest[] = [
+    {
+        id: "R24070001",
+        documentNumber: "REQ-2024-001",
+        machineId: "m1",
+        machine: "เครื่องอัดฟิล์ม Extruder Line 1",
+        location: "อาคาร A ชั้น 1",
+        section: "หน่วยหลอมพลาสติก (Extruder)",
+        problem: "เครื่องหยุดทำงานกะทันหัน ไฟแสดงสถานะขาว",
+        reporter: "นายสมศักดิ์ ผู้ปฏิบัติการ",
+        reportDate: "15/7/2567",
+        reportTime: "08:30",
+        priority: "level1",
+        priorityLabel: "ระดับ 1 หยุดทันที",
+        contactNumber: "081-123-4567",
+        additionalDetails: "เครื่องหยุดทำงานขณะกำลังผลิต ส่งผลกระทบต่อแผนการผลิต",
+        status: "accepted",
+        createdAt: "15/7/2567 08:30",
+        updatedAt: "15/7/2567 09:00",
+        createdBy: "นายสมศักดิ์ ผู้ปฏิบัติการ",
+        updatedBy: "วิศวกร ประจำแผนก",
+    },
+    {
+        id: "R24070002",
+        documentNumber: "REQ-2024-002",
+        machineId: "m2",
+        machine: "เครื่องตัดฟิล์ม Slitting Machine A",
+        location: "อาคาร B ชั้น 2",
+        section: "หน่วยตัด (Cutting Unit)",
+        problem: "ใบมีดตัดไม่คม ตัดฟิล์มไม่เรียบ",
+        reporter: "นายวิชัย ช่างเทคนิค",
+        reportDate: "16/7/2567",
+        reportTime: "14:15",
+        priority: "level2",
+        priorityLabel: "ระดับ 2 วิ่งอยู่แต่เสี่ยงต่อคุณภาพ",
+        contactNumber: "082-345-6789",
+        additionalDetails: "ใบมีดใช้งานมานาน ควรเปลี่ยนใหม่",
+        status: "pending",
+        createdAt: "16/7/2567 14:15",
+        updatedAt: "16/7/2567 14:15",
+        createdBy: "นายวิชัย ช่างเทคนิค",
+    },
+    {
+        id: "R24070003",
+        documentNumber: "REQ-2024-003",
+        machineId: "m1",
+        machine: "เครื่องอัดฟิล์ม Extruder Line 1",
+        location: "อาคาร A ชั้น 1",
+        section: "หน่วยม้วนฟิล์ม (Winding Unit)",
+        problem: "ลูกกลิ้งม้วนฟิล์มสั่นผิดปกติ",
+        reporter: "นางสาวสุดา ช่างฝีมือ",
+        reportDate: "17/7/2567",
+        reportTime: "10:45",
+        priority: "level3",
+        priorityLabel: "ระดับ 3 วิ่งอยู่แต่ output drop ยังไม่กระทบคุณภาพ",
+        contactNumber: "083-456-7890",
+        additionalDetails: "ลูกกลิ้งสั่นมากขึ้นเรื่อยๆ อาจเป็นปัญหาแบริ่ง",
+        status: "accepted",
+        createdAt: "17/7/2567 10:45",
+        updatedAt: "17/7/2567 11:00",
+        createdBy: "นางสาวสุดา ช่างฝีมือ",
+        updatedBy: "วิศวกร ประจำแผนก",
+    },
+    {
+        id: "R24070004",
+        documentNumber: "REQ-2024-004",
+        machineId: "m3",
+        machine: "เครื่องพิมพ์ฟิล์ม Printing Press B",
+        location: "อาคาร C ชั้น 1",
+        section: "หน่วยพิมพ์ (Printing Unit)",
+        problem: "หัวพิมพ์สีไม่ออกสี",
+        reporter: "นายอนุชา ซ่อมแซม",
+        reportDate: "18/7/2567",
+        reportTime: "16:20",
+        priority: "level4",
+        priorityLabel: "ระดับ 4 เครื่องจักรมีปัญหา แต่ไม่ส่งผลต่อการผลิต",
+        contactNumber: "084-567-8901",
+        additionalDetails: "หัวพิมพ์อาจอุดตัน ต้องทำความสะอาด",
+        status: "rejected",
+        createdAt: "18/7/2567 16:20",
+        updatedAt: "18/7/2567 17:00",
+        createdBy: "นายอนุชา ซ่อมแซม",
+        updatedBy: "หัวหน้าแผนก สุรชัย",
+    },
+];
+
+// ข้อมูลใบแจ้งซ่อม (Process)
+export const mockRepairProcesses: RepairProcess[] = [
+    {
+        id: "P24070001",
+        requestId: "R24070001",
+        documentNumber: "PROC-2024-001",
+        assignedTechnicians: ["tech1", "tech4"],
+        estimatedStartDate: "15/7/2567",
+        estimatedEndDate: "16/7/2567",
+        actualStartDate: "15/7/2567",
+        actualEndDate: "15/7/2567",
+        repairMethod: "ตรวจสอบระบบไฟฟ้าและเปลี่ยนอุปกรณ์ที่ชำรุด",
+        cause: "เซ็นเซอร์วัดอุณหภูมิเสียหาย",
+        usedParts: [
+            {
+                partId: "p4",
+                partName: "เซ็นเซอร์ PT100",
+                partCode: "SEN-PT100-004",
+                quantity: 1,
+                unit: "ตัว",
+            },
+            {
+                partId: "p5",
+                partName: "สายสัญญาณ",
+                partCode: "CAB-SIG-005",
+                quantity: 3,
+                unit: "เมตร",
+            },
+        ],
+        status: "completed",
+        notes: "ซ่อมเสร็จเรียบร้อย ทดสอบการทำงานแล้ว",
+        approvedBy: "นายสุรชัย หัวหน้า",
+        approvedAt: "15/7/2567 16:00",
+        createdAt: "15/7/2567 09:00",
+        updatedAt: "15/7/2567 16:00",
+        createdBy: "วิศวกร ประจำแผนก",
+        updatedBy: "นายสมชาย วิชาการ",
+    },
+    {
+        id: "P24070003",
+        requestId: "R24070003",
+        documentNumber: "PROC-2024-003",
+        assignedTechnicians: ["tech2", "tech3"],
+        estimatedStartDate: "17/7/2567",
+        estimatedEndDate: "18/7/2567",
+        actualStartDate: "17/7/2567",
+        repairMethod: "เปลี่ยนแบริ่งลูกกลิ้งและปรับตั้งระบบ",
+        cause: "แบริ่งลูกกลิ้งเสื่อมสภาพ",
+        usedParts: [
+            {
+                partId: "p12",
+                partName: "แบริ่งลูกกลิ้ง",
+                partCode: "BRG-ROL-012",
+                quantity: 2,
+                unit: "ตัว",
+            },
+        ],
+        status: "in_progress",
+        notes: "กำลังดำเนินการเปลี่ยนแบริ่ง",
+        createdAt: "17/7/2567 11:00",
+        updatedAt: "17/7/2567 14:30",
+        createdBy: "วิศวกร ประจำแผนก",
+        updatedBy: "นายวิชัย เทคนิค",
+    },
+    {
+        id: "P24070005",
+        requestId: "R24070002",
+        documentNumber: "PROC-2024-005",
+        assignedTechnicians: ["tech2"],
+        estimatedStartDate: "19/7/2567",
+        estimatedEndDate: "19/7/2567",
+        repairMethod: "เปลี่ยนใบมีดตัดฟิล์มใหม่",
+        status: "assigned",
+        notes: "รอการอนุมัติใช้อะไหล่",
+        createdAt: "16/7/2567 15:00",
+        updatedAt: "17/7/2567 09:00",
+        createdBy: "วิศวกร ประจำแผนก",
+        updatedBy: "หัวหน้าแผนก สุรชัย",
+    },
+];
+
 // ฟังก์ชันช่วยในการจัดการข้อมูล
 export const getMachineById = (id: string): Machine | undefined => {
     return mockMachines.find((machine) => machine.id === id);
@@ -867,4 +1088,41 @@ export const searchTechnicians = (query: string): Technician[] => {
 
 export const getTechniciansByIds = (ids: string[]): Technician[] => {
     return mockTechnicians.filter((technician) => ids.includes(technician.id));
+};
+
+// ฟังก์ชันช่วยสำหรับ RepairRequest
+export const getAllRepairRequests = (): RepairRequest[] => {
+    return mockRepairRequests;
+};
+
+export const getRepairRequestById = (id: string): RepairRequest | undefined => {
+    return mockRepairRequests.find(request => request.id === id);
+};
+
+export const getRepairRequestsByStatus = (status: RepairRequest['status']): RepairRequest[] => {
+    return mockRepairRequests.filter(request => request.status === status);
+};
+
+// ฟังก์ชันช่วยสำหรับ RepairProcess
+export const getAllRepairProcesses = (): RepairProcess[] => {
+    return mockRepairProcesses;
+};
+
+export const getRepairProcessById = (id: string): RepairProcess | undefined => {
+    return mockRepairProcesses.find(process => process.id === id);
+};
+
+export const getRepairProcessByRequestId = (requestId: string): RepairProcess | undefined => {
+    return mockRepairProcesses.find(process => process.requestId === requestId);
+};
+
+export const getRepairProcessesByStatus = (status: RepairProcess['status']): RepairProcess[] => {
+    return mockRepairProcesses.filter(process => process.status === status);
+};
+
+// ฟังก์ชันช่วยสำหรับความสัมพันธ์ระหว่าง Request และ Process
+export const getRepairRequestWithProcess = (requestId: string): { request: RepairRequest | undefined, process: RepairProcess | undefined } => {
+    const request = getRepairRequestById(requestId);
+    const process = getRepairProcessByRequestId(requestId);
+    return { request, process };
 };
