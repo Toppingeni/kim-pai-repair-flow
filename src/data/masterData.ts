@@ -65,6 +65,21 @@ export interface PriorityLevel {
     color?: string;
 }
 
+export interface Technician {
+    id: string;
+    name: string;
+    employeeId: string;
+    department: string;
+    specialization: string[];
+    level: "Junior" | "Senior" | "Expert";
+    status: EntityStatus;
+    contactNumber?: string;
+    organization: string;
+    email?: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
 // ข้อมูลเครื่องจักรในโรงงานผลิตฟิล์ม
 export const mockMachines: Machine[] = [
     {
@@ -629,6 +644,94 @@ export const mockPriorityLevels: PriorityLevel[] = [
     },
 ];
 
+// ข้อมูลช่างเทคนิค
+export const mockTechnicians: Technician[] = [
+    {
+        id: "tech1",
+        name: "นายสมชาย วิชาการ",
+        employeeId: "EMP001",
+        department: "แผนกซ่อมบำรุง",
+        specialization: ["ระบบไฟฟ้า", "มอเตอร์", "เซ็นเซอร์"],
+        level: "Senior",
+        status: "Active",
+        contactNumber: "081-234-5678",
+        organization: "เป่าฟิล์ม เวลโกรว์ ซอย 6",
+        email: "somchai.w@company.com",
+        createdAt: "1/1/2567",
+        updatedAt: "15/1/2567",
+    },
+    {
+        id: "tech2",
+        name: "นายวิชัย เทคนิค",
+        employeeId: "EMP002",
+        department: "แผนกซ่อมบำรุง",
+        specialization: ["ระบบกล", "ลูกปืน", "เฟือง"],
+        level: "Expert",
+        status: "Active",
+        contactNumber: "082-345-6789",
+        organization: "ฟิล์ม ลาดกระบัง",
+        email: "wichai.t@company.com",
+        createdAt: "5/1/2567",
+        updatedAt: "20/1/2567",
+    },
+    {
+        id: "tech3",
+        name: "นางสาวสุดา ช่างฝีมือ",
+        employeeId: "EMP003",
+        department: "แผนกซ่อมบำรุง",
+        specialization: ["ระบบไฮดรอลิก", "นิวเมติก"],
+        level: "Senior",
+        status: "Active",
+        contactNumber: "083-456-7890",
+        organization: "ฉีดฟิล์ม เวลโกรว์ ซอย 6",
+        email: "suda.c@company.com",
+        createdAt: "10/1/2567",
+        updatedAt: "25/1/2567",
+    },
+    {
+        id: "tech4",
+        name: "นายอนุชา ซ่อมแซม",
+        employeeId: "EMP004",
+        department: "แผนกซ่อมบำรุง",
+        specialization: ["ระบบควบคุม", "PLC", "HMI"],
+        level: "Expert",
+        status: "Active",
+        contactNumber: "084-567-8901",
+        organization: "ฉีดฟิล์ม เวลโกรว์ ซอย 6",
+        email: "anucha.s@company.com",
+        createdAt: "15/1/2567",
+        updatedAt: "30/1/2567",
+    },
+    {
+        id: "tech5",
+        name: "นายประยุทธ์ ช่วยงาน",
+        employeeId: "EMP005",
+        department: "แผนกซ่อมบำรุง",
+        specialization: ["งานทั่วไป", "ทำความสะอาด"],
+        level: "Junior",
+        status: "Active",
+        contactNumber: "085-678-9012",
+        organization: "หลอด เวลโกรว์ ซอย 2 (BOI)",
+        email: "prayuth.c@company.com",
+        createdAt: "20/1/2567",
+        updatedAt: "5/2/2567",
+    },
+    {
+        id: "tech6",
+        name: "นายสุรชัย หัวหน้า",
+        employeeId: "EMP006",
+        department: "แผนกซ่อมบำรุง",
+        specialization: ["การจัดการ", "วางแผน", "ควบคุมงาน"],
+        level: "Expert",
+        status: "Active",
+        contactNumber: "086-789-0123",
+        organization: "ฟิล์ม เวลโกรว์ ซอย 6",
+        email: "surachai.h@company.com",
+        createdAt: "1/12/2566",
+        updatedAt: "10/2/2567",
+    },
+];
+
 // ฟังก์ชันช่วยในการจัดการข้อมูล
 export const getMachineById = (id: string): Machine | undefined => {
     return mockMachines.find((machine) => machine.id === id);
@@ -717,4 +820,51 @@ export const searchSubSpareParts = (query: string): SubSparePart[] => {
             subPart.code.toLowerCase().includes(lowerQuery) ||
             subPart.category.toLowerCase().includes(lowerQuery)
     );
+};
+
+// ฟังก์ชันช่วยสำหรับจัดการข้อมูลช่างเทคนิค
+export const getTechnicianById = (id: string): Technician | undefined => {
+    return mockTechnicians.find((technician) => technician.id === id);
+};
+
+export const getAllTechnicians = (): Technician[] => {
+    return mockTechnicians.filter(
+        (technician) => technician.status === "Active"
+    );
+};
+
+export const getTechniciansByLevel = (
+    level: "Junior" | "Senior" | "Expert"
+): Technician[] => {
+    return mockTechnicians.filter(
+        (technician) =>
+            technician.level === level && technician.status === "Active"
+    );
+};
+
+export const getTechniciansBySpecialization = (
+    specialization: string
+): Technician[] => {
+    return mockTechnicians.filter(
+        (technician) =>
+            technician.specialization.includes(specialization) &&
+            technician.status === "Active"
+    );
+};
+
+export const searchTechnicians = (query: string): Technician[] => {
+    const lowerQuery = query.toLowerCase();
+    return mockTechnicians.filter(
+        (technician) =>
+            (technician.name.toLowerCase().includes(lowerQuery) ||
+                technician.employeeId.toLowerCase().includes(lowerQuery) ||
+                technician.specialization.some((spec) =>
+                    spec.toLowerCase().includes(lowerQuery)
+                )) &&
+            technician.status === "Active"
+    );
+};
+
+export const getTechniciansByIds = (ids: string[]): Technician[] => {
+    return mockTechnicians.filter((technician) => ids.includes(technician.id));
 };

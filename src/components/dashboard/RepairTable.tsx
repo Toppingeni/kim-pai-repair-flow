@@ -32,7 +32,7 @@ interface RepairTableProps {
 
 interface ApprovalFormData {
     workType: string;
-    technicians: string;
+    technicians: string[];
     startDateTime: string;
     endDateTime: string;
     totalHours: number;
