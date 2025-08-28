@@ -14,10 +14,10 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Search, Filter } from "lucide-react";
 
-// Mock data for user's repair requests
+// Mock data for user's repair requests - ใช้รูปแบบรหัสเอกสารตาม NewRepairForm (R{YY}{MM}0001)
 const mockUserRepairs = [
   {
-    id: "M-001",
+    id: "R24070001",
     machine: "Extruder A",
     problem: "เสียงดังผิดปกติ",
     date: "07/07/2568",
@@ -25,7 +25,7 @@ const mockUserRepairs = [
     engineer: "นายสมชาย",
   },
   {
-    id: "M-002", 
+    id: "R24070002", 
     machine: "Packing M/C",
     problem: "แพ็คไม่แน่น",
     date: "05/07/2568",
@@ -33,7 +33,7 @@ const mockUserRepairs = [
     engineer: "นางสาวอร",
   },
   {
-    id: "M-003",
+    id: "R24070003",
     machine: "Boiler #1", 
     problem: "แรงดันตก",
     date: "02/07/2568",
@@ -41,7 +41,7 @@ const mockUserRepairs = [
     engineer: "นายสมชาย",
   },
   {
-    id: "M-006",
+    id: "R24070006",
     machine: "Mixer #2",
     problem: "ใบผสมชำรุด",
     date: "01/07/2568", 
@@ -49,7 +49,7 @@ const mockUserRepairs = [
     engineer: "นางสาวอร",
   },
   {
-    id: "M-007",
+    id: "R24070007",
     machine: "Dryer",
     problem: "อุณหภูมิไม่คงที่",
     date: "29/06/2568",

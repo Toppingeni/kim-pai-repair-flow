@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRepairActions } from "@/hooks/useRepairActions";
+import { ApprovalDialog } from "@/components/dialogs/ApprovalDialog";
 
 interface RepairItem {
   id: string;
@@ -28,6 +29,15 @@ interface RepairTableProps {
   title: string;
 }
 
+interface ApprovalFormData {
+  workType: string;
+  technicians: string;
+  startDateTime: string;
+  endDateTime: string;
+  totalHours: number;
+  totalMinutes: number;
+}
+
 const statusConfig = {
   new: { label: "งานใหม่", variant: "new" as const },
   progress: { label: "กำลังซ่อม", variant: "progress" as const },
@@ -38,174 +48,171 @@ const statusConfig = {
 
 const StatusBadge = ({ status }: { status: keyof typeof statusConfig }) => {
   const config = statusConfig[status];
-  const baseClasses = "text-xs font-medium px-2 py-1 rounded-full";
-  
-  const variantClasses = {
-    new: "bg-status-new/10 text-status-new border border-status-new/20",
-    progress: "bg-status-progress/10 text-status-progress border border-status-progress/20",
-    waiting: "bg-status-waiting/10 text-status-waiting border border-status-waiting/20",
-    completed: "bg-status-completed/10 text-status-completed border border-status-completed/20",
-    pending: "bg-status-pending/10 text-status-pending border border-status-pending/20",
-  };
-
   return (
-    <span className={`${baseClasses} ${variantClasses[config.variant]}`}>
+    <Badge
+      variant="outline"
+      className={`
+        ${status === "new" ? "bg-blue-100 text-blue-800 border-blue-200" : ""}
+        ${status === "progress" ? "bg-yellow-100 text-yellow-800 border-yellow-200" : ""}
+        ${status === "waiting" ? "bg-orange-100 text-orange-800 border-orange-200" : ""}
+        ${status === "completed" ? "bg-green-100 text-green-800 border-green-200" : ""}
+        ${status === "pending" ? "bg-red-100 text-red-800 border-red-200" : ""}
+      `}
+    >
       {config.label}
-    </span>
+    </Badge>
   );
 };
 
 export function RepairTable({ repairs, userRole, title }: RepairTableProps) {
   const navigate = useNavigate();
-  const { acceptJob, confirmCompletion, loading } = useRepairActions();
+  const { acceptJob } = useRepairActions();
+  const [selectedRepair, setSelectedRepair] = useState<RepairItem | null>(null);
+  const [showApprovalDialog, setShowApprovalDialog] = useState(false);
+
   const handleViewDetail = (repairId: string) => {
     navigate(`/repair-detail/${repairId}`);
   };
 
-  const handleAcceptJob = async (repairId: string) => {
-    const result = await acceptJob(repairId, "นายสมชาย");
-    if (result.success) {
-      // In a real app, you would update the repair list here
-      window.location.reload(); // Simple reload for demo
-    }
-  };
-
-  const handleConfirmCompletion = async (repairId: string) => {
-    const result = await confirmCompletion(repairId);
-    if (result.success) {
-      // In a real app, you would update the repair list here
-      window.location.reload(); // Simple reload for demo
-    }
+  const handleAcceptJob = (repair: RepairItem) => {
+    setSelectedRepair(repair);
+    setShowApprovalDialog(true);
   };
 
   const handleStartRepair = (repairId: string) => {
     navigate(`/repair-action/${repairId}`);
   };
 
+  const handleApproveRepair = (formData: ApprovalFormData) => {
+    console.log("อนุมัติใบสั่งงาน:", {
+      repairId: selectedRepair?.id,
+      ...formData
+    });
+    setShowApprovalDialog(false);
+    setSelectedRepair(null);
+  };
+
+  const handleCancelRepair = (reason: string) => {
+    console.log("ยกเลิกใบสั่งงาน:", {
+      repairId: selectedRepair?.id,
+      reason
+    });
+    setShowApprovalDialog(false);
+    setSelectedRepair(null);
+  };
+
   const getActionButtons = (repair: RepairItem) => {
-    if (userRole === "production") {
-      if (repair.status === "waiting") {
-        return (
-          <div className="flex space-x-2">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => handleViewDetail(repair.id)}
-            >
-              ดูรายละเอียด
-            </Button>
-            <Button 
-              variant="success" 
-              size="sm" 
-              disabled={loading}
-              onClick={() => handleConfirmCompletion(repair.id)}
-            >
-              ยืนยันปิดงาน
-            </Button>
-          </div>
-        );
-      }
-      return (
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={() => handleViewDetail(repair.id)}
-        >
-          ดูรายละเอียด
-        </Button>
-      );
-    } else {
+    const buttons = [];
+
+    buttons.push(
+      <Button
+        key="view"
+        variant="outline"
+        size="sm"
+        onClick={() => handleViewDetail(repair.id)}
+        className="mr-2"
+      >
+        ดูรายละเอียด
+      </Button>
+    );
+
+    if (userRole === "engineering") {
       if (repair.status === "new") {
-        return (
-          <div className="flex space-x-2">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => handleViewDetail(repair.id)}
-            >
-              ดูรายละเอียด
-            </Button>
-            <Button 
-              variant="default" 
-              size="sm" 
-              disabled={loading}
-              onClick={() => handleAcceptJob(repair.id)}
-            >
-              รับงาน
-            </Button>
-          </div>
+        buttons.push(
+          <Button
+            key="accept"
+            variant="default"
+            size="sm"
+            onClick={() => handleAcceptJob(repair)}
+            className="mr-2 bg-blue-600 hover:bg-blue-700"
+          >
+            รับงาน
+          </Button>
+        );
+      } else if (repair.status === "progress") {
+        buttons.push(
+          <Button
+            key="start"
+            variant="default"
+            size="sm"
+            onClick={() => handleStartRepair(repair.id)}
+            className="mr-2 bg-green-600 hover:bg-green-700"
+          >
+            เริ่มซ่อม
+          </Button>
         );
       }
-      if (repair.status === "progress") {
-        return (
-          <div className="flex space-x-2">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => handleViewDetail(repair.id)}
-            >
-              ดูรายละเอียด
-            </Button>
-            <Button 
-              variant="info" 
-              size="sm" 
-              onClick={() => handleStartRepair(repair.id)}
-            >
-              บันทึกการซ่อม
-            </Button>
-          </div>
-        );
-      }
-      return (
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={() => handleViewDetail(repair.id)}
-        >
-          ดูรายละเอียด
-        </Button>
-      );
     }
+
+    return <div className="flex">{buttons}</div>;
   };
 
   return (
-    <Card className="shadow-card">
-      <CardHeader>
-        <CardTitle className="text-lg font-semibold text-foreground">{title}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>รหัสใบแจ้งซ่อม</TableHead>
-              <TableHead>เครื่องจักร</TableHead>
-              <TableHead>ปัญหาเบื้องต้น</TableHead>
-              <TableHead>วันที่แจ้ง</TableHead>
-              <TableHead>สถานะ</TableHead>
-              <TableHead>ผู้รับผิดชอบ</TableHead>
-              <TableHead>การดำเนินการ</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {repairs.map((repair) => (
-              <TableRow key={repair.id}>
-                <TableCell className="font-medium">{repair.id}</TableCell>
-                <TableCell>{repair.machine}</TableCell>
-                <TableCell>{repair.problem}</TableCell>
-                <TableCell>{repair.date}</TableCell>
-                <TableCell>
-                  <StatusBadge status={repair.status} />
-                </TableCell>
-                <TableCell>{repair.engineer || "-"}</TableCell>
-                <TableCell>{getActionButtons(repair)}</TableCell>
+    <>
+      <Card className="shadow-card">
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold text-foreground">{title}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>รหัสใบแจ้งซ่อม</TableHead>
+                <TableHead>เครื่องจักร</TableHead>
+                <TableHead>ปัญหาเบื้องต้น</TableHead>
+                <TableHead>วันที่แจ้ง</TableHead>
+                <TableHead>สถานะ</TableHead>
+                <TableHead>ผู้รับผิดชอบ</TableHead>
+                <TableHead>การดำเนินการ</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-        <div className="mt-4 flex justify-end">
-          <Button variant="outline">ดูทั้งหมด</Button>
-        </div>
-      </CardContent>
-    </Card>
+            </TableHeader>
+            <TableBody>
+              {repairs.map((repair) => (
+                <TableRow key={repair.id}>
+                  <TableCell className="font-medium">{repair.id}</TableCell>
+                  <TableCell>{repair.machine}</TableCell>
+                  <TableCell>{repair.problem}</TableCell>
+                  <TableCell>{repair.date}</TableCell>
+                  <TableCell>
+                    <StatusBadge status={repair.status} />
+                  </TableCell>
+                  <TableCell>{repair.engineer || "-"}</TableCell>
+                  <TableCell>{getActionButtons(repair)}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <div className="mt-4 flex justify-end">
+            <Button variant="outline">ดูทั้งหมด</Button>
+          </div>
+        </CardContent>
+      </Card>
+      
+      {selectedRepair && (
+        <ApprovalDialog
+          open={showApprovalDialog}
+          onOpenChange={setShowApprovalDialog}
+          repairData={{
+            id: selectedRepair.id,
+            machine: selectedRepair.machine,
+            problem: selectedRepair.problem,
+            date: selectedRepair.date,
+            status: selectedRepair.status,
+            documentNumber: selectedRepair.id,
+            section: "มอเตอร์หลัก", // ใช้ข้อมูลจาก mockOriginalRequest
+            contactNumber: "081-234-5678", // ใช้ข้อมูลจาก mockOriginalRequest
+            priority: "ระดับ 2 วิ่งอยู่แต่เสี่ยงต่อคุณภาพ", // ใช้ข้อมูลจาก mockOriginalRequest
+            description: selectedRepair.problem,
+            images: [], // ใช้ข้อมูลจาก mockOriginalRequest
+            location: "อาคาร 1, Line 1", // ใช้ข้อมูลจาก mockOriginalRequest
+            reportedDate: "2024-07-07", // ใช้ข้อมูลจาก mockOriginalRequest
+            reportedTime: "09:30", // ใช้ข้อมูลจาก mockOriginalRequest
+            reporter: "สมศรี (ฝ่ายผลิต)", // ใช้ข้อมูลจาก mockOriginalRequest
+          }}
+          onApprove={handleApproveRepair}
+          onCancel={handleCancelRepair}
+        />
+      )}
+    </>
   );
 }

@@ -1,10 +1,20 @@
 export const mockOriginalRequest = {
-  id: "M-001",
+  id: "R24070001", // ใช้รูปแบบเดียวกับหน้าสร้างใบแจ้งซ่อมใหม่ (R{YY}{MM}{NNNN})
+  documentNumber: "R24070001",
   machine: "เครื่องอัดฟิล์ม Extruder Line 1",
   machineId: "m1", // เพิ่ม machineId ที่ตรงกับ masterData
+  location: "อาคาร 1, Line 1", // เพิ่มสถานที่ตั้งให้ตรงกับ NewRepairForm
+  section: "มอเตอร์หลัก", // เพิ่มส่วนประกอบ
   problem: "เสียงดังผิดปกติ จากมอเตอร์หลัก เมื่อเครื่องทำงานนานกว่า 2 ชั่วโมง",
   reporter: "สมศรี (ฝ่ายผลิต)",
-  reportDate: "07/07/2568 09:30",
+  reportDate: "07/07/2568",
+  reportTime: "09:30",
+  reportedDate: "2024-07-07", // เพิ่มรูปแบบวันที่มาตรฐาน
+  reportedTime: "09:30", // เพิ่มรูปแบบเวลามาตรฐาน
+  priority: "level2", // เพิ่มความสำคัญตามรูปแบบใน NewRepairForm
+  priorityLabel: "ระดับ 2 วิ่งอยู่แต่เสี่ยงต่อคุณภาพ",
+  contactNumber: "081-234-5678", // เพิ่มเบอร์ติดต่อ
+  additionalDetails: "เสียงดังเกิดขึ้นเฉพาะเมื่อเครื่องทำงานต่อเนื่องนานกว่า 2 ชั่วโมง อาจส่งผลต่อคุณภาพของผลิตภัณฑ์", // เพิ่มหมายเหตุ
   images: ["image1.jpg", "image2.jpg"],
 };
 

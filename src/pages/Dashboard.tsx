@@ -5,10 +5,10 @@ import { RepairTable } from "@/components/dashboard/RepairTable";
 import { useUserRole } from "@/contexts/UserRoleContext";
 import { Link } from "react-router-dom";
 
-// Mock data for repairs
+// Mock data for repairs - ใช้รูปแบบรหัสเอกสารตาม NewRepairForm (R{YY}{MM}0001)
 const mockRepairs = [
   {
-    id: "M-001",
+    id: "R24070001",
     machine: "Extruder A",
     problem: "เสียงดังผิดปกติ",
     date: "07/07/2568",
@@ -16,7 +16,7 @@ const mockRepairs = [
     reporter: "สมศรี"
   },
   {
-    id: "M-002",
+    id: "R24070002",
     machine: "Packing M/C",
     problem: "แพ็คไม่แน่น",
     date: "06/07/2568",
@@ -24,7 +24,7 @@ const mockRepairs = [
     reporter: "สมศรี"
   },
   {
-    id: "M-003",
+    id: "R24070003",
     machine: "Conveyor Belt",
     problem: "สายพานขาด",
     date: "05/07/2568",
@@ -32,7 +32,7 @@ const mockRepairs = [
     reporter: "สมศรี"
   },
   {
-    id: "M-004",
+    id: "R24070004",
     machine: "Injection M/C",
     problem: "อุณหภูมิไม่คงที่",
     date: "04/07/2568",
@@ -40,7 +40,7 @@ const mockRepairs = [
     reporter: "สมศรี"
   },
   {
-    id: "M-005",
+    id: "R24070005",
     machine: "Dryer Unit",
     problem: "เซ็นเซอร์ขัดข้อง",
     date: "03/07/2568",
