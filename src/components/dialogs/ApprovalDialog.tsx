@@ -27,6 +27,7 @@ import {
     getTechniciansByIds,
     Technician,
 } from "@/data/masterData";
+import { RepairRequestInfo } from "@/components/shared/RepairRequestInfo";
 
 interface RepairData {
     id: string;
@@ -212,135 +213,26 @@ export function ApprovalDialog({
 
                     <div className="space-y-6">
                         {/* ข้อมูลใบแจ้งซ่อม (Read-only) */}
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="text-lg">
-                                    ข้อมูลใบแจ้งซ่อม
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <Label className="text-sm font-medium text-muted-foreground">
-                                            รหัสเอกสาร
-                                        </Label>
-                                        <div className="mt-1 p-2 bg-muted rounded-md">
-                                            {repairData.documentNumber ||
-                                                repairData.id}
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <Label className="text-sm font-medium text-muted-foreground">
-                                            สถานที่ตั้ง
-                                        </Label>
-                                        <div className="mt-1 p-2 bg-muted rounded-md">
-                                            {repairData.location || "ไม่ระบุ"}
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <Label className="text-sm font-medium text-muted-foreground">
-                                            เครื่องจักร
-                                        </Label>
-                                        <div className="mt-1 p-2 bg-muted rounded-md">
-                                            {repairData.machine}
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <Label className="text-sm font-medium text-muted-foreground">
-                                            ส่วนประกอบ (Section)
-                                        </Label>
-                                        <div className="mt-1 p-2 bg-muted rounded-md">
-                                            {repairData.section || "ไม่ระบุ"}
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <Label className="text-sm font-medium text-muted-foreground">
-                                            วันที่และเวลาที่แจ้งซ่อม
-                                        </Label>
-                                        <div className="mt-1 p-2 bg-muted rounded-md">
-                                            {repairData.reportedDate &&
-                                            repairData.reportedTime
-                                                ? `${repairData.reportedDate} ${repairData.reportedTime}`
-                                                : repairData.date || "ไม่ระบุ"}
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <Label className="text-sm font-medium text-muted-foreground">
-                                            ผู้แจ้งซ่อม
-                                        </Label>
-                                        <div className="mt-1 p-2 bg-muted rounded-md">
-                                            {repairData.reporter || "ไม่ระบุ"}
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <Label className="text-sm font-medium text-muted-foreground">
-                                            เบอร์ติดต่อ
-                                        </Label>
-                                        <div className="mt-1 p-2 bg-muted rounded-md">
-                                            {repairData.contactNumber ||
-                                                "ไม่ระบุ"}
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <Label className="text-sm font-medium text-muted-foreground">
-                                            ความสำคัญ
-                                        </Label>
-                                        <div className="mt-1 p-2 bg-muted rounded-md">
-                                            {repairData.priority || "ไม่ระบุ"}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        ปัญหาเบื้องต้น/อาการ
-                                    </Label>
-                                    <div className="mt-1 p-2 bg-muted rounded-md min-h-[80px]">
-                                        {repairData.problem}
-                                    </div>
-                                </div>
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        หมายเหตุ
-                                    </Label>
-                                    <div className="mt-1 p-2 bg-muted rounded-md min-h-[60px]">
-                                        {repairData.description ||
-                                            "ไม่มีหมายเหตุ"}
-                                    </div>
-                                </div>
-                                {repairData.images &&
-                                    repairData.images.length > 0 && (
-                                        <div>
-                                            <Label className="text-sm font-medium text-muted-foreground">
-                                                รูปภาพประกอบ (
-                                                {repairData.images.length} รูป)
-                                            </Label>
-                                            <div className="mt-2 grid grid-cols-2 md:grid-cols-4 gap-2">
-                                                {repairData.images.map(
-                                                    (image, index) => (
-                                                        <div
-                                                            key={index}
-                                                            className="relative aspect-square cursor-pointer hover:opacity-80 transition-opacity"
-                                                        >
-                                                            <img
-                                                                src={image}
-                                                                alt={`รูปภาพ ${
-                                                                    index + 1
-                                                                }`}
-                                                                className="w-full h-full object-cover rounded-md border"
-                                                                onClick={() =>
-                                                                    setSelectedImage(
-                                                                        image
-                                                                    )
-                                                                }
-                                                            />
-                                                        </div>
-                                                    )
-                                                )}
-                                            </div>
-                                        </div>
-                                    )}
-                            </CardContent>
-                        </Card>
+                        <RepairRequestInfo 
+                            request={{
+                                id: repairData.id,
+                                documentNumber: repairData.documentNumber,
+                                location: repairData.location,
+                                machine: repairData.machine,
+                                section: repairData.section,
+                                reportedDate: repairData.reportedDate,
+                                reportedTime: repairData.reportedTime,
+                                reporter: repairData.reporter,
+                                contactNumber: repairData.contactNumber,
+                                priority: repairData.priority,
+                                problem: repairData.problem,
+                                description: repairData.description,
+                                images: repairData.images,
+                                date: repairData.date,
+                            }}
+                            title="ข้อมูลใบแจ้งซ่อม"
+                            defaultExpanded={true}
+                        />
 
                         {/* ฟอร์มอนุมัติงาน */}
                         <Card>
