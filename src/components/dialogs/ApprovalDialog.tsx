@@ -20,6 +20,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CancelDialog } from './CancelDialog';
+import { X } from "lucide-react";
+import { getPriorityLevelById } from "@/data/masterData";
 
 interface RepairData {
   id: string;
@@ -33,7 +35,7 @@ interface RepairData {
   contactNumber?: string;
   priority?: string;
   description?: string;
-  images?: File[];
+  images?: string[];
   location?: string;
   reportedDate?: string;
   reportedTime?: string;
@@ -74,6 +76,7 @@ export function ApprovalDialog({
   });
 
   const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   // คำนวณเวลารวม
   useEffect(() => {
@@ -229,11 +232,12 @@ export function ApprovalDialog({
                     </Label>
                     <div className="mt-2 grid grid-cols-2 md:grid-cols-4 gap-2">
                       {repairData.images.map((image, index) => (
-                        <div key={index} className="relative aspect-square">
+                        <div key={index} className="relative aspect-square cursor-pointer hover:opacity-80 transition-opacity">
                           <img
-                            src={URL.createObjectURL(image)}
+                            src={image}
                             alt={`รูปภาพ ${index + 1}`}
                             className="w-full h-full object-cover rounded-md border"
+                            onClick={() => setSelectedImage(image)}
                           />
                         </div>
                       ))}
@@ -341,6 +345,29 @@ export function ApprovalDialog({
         onOpenChange={setShowCancelDialog}
         onConfirm={handleCancelOrder}
       />
+
+      {/* Image Fullscreen Modal */}
+      {selectedImage && (
+        <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
+          <DialogContent className="max-w-4xl max-h-[90vh] p-0">
+            <div className="relative">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute top-2 right-2 z-10 bg-black/50 hover:bg-black/70 text-white"
+                onClick={() => setSelectedImage(null)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+              <img
+                src={selectedImage}
+                alt="รูปภาพขนาดใหญ่"
+                className="w-full h-auto max-h-[85vh] object-contain"
+              />
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </>
   );
 }

@@ -22,7 +22,9 @@ import { Info, X } from "lucide-react";
 import {
     mockMachines,
     getSectionsByMachineId,
+    getAllPriorityLevels,
     type Section,
+    type PriorityLevel,
 } from "@/data/masterData";
 
 // แปลงข้อมูลจาก masterData ให้มีข้อมูลสถานที่ตั้ง
@@ -54,32 +56,8 @@ function generateDocumentNumber(): string {
     return `R${year}${month}0001`;
 }
 
-// ข้อมูลระดับความสำคัญ
-const priorityLevels = [
-    {
-        id: "level1",
-        label: "ระดับ 1 หยุดทันที",
-        tooltip:
-            "เช่น Break down ฉุกเฉินที่ส่งผลด้านความปลอดภัย หรือความเสียหายของทรัพย์สิน",
-    },
-    {
-        id: "level2",
-        label: "ระดับ 2 วิ่งอยู่แต่เสี่ยงต่อคุณภาพ",
-        tooltip: "เช่น เครื่องจักรยังสามารถใช้งานได้ แต่มีผลต่อด้าน คุณภาพ",
-    },
-    {
-        id: "level3",
-        label: "ระดับ 3 วิ่งอยู่แต่ output drop ยังไม่กระทบคุณภาพ (ไม่ควรปล่อยทิ้งใว้)",
-        tooltip:
-            "เช่น เร่งด่วน แต่ยังสามารถรอได้ แต่ต้องลด Speed หรือ มีของเสียที่เกิดขึ้นในกระบวณการที่สามารถรับได้ (แต่ต้องกำหนดเวลาที่ชัดเจน เช่น ไม่เกิน 15 นาทีที่รอ)",
-    },
-    {
-        id: "level4",
-        label: "ระดับ 4 เครื่องจักรมีปัญหา แต่ไม่ส่งผลต่อการผลิต",
-        tooltip:
-            "เช่น มีโอกาสที่จะเสียหาย หรือเสียหาย แต่ยังไม่ส่งผลกระทบ สามารถกำหนดวันลงซ่อมได้ (โดยทีมช่างและ PD ต้องทำการประเมินและกำหนดเวลาซ่อม)",
-    },
-];
+// ข้อมูลระดับความสำคัญจาก masterData
+const priorityLevels: PriorityLevel[] = getAllPriorityLevels();
 
 export function NewRepairForm() {
     const [documentNumber] = useState(generateDocumentNumber());
