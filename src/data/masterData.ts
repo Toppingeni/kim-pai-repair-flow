@@ -97,7 +97,7 @@ export interface RepairRequest {
     contactNumber?: string;
     additionalDetails?: string;
     images?: string[];
-    status: "pending" | "accepted" | "rejected"; // สถานะของใบร้องของงาน
+    status: "pending" | "rejected"; // สถานะของใบร้องของงาน: pending = ใหม่, rejected = ยกเลิก
     createdAt: string;
     updatedAt: string;
     createdBy: string;
@@ -802,7 +802,7 @@ export const mockRepairRequests: RepairRequest[] = [
         priorityLabel: "ระดับ 1 หยุดทันที",
         contactNumber: "081-123-4567",
         additionalDetails: "เครื่องหยุดทำงานขณะกำลังผลิต ส่งผลกระทบต่อแผนการผลิต",
-        status: "accepted",
+        status: "pending",
         createdAt: "15/7/2567 08:30",
         updatedAt: "15/7/2567 09:00",
         createdBy: "นายสมศักดิ์ ผู้ปฏิบัติการ",
@@ -843,7 +843,7 @@ export const mockRepairRequests: RepairRequest[] = [
         priorityLabel: "ระดับ 3 วิ่งอยู่แต่ output drop ยังไม่กระทบคุณภาพ",
         contactNumber: "083-456-7890",
         additionalDetails: "ลูกกลิ้งสั่นมากขึ้นเรื่อยๆ อาจเป็นปัญหาแบริ่ง",
-        status: "accepted",
+        status: "pending",
         createdAt: "17/7/2567 10:45",
         updatedAt: "17/7/2567 11:00",
         createdBy: "นางสาวสุดา ช่างฝีมือ",

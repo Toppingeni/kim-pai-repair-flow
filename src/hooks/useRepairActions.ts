@@ -6,7 +6,7 @@ export interface RepairItem {
   machine: string;
   problem: string;
   date: string;
-  status: "new" | "progress" | "waiting" | "completed" | "pending";
+  status: "new" | "progress" | "waiting" | "completed" | "pending" | "cancelled";
   engineer?: string;
 }
 
@@ -39,7 +39,7 @@ export function useRepairActions() {
     }
   };
 
-  const completeRepair = async (repairId: string, repairData: any) => {
+  const completeRepair = async (repairId: string, repairData: Record<string, unknown>) => {
     setLoading(true);
     try {
       // Simulate API call

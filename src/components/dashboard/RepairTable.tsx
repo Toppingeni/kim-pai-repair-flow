@@ -20,7 +20,13 @@ interface RepairItem {
     machine: string;
     problem: string;
     date: string;
-    status: "new" | "progress" | "waiting" | "completed" | "pending";
+    status:
+        | "new"
+        | "progress"
+        | "waiting"
+        | "completed"
+        | "pending"
+        | "cancelled";
     engineer?: string;
 }
 
@@ -45,6 +51,7 @@ const statusConfig = {
     waiting: { label: "รอยืนยันปิดงาน", variant: "waiting" as const },
     completed: { label: "ปิดงานแล้ว", variant: "completed" as const },
     pending: { label: "รออะไหล่", variant: "pending" as const },
+    cancelled: { label: "ยกเลิก", variant: "cancelled" as const },
 };
 
 const StatusBadge = ({ status }: { status: keyof typeof statusConfig }) => {
@@ -70,6 +77,11 @@ const StatusBadge = ({ status }: { status: keyof typeof statusConfig }) => {
                 : ""
         }
         ${status === "pending" ? "bg-red-100 text-red-800 border-red-200" : ""}
+        ${
+            status === "cancelled"
+                ? "bg-red-300 text-red-800 border-gray-200"
+                : ""
+        }
       `}
         >
             {config.label}
