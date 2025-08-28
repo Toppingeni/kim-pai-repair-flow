@@ -86,30 +86,31 @@ export function NewRepairForm() {
     };
 
     return (
-        <div className="max-w-4xl mx-auto p-6 space-y-6">
-            <div className="mb-6">
+        <div className="max-w-4xl mx-auto p-6 space-y-1">
+            <div className="mb-3">
                 <h1 className="text-2xl font-bold text-foreground">
                     สร้างใบแจ้งซ่อมใหม่
                 </h1>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-1">
                 {/* Document Number Section */}
-                <Card className="shadow-card">
-                    <CardContent>
-                        <div className="space-y-2">
-                            <Label htmlFor="document-number">
-                                เลขที่ใบคำร้อง
-                            </Label>
-                            <Input
-                                id="document-number"
-                                value={documentNumber}
-                                readOnly
-                                className="bg-muted font-mono"
-                            />
-                        </div>
-                    </CardContent>
-                </Card>
+                <div className="mb-2">
+                    <div className="flex flex-row items-center space-y-1">
+                        <Label
+                            htmlFor="document-number"
+                            className="text-sm font-medium w-32"
+                        >
+                            เลขที่ใบคำร้อง
+                        </Label>
+                        <Input
+                            id="document-number"
+                            value={documentNumber}
+                            readOnly
+                            className="bg-muted font-mono w-44"
+                        />
+                    </div>
+                </div>
                 {/* Machine Information Section */}
                 <Card className="shadow-card">
                     <CardHeader>
@@ -117,9 +118,9 @@ export function NewRepairForm() {
                             ข้อมูลเครื่องจักร/อุปกรณ์
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-1">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-2">
+                            <div className="space-y-1">
                                 <Label htmlFor="location">สถานที่ตั้ง</Label>
                                 <Input
                                     id="location"
@@ -129,7 +130,7 @@ export function NewRepairForm() {
                                     placeholder="เลือกเครื่องจักรเพื่อแสดงสถานที่ตั้ง"
                                 />
                             </div>
-                            <div className="space-y-2">
+                            <div className="space-y-1">
                                 <Label htmlFor="machine">
                                     ชื่อเครื่องจักร/อุปกรณ์
                                 </Label>
@@ -154,7 +155,7 @@ export function NewRepairForm() {
                             </div>
                         </div>
 
-                        <div className="space-y-2">
+                        <div className="space-y-1">
                             <Label htmlFor="section">
                                 ส่วนประกอบ (Section)
                             </Label>
@@ -194,9 +195,9 @@ export function NewRepairForm() {
                             รายละเอียดปัญหา
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-1">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-2">
+                            <div className="space-y-1">
                                 <Label htmlFor="datetime">
                                     วันที่และเวลาที่แจ้งซ่อม
                                 </Label>
@@ -208,7 +209,7 @@ export function NewRepairForm() {
                                         .slice(0, 16)}
                                 />
                             </div>
-                            <div className="space-y-2">
+                            <div className="space-y-1">
                                 <Label htmlFor="reporter">ผู้แจ้งซ่อม</Label>
                                 <Input
                                     id="reporter"
@@ -259,7 +260,7 @@ export function NewRepairForm() {
                             )}
                         </div>
 
-                        <div className="space-y-2">
+                        <div className="space-y-1">
                             <Label htmlFor="problem">
                                 ปัญหาเบื้องต้น/อาการ
                             </Label>
@@ -270,7 +271,7 @@ export function NewRepairForm() {
                             />
                         </div>
 
-                        <div className="space-y-2">
+                        <div className="space-y-1">
                             <Label htmlFor="images">รูปภาพประกอบ</Label>
                             <Input
                                 id="images"
@@ -280,7 +281,7 @@ export function NewRepairForm() {
                             />
                         </div>
 
-                        <div className="space-y-2">
+                        <div className="space-y-1">
                             <Label htmlFor="notes">หมายเหตุ</Label>
                             <Textarea
                                 id="notes"
