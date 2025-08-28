@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+
 import {
     Select,
     SelectContent,
@@ -18,7 +18,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Info } from "lucide-react";
+import { Info, X } from "lucide-react";
 import {
     mockMachines,
     getSectionsByMachineId,
@@ -59,33 +59,36 @@ const priorityLevels = [
     {
         id: "level1",
         label: "ระดับ 1 หยุดทันที",
-        tooltip: "เช่น Break down ฉุกเฉินที่ส่งผลด้านความปลอดภัย หรือความเสียหายของทรัพย์สิน"
+        tooltip:
+            "เช่น Break down ฉุกเฉินที่ส่งผลด้านความปลอดภัย หรือความเสียหายของทรัพย์สิน",
     },
     {
         id: "level2",
         label: "ระดับ 2 วิ่งอยู่แต่เสี่ยงต่อคุณภาพ",
-        tooltip: "เช่น เครื่องจักรยังสามารถใช้งานได้ แต่มีผลต่อด้าน คุณภาพ"
+        tooltip: "เช่น เครื่องจักรยังสามารถใช้งานได้ แต่มีผลต่อด้าน คุณภาพ",
     },
     {
         id: "level3",
         label: "ระดับ 3 วิ่งอยู่แต่ output drop ยังไม่กระทบคุณภาพ (ไม่ควรปล่อยทิ้งใว้)",
-        tooltip: "เช่น เร่งด่วน แต่ยังสามารถรอได้ แต่ต้องลด Speed หรือ มีของเสียที่เกิดขึ้นในกระบวณการที่สามารถรับได้ (แต่ต้องกำหนดเวลาที่ชัดเจน เช่น ไม่เกิน 15 นาทีที่รอ)"
+        tooltip:
+            "เช่น เร่งด่วน แต่ยังสามารถรอได้ แต่ต้องลด Speed หรือ มีของเสียที่เกิดขึ้นในกระบวณการที่สามารถรับได้ (แต่ต้องกำหนดเวลาที่ชัดเจน เช่น ไม่เกิน 15 นาทีที่รอ)",
     },
     {
         id: "level4",
         label: "ระดับ 4 เครื่องจักรมีปัญหา แต่ไม่ส่งผลต่อการผลิต",
-        tooltip: "เช่น มีโอกาสที่จะเสียหาย หรือเสียหาย แต่ยังไม่ส่งผลกระทบ สามารถกำหนดวันลงซ่อมได้ (โดยทีมช่างและ PD ต้องทำการประเมินและกำหนดเวลาซ่อม)"
-    }
+        tooltip:
+            "เช่น มีโอกาสที่จะเสียหาย หรือเสียหาย แต่ยังไม่ส่งผลกระทบ สามารถกำหนดวันลงซ่อมได้ (โดยทีมช่างและ PD ต้องทำการประเมินและกำหนดเวลาซ่อม)",
+    },
 ];
 
 export function NewRepairForm() {
     const [documentNumber] = useState(generateDocumentNumber());
     const [selectedMachine, setSelectedMachine] = useState("");
     const [selectedSection, setSelectedSection] = useState("");
-    const [workType, setWorkType] = useState("");
-    const [otherWorkType, setOtherWorkType] = useState("");
+
     const [contactNumber, setContactNumber] = useState("");
     const [priority, setPriority] = useState("");
+    const [selectedImages, setSelectedImages] = useState<File[]>([]);
     const [availableSections, setAvailableSections] = useState<Section[]>([]);
 
     const selectedMachineData = machines.find((m) => m.id === selectedMachine);
@@ -94,15 +97,31 @@ export function NewRepairForm() {
     );
 
     // ฟังก์ชันสำหรับจัดการ format เบอร์ติดต่อ
-    const handleContactNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value.replace(/\D/g, ''); // เอาตัวอักษรที่ไม่ใช่ตัวเลขออก
+    const handleContactNumberChange = (
+        e: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        const value = e.target.value.replace(/\D/g, ""); // เอาตัวอักษรที่ไม่ใช่ตัวเลขออก
         if (value.length <= 10) {
             let formatted = value;
             if (value.length > 3) {
-                formatted = value.slice(0, 3) + '-' + value.slice(3);
+                formatted = value.slice(0, 3) + "-" + value.slice(3);
             }
             setContactNumber(formatted);
         }
+    };
+
+    // ฟังก์ชันสำหรับจัดการการเลือกไฟล์รูปภาพ
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (files) {
+            const newImages = Array.from(files);
+            setSelectedImages(prev => [...prev, ...newImages]);
+        }
+    };
+
+    // ฟังก์ชันสำหรับลบรูปภาพ
+    const removeImage = (index: number) => {
+        setSelectedImages(prev => prev.filter((_, i) => i !== index));
     };
 
     // อัปเดตส่วนประกอบเมื่อเลือกเครื่องจักร
@@ -126,9 +145,9 @@ export function NewRepairForm() {
             documentNumber,
             selectedMachine,
             selectedSection,
-            workType,
             contactNumber,
             priority,
+            images: selectedImages,
         });
     };
 
@@ -279,7 +298,7 @@ export function NewRepairForm() {
                                 />
                             </div>
                             <div className="space-y-1">
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2 mt-2">
                                     <Label htmlFor="priority">ความสำคัญ</Label>
                                     <TooltipProvider>
                                         <Tooltip>
@@ -288,13 +307,28 @@ export function NewRepairForm() {
                                             </TooltipTrigger>
                                             <TooltipContent className="max-w-md p-4">
                                                 <div className="space-y-2">
-                                                    <p className="font-semibold">ระดับความสำคัญ:</p>
-                                                    {priorityLevels.map((level) => (
-                                                        <div key={level.id} className="text-sm">
-                                                            <p className="font-medium">{level.label}</p>
-                                                            <p className="text-muted-foreground">{level.tooltip}</p>
-                                                        </div>
-                                                    ))}
+                                                    <p className="font-semibold">
+                                                        ระดับความสำคัญ:
+                                                    </p>
+                                                    {priorityLevels.map(
+                                                        (level) => (
+                                                            <div
+                                                                key={level.id}
+                                                                className="text-sm"
+                                                            >
+                                                                <p className="font-medium">
+                                                                    {
+                                                                        level.label
+                                                                    }
+                                                                </p>
+                                                                <p className="text-muted-foreground">
+                                                                    {
+                                                                        level.tooltip
+                                                                    }
+                                                                </p>
+                                                            </div>
+                                                        )
+                                                    )}
                                                 </div>
                                             </TooltipContent>
                                         </Tooltip>
@@ -321,46 +355,6 @@ export function NewRepairForm() {
                             </div>
                         </div>
 
-                        <div className="space-y-3">
-                            <Label>ประเภทงาน</Label>
-                            <RadioGroup
-                                value={workType}
-                                onValueChange={setWorkType}
-                            >
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem
-                                        value="maintenance"
-                                        id="maintenance"
-                                    />
-                                    <Label htmlFor="maintenance">
-                                        งานซ่อมบำรุง
-                                    </Label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem
-                                        value="emergency"
-                                        id="emergency"
-                                    />
-                                    <Label htmlFor="emergency">
-                                        งานซ่อมฉุกเฉิน
-                                    </Label>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="other" id="other" />
-                                    <Label htmlFor="other">อื่นๆ</Label>
-                                </div>
-                            </RadioGroup>
-                            {workType === "other" && (
-                                <Input
-                                    placeholder="ระบุประเภทงาน"
-                                    value={otherWorkType}
-                                    onChange={(e) =>
-                                        setOtherWorkType(e.target.value)
-                                    }
-                                />
-                            )}
-                        </div>
-
                         <div className="space-y-1">
                             <Label htmlFor="problem">
                                 ปัญหาเบื้องต้น/อาการ
@@ -371,17 +365,6 @@ export function NewRepairForm() {
                                 rows={4}
                             />
                         </div>
-
-                        <div className="space-y-1">
-                            <Label htmlFor="images">รูปภาพประกอบ</Label>
-                            <Input
-                                id="images"
-                                type="file"
-                                multiple
-                                accept="image/*"
-                            />
-                        </div>
-
                         <div className="space-y-1">
                             <Label htmlFor="notes">หมายเหตุ</Label>
                             <Textarea
@@ -389,6 +372,49 @@ export function NewRepairForm() {
                                 placeholder="หมายเหตุเพิ่มเติม"
                                 rows={2}
                             />
+                        </div>
+                        <div className="space-y-3">
+                            <Label htmlFor="images">รูปภาพประกอบ</Label>
+                            <Input
+                                id="images"
+                                type="file"
+                                multiple
+                                accept="image/*"
+                                onChange={handleImageChange}
+                                className="cursor-pointer"
+                            />
+                            
+                            {/* แสดงตัวอย่างรูปภาพที่เลือก */}
+                            {selectedImages.length > 0 && (
+                                <div className="space-y-2">
+                                    <Label className="text-sm text-muted-foreground">
+                                        รูปภาพที่เลือก ({selectedImages.length} รูป)
+                                    </Label>
+                                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                                        {selectedImages.map((image, index) => (
+                                            <div key={index} className="relative group">
+                                                <div className="aspect-square rounded-lg overflow-hidden border border-border bg-muted">
+                                                    <img
+                                                        src={URL.createObjectURL(image)}
+                                                        alt={`Preview ${index + 1}`}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeImage(index)}
+                                                    className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-destructive/90"
+                                                >
+                                                    <X className="h-4 w-4" />
+                                                </button>
+                                                <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs p-1 rounded-b-lg truncate">
+                                                    {image.name}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </CardContent>
                 </Card>
