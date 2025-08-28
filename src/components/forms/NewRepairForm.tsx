@@ -13,6 +13,13 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Info } from "lucide-react";
+import {
     mockMachines,
     getSectionsByMachineId,
     type Section,
@@ -47,18 +54,56 @@ function generateDocumentNumber(): string {
     return `REQ${year}${month}${day}${time}`;
 }
 
+// ข้อมูลระดับความสำคัญ
+const priorityLevels = [
+    {
+        id: "level1",
+        label: "ระดับ 1 หยุดทันที",
+        tooltip: "เช่น Break down ฉุกเฉินที่ส่งผลด้านความปลอดภัย หรือความเสียหายของทรัพย์สิน"
+    },
+    {
+        id: "level2",
+        label: "ระดับ 2 วิ่งอยู่แต่เสี่ยงต่อคุณภาพ",
+        tooltip: "เช่น เครื่องจักรยังสามารถใช้งานได้ แต่มีผลต่อด้าน คุณภาพ"
+    },
+    {
+        id: "level3",
+        label: "ระดับ 3 วิ่งอยู่แต่ output drop ยังไม่กระทบคุณภาพ (ไม่ควรปล่อยทิ้งใว้)",
+        tooltip: "เช่น เร่งด่วน แต่ยังสามารถรอได้ แต่ต้องลด Speed หรือ มีของเสียที่เกิดขึ้นในกระบวณการที่สามารถรับได้ (แต่ต้องกำหนดเวลาที่ชัดเจน เช่น ไม่เกิน 15 นาทีที่รอ)"
+    },
+    {
+        id: "level4",
+        label: "ระดับ 4 เครื่องจักรมีปัญหา แต่ไม่ส่งผลต่อการผลิต",
+        tooltip: "เช่น มีโอกาสที่จะเสียหาย หรือเสียหาย แต่ยังไม่ส่งผลกระทบ สามารถกำหนดวันลงซ่อมได้ (โดยทีมช่างและ PD ต้องทำการประเมินและกำหนดเวลาซ่อม)"
+    }
+];
+
 export function NewRepairForm() {
     const [documentNumber] = useState(generateDocumentNumber());
     const [selectedMachine, setSelectedMachine] = useState("");
     const [selectedSection, setSelectedSection] = useState("");
     const [workType, setWorkType] = useState("");
     const [otherWorkType, setOtherWorkType] = useState("");
+    const [contactNumber, setContactNumber] = useState("");
+    const [priority, setPriority] = useState("");
     const [availableSections, setAvailableSections] = useState<Section[]>([]);
 
     const selectedMachineData = machines.find((m) => m.id === selectedMachine);
     const selectedSectionData = availableSections.find(
         (s) => s.id === selectedSection
     );
+
+    // ฟังก์ชันสำหรับจัดการ format เบอร์ติดต่อ
+    const handleContactNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value.replace(/\D/g, ''); // เอาตัวอักษรที่ไม่ใช่ตัวเลขออก
+        if (value.length <= 10) {
+            let formatted = value;
+            if (value.length > 3) {
+                formatted = value.slice(0, 3) + '-' + value.slice(3);
+            }
+            setContactNumber(formatted);
+        }
+    };
 
     // อัปเดตส่วนประกอบเมื่อเลือกเครื่องจักร
     useEffect(() => {
@@ -82,6 +127,8 @@ export function NewRepairForm() {
             selectedMachine,
             selectedSection,
             workType,
+            contactNumber,
+            priority,
         });
     };
 
@@ -217,6 +264,60 @@ export function NewRepairForm() {
                                     readOnly
                                     className="bg-muted"
                                 />
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-1">
+                                <Label htmlFor="contact">เบอร์ติดต่อ</Label>
+                                <Input
+                                    id="contact"
+                                    value={contactNumber}
+                                    onChange={handleContactNumberChange}
+                                    placeholder="xxx-xxxxxxx"
+                                    maxLength={11}
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <div className="flex items-center gap-2">
+                                    <Label htmlFor="priority">ความสำคัญ</Label>
+                                    <TooltipProvider>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                                            </TooltipTrigger>
+                                            <TooltipContent className="max-w-md p-4">
+                                                <div className="space-y-2">
+                                                    <p className="font-semibold">ระดับความสำคัญ:</p>
+                                                    {priorityLevels.map((level) => (
+                                                        <div key={level.id} className="text-sm">
+                                                            <p className="font-medium">{level.label}</p>
+                                                            <p className="text-muted-foreground">{level.tooltip}</p>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                </div>
+                                <Select
+                                    value={priority}
+                                    onValueChange={setPriority}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="เลือกระดับความสำคัญ" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {priorityLevels.map((level) => (
+                                            <SelectItem
+                                                key={level.id}
+                                                value={level.id}
+                                            >
+                                                {level.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             </div>
                         </div>
 
