@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,7 +12,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { mockMachines } from "@/data/masterData";
+import { 
+  mockMachines, 
+  getSectionsByMachineId,
+  type Section
+} from "@/data/masterData";
 
 // แปลงข้อมูลจาก masterData ให้มีข้อมูลสถานที่ตั้ง
 const machines = mockMachines
@@ -33,17 +37,48 @@ function getLocationByMachineId(machineId: string): string {
   return locationMap[machineId] || "ไม่ระบุสถานที่";
 }
 
+// ฟังก์ชันสำหรับสร้างเลขที่เอกสาร
+function generateDocumentNumber(): string {
+  const now = new Date();
+  const year = now.getFullYear().toString().slice(-2);
+  const month = (now.getMonth() + 1).toString().padStart(2, '0');
+  const day = now.getDate().toString().padStart(2, '0');
+  const time = now.getTime().toString().slice(-4);
+  return `REQ${year}${month}${day}${time}`;
+}
+
 export function NewRepairForm() {
+  const [documentNumber] = useState(generateDocumentNumber());
   const [selectedMachine, setSelectedMachine] = useState("");
+  const [selectedSection, setSelectedSection] = useState("");
   const [workType, setWorkType] = useState("");
   const [otherWorkType, setOtherWorkType] = useState("");
+  const [availableSections, setAvailableSections] = useState<Section[]>([]);
 
   const selectedMachineData = machines.find(m => m.id === selectedMachine);
+  const selectedSectionData = availableSections.find(s => s.id === selectedSection);
+
+  // อัปเดตส่วนประกอบเมื่อเลือกเครื่องจักร
+  useEffect(() => {
+    if (selectedMachine) {
+      const sections = getSectionsByMachineId(selectedMachine).filter(s => s.status === "Active");
+      setAvailableSections(sections);
+      setSelectedSection("");
+    } else {
+      setAvailableSections([]);
+      setSelectedSection("");
+    }
+  }, [selectedMachine]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle form submission
-    console.log("Form submitted");
+    console.log("Form submitted", {
+      documentNumber,
+      selectedMachine,
+      selectedSection,
+      workType
+    });
   };
 
   return (
@@ -53,6 +88,23 @@ export function NewRepairForm() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Document Number Section */}
+        <Card className="shadow-card">
+          <CardHeader>
+            <CardTitle className="text-lg">ข้อมูลเอกสาร</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <Label htmlFor="document-number">เลขที่ใบคำร้อง</Label>
+              <Input 
+                id="document-number" 
+                value={documentNumber} 
+                readOnly 
+                className="bg-muted font-mono"
+              />
+            </div>
+          </CardContent>
+        </Card>
         {/* Machine Information Section */}
         <Card className="shadow-card">
           <CardHeader>
@@ -60,6 +112,16 @@ export function NewRepairForm() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="location">สถานที่ตั้ง</Label>
+                <Input 
+                  id="location" 
+                  value={selectedMachineData?.location || ""} 
+                  readOnly 
+                  className="bg-muted"
+                  placeholder="เลือกเครื่องจักรเพื่อแสดงสถานที่ตั้ง"
+                />
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="machine">ชื่อเครื่องจักร/อุปกรณ์</Label>
                 <Select value={selectedMachine} onValueChange={setSelectedMachine}>
@@ -75,24 +137,26 @@ export function NewRepairForm() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="machine-code">รหัสเครื่องจักร</Label>
-                <Input 
-                  id="machine-code" 
-                  value={selectedMachineData?.id || ""} 
-                  readOnly 
-                  className="bg-muted"
-                />
-              </div>
             </div>
+            
             <div className="space-y-2">
-              <Label htmlFor="location">สถานที่ตั้ง</Label>
-              <Input 
-                id="location" 
-                value={selectedMachineData?.location || ""} 
-                readOnly 
-                className="bg-muted"
-              />
+              <Label htmlFor="section">ส่วนประกอบ (Section)</Label>
+              <Select 
+                value={selectedSection} 
+                onValueChange={setSelectedSection}
+                disabled={!selectedMachine}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={selectedMachine ? "เลือกส่วนประกอบ" : "เลือกเครื่องจักรก่อน"} />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableSections.map((section) => (
+                    <SelectItem key={section.id} value={section.id}>
+                      {section.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </CardContent>
         </Card>
