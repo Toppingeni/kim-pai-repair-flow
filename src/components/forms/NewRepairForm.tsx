@@ -51,7 +51,7 @@ function generateDocumentNumber(): string {
     const month = (now.getMonth() + 1).toString().padStart(2, "0");
     const day = now.getDate().toString().padStart(2, "0");
     const time = now.getTime().toString().slice(-4);
-    return `REQ${year}${month}${day}${time}`;
+    return `R${year}${month}0001`;
 }
 
 // ข้อมูลระดับความสำคัญ
@@ -115,13 +115,13 @@ export function NewRepairForm() {
         const files = e.target.files;
         if (files) {
             const newImages = Array.from(files);
-            setSelectedImages(prev => [...prev, ...newImages]);
+            setSelectedImages((prev) => [...prev, ...newImages]);
         }
     };
 
     // ฟังก์ชันสำหรับลบรูปภาพ
     const removeImage = (index: number) => {
-        setSelectedImages(prev => prev.filter((_, i) => i !== index));
+        setSelectedImages((prev) => prev.filter((_, i) => i !== index));
     };
 
     // อัปเดตส่วนประกอบเมื่อเลือกเครื่องจักร
@@ -268,6 +268,7 @@ export function NewRepairForm() {
                                     วันที่และเวลาที่แจ้งซ่อม
                                 </Label>
                                 <Input
+                                    readOnly
                                     id="datetime"
                                     type="datetime-local"
                                     defaultValue={new Date()
@@ -383,26 +384,36 @@ export function NewRepairForm() {
                                 onChange={handleImageChange}
                                 className="cursor-pointer"
                             />
-                            
+
                             {/* แสดงตัวอย่างรูปภาพที่เลือก */}
                             {selectedImages.length > 0 && (
                                 <div className="space-y-2">
                                     <Label className="text-sm text-muted-foreground">
-                                        รูปภาพที่เลือก ({selectedImages.length} รูป)
+                                        รูปภาพที่เลือก ({selectedImages.length}{" "}
+                                        รูป)
                                     </Label>
                                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                                         {selectedImages.map((image, index) => (
-                                            <div key={index} className="relative group">
+                                            <div
+                                                key={index}
+                                                className="relative group"
+                                            >
                                                 <div className="aspect-square rounded-lg overflow-hidden border border-border bg-muted">
                                                     <img
-                                                        src={URL.createObjectURL(image)}
-                                                        alt={`Preview ${index + 1}`}
+                                                        src={URL.createObjectURL(
+                                                            image
+                                                        )}
+                                                        alt={`Preview ${
+                                                            index + 1
+                                                        }`}
                                                         className="w-full h-full object-cover"
                                                     />
                                                 </div>
                                                 <button
                                                     type="button"
-                                                    onClick={() => removeImage(index)}
+                                                    onClick={() =>
+                                                        removeImage(index)
+                                                    }
                                                     className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-destructive/90"
                                                 >
                                                     <X className="h-4 w-4" />
