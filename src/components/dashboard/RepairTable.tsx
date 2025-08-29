@@ -110,6 +110,10 @@ export function RepairTable({ repairs, userRole, title }: RepairTableProps) {
         navigate(`/repair-action/${repairId}`);
     };
 
+    const handleCloseJob = (repairId: string) => {
+        navigate(`/close-job/${repairId}`);
+    };
+
     const handleApproveRepair = (formData: ApprovalFormData) => {
         console.log("อนุมัติใบสั่งงาน:", {
             repairId: selectedRepair?.id,
@@ -169,6 +173,21 @@ export function RepairTable({ repairs, userRole, title }: RepairTableProps) {
                     </Button>
                 );
             }
+        }
+
+        // เพิ่มปุ่มปิดงานสำหรับฝ่ายผลิตเมื่อสถานะเป็น "รอยืนยันปิดงาน"
+        if (userRole === "production" && repair.status === "waiting") {
+            buttons.push(
+                <Button
+                    key="close-job"
+                    variant="default"
+                    size="sm"
+                    onClick={() => handleCloseJob(repair.id)}
+                    className="mr-2 bg-orange-600 hover:bg-orange-700"
+                >
+                    ปิดงาน
+                </Button>
+            );
         }
 
         return <div className="flex">{buttons}</div>;

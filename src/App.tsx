@@ -13,6 +13,7 @@ import { AllRepairs } from "./pages/AllRepairs";
 import { RepairAction } from "./pages/RepairAction";
 import { RepairDetail } from "./pages/RepairDetail";
 import { RepairHistory } from "./pages/RepairHistory";
+import { CloseJob } from "./pages/CloseJob";
 import { Reports } from "./pages/Reports";
 import { PMManagement } from "./pages/PMManagement";
 import MasterData from "./pages/MasterData";
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/all-repairs" element={<AllRepairs />} />
             <Route path="/repair-action/:id" element={<RepairAction />} />
             <Route path="/repair-detail/:id" element={<RepairDetail />} />
+            <Route path="/close-job/:id" element={<CloseJob />} />
             <Route path="/pm-management" element={<PMManagement />} />
             <Route path="/repair-history" element={<RepairHistory />} />
             <Route path="/reports" element={<Reports />} />

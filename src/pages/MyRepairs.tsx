@@ -33,6 +33,14 @@ const mockUserRepairs = [
     engineer: "นางสาวอร",
   },
   {
+    id: "R24070008",
+    machine: "Conveyor Belt #3",
+    problem: "สายพานขาด",
+    date: "08/07/2568",
+    status: "waiting" as const,
+    engineer: "นายสมชาย",
+  },
+  {
     id: "R24070003",
     machine: "Boiler #1", 
     problem: "แรงดันตก",
