@@ -343,7 +343,7 @@ export function MasterDataManager() {
                     <CardHeader className="pb-3">
                         <div className="flex items-center justify-between">
                             <CardTitle className="text-lg">
-                                เครื่องจักร
+                                เครื่องจักร (Machines)
                             </CardTitle>
                             <Button
                                 size="sm"
