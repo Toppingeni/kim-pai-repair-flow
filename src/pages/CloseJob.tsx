@@ -130,37 +130,57 @@ export function CloseJob() {
         );
     }
 
+    // Utility: แปลงวันที่ไทย (พ.ศ. DD/MM/YYYY) + เวลา เป็น Date
+    const parseThaiDateTime = (dateStr?: string, timeStr?: string): Date | null => {
+        if (!dateStr) return null;
+        // คาดว่ามาในรูปแบบ DD/MM/YYYY (พ.ศ.)
+        const parts = dateStr.split("/");
+        if (parts.length !== 3) return null;
+        const [ddStr, mmStr, byStr] = parts;
+        const dd = parseInt(ddStr, 10);
+        const mm = parseInt(mmStr, 10);
+        const by = parseInt(byStr, 10);
+        if (!dd || !mm || !by) return null;
+        const gy = by - 543; // แปลง พ.ศ. → ค.ศ.
+        let hh = 0, min = 0;
+        if (timeStr && /\d{1,2}:\d{2}/.test(timeStr)) {
+            const [hStr, mStr] = timeStr.split(":");
+            hh = parseInt(hStr, 10) || 0;
+            min = parseInt(mStr, 10) || 0;
+        }
+        const d = new Date(gy, mm - 1, dd, hh, min, 0, 0);
+        if (isNaN(d.getTime())) return null;
+        return d;
+    };
+
     // คำนวณเวลาสูญเสียทั้งหมด
     const calculateTotalLostTime = () => {
-        if (!mockRepairData.repairDetails) return "ไม่มีข้อมูล";
+        const rd = mockRepairData.repairDetails;
+        if (!rd) return "ไม่มีข้อมูล";
 
-        const notificationDateTime = new Date(
-            `${mockRepairData.requestDate} ${
-                mockRepairData.requestTime || "00:00"
-            }`
+        const notificationDateTime = parseThaiDateTime(
+            mockRepairData.requestDate,
+            mockRepairData.requestTime || "00:00"
         );
-        const operationStartDateTime = new Date(
-            `${mockRepairData.repairDetails.startDate} ${
-                mockRepairData.repairDetails.startTime || "00:00"
-            }`
+        const operationStartDateTime = parseThaiDateTime(
+            rd.startDate,
+            rd.startTime || "00:00"
         );
-        const operationEndDateTime = new Date(
-            `${
-                mockRepairData.repairDetails.endDate ||
-                mockRepairData.repairDetails.startDate
-            } ${mockRepairData.repairDetails.endTime || "23:59"}`
+        const operationEndDateTime = parseThaiDateTime(
+            rd.endDate || rd.startDate,
+            rd.endTime || "23:59"
         );
 
-        const lostTime1 =
-            operationStartDateTime.getTime() - notificationDateTime.getTime();
-        const lostTime2 =
-            operationEndDateTime.getTime() - operationStartDateTime.getTime();
-        const totalLostTime = lostTime1 + lostTime2;
+        if (!notificationDateTime || !operationStartDateTime || !operationEndDateTime) {
+            return "ไม่มีข้อมูล";
+        }
+
+        const lostTime1 = operationStartDateTime.getTime() - notificationDateTime.getTime();
+        const lostTime2 = operationEndDateTime.getTime() - operationStartDateTime.getTime();
+        const totalLostTime = Math.max(0, lostTime1) + Math.max(0, lostTime2);
 
         const hours = Math.floor(totalLostTime / (1000 * 60 * 60));
-        const minutes = Math.floor(
-            (totalLostTime % (1000 * 60 * 60)) / (1000 * 60)
-        );
+        const minutes = Math.floor((totalLostTime % (1000 * 60 * 60)) / (1000 * 60));
 
         return `${hours} ชั่วโมง ${minutes} นาที`;
     };
