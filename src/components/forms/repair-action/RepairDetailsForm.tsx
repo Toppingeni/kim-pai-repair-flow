@@ -274,10 +274,6 @@ export function RepairDetailsForm({
                                 </span>
                             </div>
                         </div>
-                        <p className="text-xs text-orange-600 mt-2">
-                            คำนวณจากวันที่แจ้งซ่อม (15/07/2567 14:30)
-                            ถึงวันที่สิ้นสุดงานจริง
-                        </p>
                     </div>
                 </div>
 

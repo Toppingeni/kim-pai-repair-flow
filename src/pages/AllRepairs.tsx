@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { RepairTable } from "@/components/dashboard/RepairTable";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,7 +20,15 @@ import { getSimpleRepairs } from "@/data/allRepairsMockData";
 const mockAllRepairs = getSimpleRepairs();
 
 export function AllRepairs() {
-  const [activeTab, setActiveTab] = useState("requests");
+  // โหลด tab ที่เลือกไว้จาก localStorage หรือใช้ "requests" เป็นค่าเริ่มต้น
+  const [activeTab, setActiveTab] = useState(() => {
+    return localStorage.getItem('allRepairs-activeTab') || 'requests';
+  });
+  
+  // บันทึก tab ที่เลือกลง localStorage เมื่อมีการเปลี่ยนแปลง
+  useEffect(() => {
+    localStorage.setItem('allRepairs-activeTab', activeTab);
+  }, [activeTab]);
   const repairRequests = getAllRepairRequests();
   const repairProcesses = getAllRepairProcesses();
   
