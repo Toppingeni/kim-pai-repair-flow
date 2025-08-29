@@ -41,6 +41,7 @@ export function AllRepairs() {
       machine: request.machine,
       location: request.location,
       problem: request.problem,
+      contactNumber: request.contactNumber || "",
       reporter: request.reporter,
       reportDate: request.reportDate,
       date: request.reportDate, // เพิ่ม field date ที่ RepairItem ต้องการ
@@ -68,6 +69,7 @@ export function AllRepairs() {
         machine: relatedRequest?.machine || "",
         location: relatedRequest?.location || "",
         problem: relatedRequest?.problem || "",
+        contactNumber: relatedRequest?.contactNumber || "",
         reporter: relatedRequest?.reporter || "",
         reportDate: relatedRequest?.reportDate || "",
         date: relatedRequest?.reportDate || "", // เพิ่ม field date ที่ RepairItem ต้องการ
@@ -247,6 +249,7 @@ export function AllRepairs() {
                   userRole="engineering"
                   title="รายการใบร้องของงานซ่อม"
                   showEngineerColumn={false}
+                  showContactColumn={true}
                 />
               </TabsContent>
 
@@ -256,6 +259,7 @@ export function AllRepairs() {
                   userRole="engineering"
                   title="รายการใบแจ้งซ่อม"
                   showEngineerColumn={true}
+                  showContactColumn={true}
                 />
               </TabsContent>
             </Tabs>

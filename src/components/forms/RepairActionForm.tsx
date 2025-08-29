@@ -52,7 +52,7 @@ export function RepairActionForm() {
 
             <form onSubmit={handleSubmit} className="space-y-6">
                 <OriginalRequestInfo request={mockOriginalRequest} />
-                `
+
                 <RepairDetailsForm
                     selectedEngineer={selectedEngineer}
                     onEngineerChange={setSelectedEngineer}
@@ -60,7 +60,7 @@ export function RepairActionForm() {
                     onRepairResultChange={setRepairResult}
                     engineers={engineers}
                 />
-                `
+
                 <PartsManagement
                     parts={parts}
                     onAddPart={addPart}

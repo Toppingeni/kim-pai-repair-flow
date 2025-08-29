@@ -20,6 +20,7 @@ interface RepairItem {
     machine: string;
     problem: string;
     date: string;
+    contactNumber?: string;
     status:
         | "new"
         | "progress"
@@ -35,6 +36,7 @@ interface RepairTableProps {
     userRole: "production" | "engineering";
     title: string;
     showEngineerColumn?: boolean; // เพิ่ม prop สำหรับควบคุมการแสดงคอลัมน์ผู้รับผิดชอบ
+    showContactColumn?: boolean; // แสดงคอลัมน์เบอร์ติดต่อ
 }
 
 interface ApprovalFormData {
@@ -90,7 +92,7 @@ const StatusBadge = ({ status }: { status: keyof typeof statusConfig }) => {
     );
 };
 
-export function RepairTable({ repairs, userRole, title, showEngineerColumn = true }: RepairTableProps) {
+export function RepairTable({ repairs, userRole, title, showEngineerColumn = true, showContactColumn = false }: RepairTableProps) {
     const navigate = useNavigate();
     const { acceptJob } = useRepairActions();
     const [selectedRepair, setSelectedRepair] = useState<RepairItem | null>(
@@ -209,6 +211,7 @@ export function RepairTable({ repairs, userRole, title, showEngineerColumn = tru
                                 <TableHead>รหัสใบแจ้งซ่อม</TableHead>
                                 <TableHead>เครื่องจักร</TableHead>
                                 <TableHead>ปัญหาเบื้องต้น</TableHead>
+                                {showContactColumn && <TableHead>เบอร์ติดต่อ</TableHead>}
                                 <TableHead>วันที่แจ้ง</TableHead>
                                 <TableHead>สถานะ</TableHead>
                                 {showEngineerColumn && <TableHead>ผู้รับผิดชอบ</TableHead>}
@@ -223,6 +226,9 @@ export function RepairTable({ repairs, userRole, title, showEngineerColumn = tru
                                     </TableCell>
                                     <TableCell>{repair.machine}</TableCell>
                                     <TableCell>{repair.problem}</TableCell>
+                                    {showContactColumn && (
+                                      <TableCell>{repair.contactNumber || '-'}</TableCell>
+                                    )}
                                     <TableCell>{repair.date}</TableCell>
                                     <TableCell>
                                         <StatusBadge status={repair.status} />
