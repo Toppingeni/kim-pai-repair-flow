@@ -30,9 +30,14 @@ import {
 } from "@/data/masterData";
 
 export default function ReportsPartsByMachine() {
+    // current selections (UI)
     const [machineId, setMachineId] = useState<string>("");
     const [sectionId, setSectionId] = useState<string>("");
     const [componentId, setComponentId] = useState<string>("");
+    // applied filters (used for table)
+    const [appliedMachineId, setAppliedMachineId] = useState<string>("");
+    const [appliedSectionId, setAppliedSectionId] = useState<string>("");
+    const [appliedComponentId, setAppliedComponentId] = useState<string>("");
 
     const machines = useMemo(
         () => mockMachines.filter((m) => m.status === "Active"),
@@ -49,13 +54,17 @@ export default function ReportsPartsByMachine() {
 
     const rows = useMemo(() => {
         let parts: SparePart[] = mockSpareParts;
-        if (componentId) {
-            parts = parts.filter((p) => p.componentId === componentId);
-        } else if (sectionId) {
-            const compIds = components.map((c) => c.id);
+        if (appliedComponentId) {
+            parts = parts.filter((p) => p.componentId === appliedComponentId);
+        } else if (appliedSectionId) {
+            const compIds = mockComponents
+                .filter((c) => c.sectionId === appliedSectionId)
+                .map((c) => c.id);
             parts = parts.filter((p) => compIds.includes(p.componentId));
-        } else if (machineId) {
-            const secIds = sections.map((s) => s.id);
+        } else if (appliedMachineId) {
+            const secIds = mockSections
+                .filter((s) => s.machineId === appliedMachineId)
+                .map((s) => s.id);
             const compIds = mockComponents
                 .filter((c) => secIds.includes(c.sectionId))
                 .map((c) => c.id);
@@ -81,7 +90,7 @@ export default function ReportsPartsByMachine() {
                 unit: p.unit,
             };
         });
-    }, [machineId, sectionId, componentId, components, sections]);
+    }, [appliedMachineId, appliedSectionId, appliedComponentId]);
 
     const handleSelectMachine = (id: string) => {
         setMachineId(id);
@@ -97,6 +106,14 @@ export default function ReportsPartsByMachine() {
         setMachineId("");
         setSectionId("");
         setComponentId("");
+        setAppliedMachineId("");
+        setAppliedSectionId("");
+        setAppliedComponentId("");
+    };
+    const applySearch = () => {
+        setAppliedMachineId(machineId);
+        setAppliedSectionId(sectionId);
+        setAppliedComponentId(componentId);
     };
 
     return (
@@ -188,12 +205,13 @@ export default function ReportsPartsByMachine() {
                             </div>
                         </div>
                         <div className="mt-4 flex justify-end space-x-2">
-                            <Button variant="info">ค้นหา</Button>
+                            <Button onClick={applySearch} disabled={!machineId}>ค้นหา</Button>
                             <Button
                                 variant="outline"
                                 onClick={clearFilters}
                                 disabled={
-                                    !machineId && !sectionId && !componentId
+                                    !machineId && !sectionId && !componentId &&
+                                    !appliedMachineId && !appliedSectionId && !appliedComponentId
                                 }
                             >
                                 ล้างการค้นหา
