@@ -581,11 +581,11 @@ export const mockSpareParts: SparePart[] = [
         code: "CBN-BRS-021",
         category: "คาร์บอน",
         status: "Active",
-        qty: 12,
+        qty: 20,
         used: 3,
         unit: "ตัว",
         defaultUsage: 2,
-        stock: 9,
+        stock: 20,
     },
     {
         id: "p22",
@@ -594,11 +594,11 @@ export const mockSpareParts: SparePart[] = [
         code: "CBN-BRS-022",
         category: "คาร์บอน",
         status: "Active",
-        qty: 7,
+        qty: 20,
         used: 1,
         unit: "ตัว",
         defaultUsage: 2,
-        stock: 6,
+        stock: 20,
     },
 ];
 
