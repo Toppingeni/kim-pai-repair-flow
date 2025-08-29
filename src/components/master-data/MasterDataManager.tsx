@@ -16,7 +16,6 @@ import { AddSectionModal } from "./AddSectionModal";
 import { AddComponentModal } from "./AddComponentModal";
 import { AddSparePartModal } from "./AddSparePartModal";
 import { EditSparePartModal } from "./EditSparePartModal";
-import { type SelectedSubPart } from "./SubSparePartSelector";
 import {
   type EntityStatus,
   type Machine,
@@ -204,7 +203,6 @@ export function MasterDataManager() {
     minQty?: number;
     unit?: string;
     description?: string;
-    subParts?: SelectedSubPart[];
   }) => {
     setSpareParts(prev => prev.map(part => 
       part.id === sparePartId 
@@ -215,7 +213,6 @@ export function MasterDataManager() {
             qty: updatedData.qty,
             unit: updatedData.unit || part.unit,
             stock: updatedData.qty, // อัปเดต stock ตาม qty ใหม่
-            // Note: subParts จะต้องจัดการแยกต่างหาก เนื่องจาก SparePart interface ยังไม่รองรับ
           }
         : part
     ));

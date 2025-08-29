@@ -19,7 +19,6 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { type EntityStatus, type SparePart } from "@/data/masterData";
-import { SubSparePartSelector, type SelectedSubPart } from "./SubSparePartSelector";
 
 interface EditSparePartModalProps {
   open: boolean;
@@ -35,7 +34,6 @@ interface EditSparePartModalProps {
     minQty?: number;
     unit?: string;
     description?: string;
-    subParts?: SelectedSubPart[];
   }) => void;
 }
 
@@ -57,7 +55,6 @@ export function EditSparePartModal({
     description: "",
   });
   
-  const [selectedSubParts, setSelectedSubParts] = useState<SelectedSubPart[]>([]);
 
   // อัปเดตข้อมูลฟอร์มเมื่อ sparePart เปลี่ยน
   useEffect(() => {
@@ -70,20 +67,6 @@ export function EditSparePartModal({
         unit: sparePart.unit,
         description: "", // ไม่มีใน interface เดิม
       });
-      
-      // แปลง subParts เป็น SelectedSubPart format
-      if (sparePart.subParts) {
-        const convertedSubParts: SelectedSubPart[] = sparePart.subParts.map(sub => ({
-          subPart: sub,
-          qty: sub.qty,
-          unit: sub.unit,
-          status: sub.status,
-          description: sub.description || "",
-        }));
-        setSelectedSubParts(convertedSubParts);
-      } else {
-        setSelectedSubParts([]);
-      }
     }
   }, [sparePart]);
 
@@ -109,7 +92,6 @@ export function EditSparePartModal({
       minQty: formData.minQty || undefined,
       unit: formData.unit.trim() || undefined,
       description: formData.description.trim() || undefined,
-      subParts: selectedSubParts.length > 0 ? selectedSubParts : undefined,
     });
     
     onOpenChange(false);
@@ -126,19 +108,6 @@ export function EditSparePartModal({
         unit: sparePart.unit,
         description: "",
       });
-      
-      if (sparePart.subParts) {
-        const convertedSubParts: SelectedSubPart[] = sparePart.subParts.map(sub => ({
-          subPart: sub,
-          qty: sub.qty,
-          unit: sub.unit,
-          status: sub.status,
-          description: sub.description || "",
-        }));
-        setSelectedSubParts(convertedSubParts);
-      } else {
-        setSelectedSubParts([]);
-      }
     }
     onOpenChange(false);
   };
@@ -147,7 +116,7 @@ export function EditSparePartModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[90vw] max-w-[90vw] max-h-[80vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>แก้ไขอะไหล่</DialogTitle>
           <DialogDescription>
@@ -156,8 +125,8 @@ export function EditSparePartModal({
         </DialogHeader>
         
         <div className="flex gap-6 h-full min-h-[500px]">
-          {/* ทางซ้าย - ข้อมูลเครื่องจักรและอะไหล่หลัก */}
-          <div className="w-[400px] flex-shrink-0 flex flex-col space-y-4 min-h-0">
+          {/* ข้อมูลเครื่องจักรและแบบฟอร์มอะไหล่ */}
+          <div className="flex-1 flex-shrink-0 flex flex-col space-y-4 min-h-0">
             {/* กล่องข้อมูลเครื่องจักร */}
             <div className="bg-muted p-3 rounded-md space-y-1">
               <p className="text-sm text-muted-foreground">เครื่องจักร:</p>
@@ -246,16 +215,6 @@ export function EditSparePartModal({
             </form>
           </div>
           
-          {/* ทางขวา - Sub อะไหล่ */}
-          <div className="flex-1 flex flex-col space-y-4 min-h-0">
-            <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Sub อะไหล่</h3>
-            <div className="flex-1 min-h-0">
-              <SubSparePartSelector
-                selectedSubParts={selectedSubParts}
-                onSubPartsChange={setSelectedSubParts}
-              />
-            </div>
-          </div>
         </div>
 
         <DialogFooter>

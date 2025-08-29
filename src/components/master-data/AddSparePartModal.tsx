@@ -21,7 +21,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { type EntityStatus } from "@/data/masterData";
-import { SubSparePartSelector, type SelectedSubPart } from "./SubSparePartSelector";
 
 interface AddSparePartModalProps {
   open: boolean;
@@ -38,7 +37,6 @@ interface AddSparePartModalProps {
     minQty?: number;
     unit?: string;
     description?: string;
-    subParts?: SelectedSubPart[];
   }) => void;
 }
 
@@ -60,7 +58,6 @@ export function AddSparePartModal({
     description: "",
   });
   
-  const [selectedSubParts, setSelectedSubParts] = useState<SelectedSubPart[]>([]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,7 +71,6 @@ export function AddSparePartModal({
       minQty: formData.minQty > 0 ? formData.minQty : undefined,
       unit: formData.unit.trim() || undefined,
       description: formData.description.trim() || undefined,
-      subParts: selectedSubParts.length > 0 ? selectedSubParts : undefined,
     });
     
     // Reset form
@@ -86,7 +82,7 @@ export function AddSparePartModal({
       unit: "",
       description: "",
     });
-    setSelectedSubParts([]);
+    
     
     onOpenChange(false);
   };
@@ -100,13 +96,12 @@ export function AddSparePartModal({
       unit: "",
       description: "",
     });
-    setSelectedSubParts([]);
     onOpenChange(false);
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[90vw] max-w-[90vw] max-h-[80vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>เพิ่มอะไหล่ใหม่</DialogTitle>
           <DialogDescription>
@@ -124,8 +119,8 @@ export function AddSparePartModal({
         ) : (
           <>
             <div className="flex gap-6 h-full min-h-[500px]">
-              {/* ทางซ้าย - ข้อมูลเครื่องจักรและอะไหล่หลัก */}
-              <div className="w-[400px] flex-shrink-0 flex flex-col space-y-4 min-h-0">
+              {/* ข้อมูลเครื่องจักรและอะไหล่หลัก */}
+              <div className="flex-1 flex-shrink-0 flex flex-col space-y-4 min-h-0">
                 {/* กล่องข้อมูลเครื่องจักร */}
                 <div className="bg-muted p-3 rounded-md space-y-1">
                   <p className="text-sm text-muted-foreground">เครื่องจักร:</p>
@@ -228,16 +223,6 @@ export function AddSparePartModal({
                 </form>
               </div>
               
-              {/* ทางขวา - Sub อะไหล่ */}
-              <div className="flex-1 flex flex-col space-y-4 min-h-0">
-                <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Sub อะไหล่</h3>
-                <div className="flex-1 min-h-0">
-                  <SubSparePartSelector
-                    selectedSubParts={selectedSubParts}
-                    onSubPartsChange={setSelectedSubParts}
-                  />
-                </div>
-              </div>
             </div>
 
           </>
