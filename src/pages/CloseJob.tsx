@@ -88,7 +88,9 @@ const StarRating = ({ rating, onRatingChange }: StarRatingProps) => {
 };
 
 export function CloseJob() {
-    const { repairId } = useParams();
+    // รองรับได้ทั้งพาธพารามิเตอร์ชื่อ id และ repairId
+    const { id, repairId: repairIdFromParams } = useParams();
+    const repairId = repairIdFromParams || id;
     const navigate = useNavigate();
     const [isExpanded, setIsExpanded] = useState(false);
     const [rating, setRating] = useState(0);
@@ -96,7 +98,7 @@ export function CloseJob() {
     const [additionalNotes, setAdditionalNotes] = useState("");
 
     // ดึงข้อมูลจาก mock data
-    const mockRepairData = getRepairById(repairId!);
+    const mockRepairData = repairId ? getRepairById(repairId) : undefined;
 
     // State สำหรับ checkbox การทดสอบ
     const [testChecks, setTestChecks] = useState({
@@ -113,9 +115,11 @@ export function CloseJob() {
             <MainLayout>
                 <div className="container mx-auto px-4 py-8">
                     <div className="text-center">
-                        <h2 className="text-2xl font-bold mb-4">ไม่พบข้อมูลใบแจ้งซ่อม</h2>
+                        <h2 className="text-2xl font-bold mb-4">
+                            ไม่พบข้อมูลใบแจ้งซ่อม
+                        </h2>
                         <p className="text-gray-600 mb-4">
-                            ไม่พบข้อมูลใบแจ้งซ่อมหมายเลข {repairId}
+                            ไม่พบข้อมูลใบแจ้งซ่อมหมายเลข {repairId || "-"}
                         </p>
                         <Button onClick={() => navigate(-1)} variant="outline">
                             กลับ
@@ -129,15 +133,22 @@ export function CloseJob() {
     // คำนวณเวลาสูญเสียทั้งหมด
     const calculateTotalLostTime = () => {
         if (!mockRepairData.repairDetails) return "ไม่มีข้อมูล";
-        
+
         const notificationDateTime = new Date(
-            `${mockRepairData.requestDate} ${mockRepairData.requestTime || '00:00'}`
+            `${mockRepairData.requestDate} ${
+                mockRepairData.requestTime || "00:00"
+            }`
         );
         const operationStartDateTime = new Date(
-            `${mockRepairData.repairDetails.startDate} ${mockRepairData.repairDetails.startTime || '00:00'}`
+            `${mockRepairData.repairDetails.startDate} ${
+                mockRepairData.repairDetails.startTime || "00:00"
+            }`
         );
         const operationEndDateTime = new Date(
-            `${mockRepairData.repairDetails.endDate || mockRepairData.repairDetails.startDate} ${mockRepairData.repairDetails.endTime || '23:59'}`
+            `${
+                mockRepairData.repairDetails.endDate ||
+                mockRepairData.repairDetails.startDate
+            } ${mockRepairData.repairDetails.endTime || "23:59"}`
         );
 
         const lostTime1 =
@@ -206,17 +217,17 @@ export function CloseJob() {
                         id: mockRepairData.id,
                         machine: mockRepairData.machine,
                         problem: mockRepairData.problem,
-                        section: mockRepairData.section || 'ไม่ระบุ',
+                        section: mockRepairData.section || "ไม่ระบุ",
                         location: mockRepairData.location,
-                        priority: mockRepairData.priority || 'ปานกลาง',
+                        priority: mockRepairData.priority || "ปานกลาง",
                         reporter: mockRepairData.reporter,
-                        contactNumber: mockRepairData.contactNumber || '',
+                        contactNumber: mockRepairData.contactNumber || "",
                         reportedDate: mockRepairData.requestDate,
-                        reportedTime: mockRepairData.requestTime || '',
-                        description: mockRepairData.notes || '',
+                        reportedTime: mockRepairData.requestTime || "",
+                        description: mockRepairData.notes || "",
                         images: mockRepairData.images || [],
                     }}
-                    title={`ข้อมูลใบแจ้งซ่อม - ${mockRepairData.id}`}
+                    title={`ข้อมูลใบแจ้งซ่อม`}
                     defaultExpanded={isExpanded}
                 />
 
@@ -229,19 +240,21 @@ export function CloseJob() {
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-2">
-                            {mockRepairData.repairDetails?.usedParts?.map((part, index) => (
-                                <div
-                                    key={index}
-                                    className="flex justify-between items-center p-2 bg-muted/50 rounded"
-                                >
-                                    <span>
-                                        {part.code} - {part.name}
-                                    </span>
-                                    <span>
-                                        {part.quantity} {part.unit}
-                                    </span>
-                                </div>
-                            )) || (
+                            {mockRepairData.repairDetails?.usedParts?.map(
+                                (part, index) => (
+                                    <div
+                                        key={index}
+                                        className="flex justify-between items-center p-2 bg-muted/50 rounded"
+                                    >
+                                        <span>
+                                            {part.code} - {part.name}
+                                        </span>
+                                        <span>
+                                            {part.quantity} {part.unit}
+                                        </span>
+                                    </div>
+                                )
+                            ) || (
                                 <p className="text-muted-foreground text-center py-4">
                                     ไม่มีข้อมูลอะไหล่ที่ใช้
                                 </p>
@@ -276,8 +289,10 @@ export function CloseJob() {
                                     วันที่เริ่มปฏิบัติงาน
                                 </Label>
                                 <p className="text-foreground font-medium">
-                                    {mockRepairData.repairDetails?.startDate || 'ไม่มีข้อมูล'}{" "}
-                                    {mockRepairData.repairDetails?.startTime || ''}
+                                    {mockRepairData.repairDetails?.startDate ||
+                                        "ไม่มีข้อมูล"}{" "}
+                                    {mockRepairData.repairDetails?.startTime ||
+                                        ""}
                                 </p>
                             </div>
                             <div className="space-y-2">
@@ -286,8 +301,10 @@ export function CloseJob() {
                                     วันที่เสร็จสิ้น
                                 </Label>
                                 <p className="text-foreground font-medium">
-                                    {mockRepairData.repairDetails?.endDate || 'ไม่มีข้อมูล'}{" "}
-                                    {mockRepairData.repairDetails?.endTime || ''}
+                                    {mockRepairData.repairDetails?.endDate ||
+                                        "ไม่มีข้อมูล"}{" "}
+                                    {mockRepairData.repairDetails?.endTime ||
+                                        ""}
                                 </p>
                             </div>
                             <div className="space-y-2">

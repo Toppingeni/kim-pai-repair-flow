@@ -35,7 +35,7 @@ export interface CompleteRepairData {
     reporter: string;
     contactNumber?: string;
     workType?: string;
-    status: 'new' | 'pending' | 'progress' | 'waiting' | 'completed';
+    status: "new" | "pending" | "progress" | "waiting" | "completed";
     engineer?: string;
     urgency?: string;
     priority?: string;
@@ -50,7 +50,7 @@ export interface SimpleRepairData {
     machine: string;
     problem: string;
     date: string;
-    status: 'new' | 'pending' | 'progress' | 'waiting' | 'completed';
+    status: "new" | "pending" | "progress" | "waiting" | "completed";
     engineer?: string;
     reporter?: string;
 }
@@ -63,7 +63,8 @@ export const mockCompleteRepairs: CompleteRepairData[] = [
         machineCode: "EXT-001",
         location: "อาคาร A ชั้น 1",
         section: "หน่วยหลอมพลาสติก (Extruder)",
-        problem: "เซ็นเซอร์วัดอุณหภูมิแสดงค่าผิดปกติ ทำให้ระบบหยุดทำงานอัตโนมัติ",
+        problem:
+            "เซ็นเซอร์วัดอุณหภูมิแสดงค่าผิดปกติ ทำให้ระบบหยุดทำงานอัตโนมัติ",
         requestDate: "15/7/2567",
         requestTime: "09:00",
         reporter: "นายสมชาย ใจดี",
@@ -122,8 +123,8 @@ export const mockCompleteRepairs: CompleteRepairData[] = [
         repairDetails: {
             startDate: "19/7/2567",
             startTime: "08:00",
-            endDate: null,
-            endTime: null,
+            endDate: "19/7/2567",
+            endTime: "12:00",
             description: "เปลี่ยนใบมีดตัดฟิล์มใหม่",
             cause: "ใบมีดสึกหรอจากการใช้งาน",
             result: null,
@@ -331,27 +332,42 @@ export const mockCompleteRepairs: CompleteRepairData[] = [
 ];
 
 // ข้อมูล Mock สำหรับตารางแบบย่อ (Dashboard, AllRepairs)
-export const mockSimpleRepairs: SimpleRepairData[] = mockCompleteRepairs.map(repair => ({
-    id: repair.id,
-    machine: repair.machine,
-    problem: repair.problem,
-    date: repair.requestDate,
-    status: repair.status,
-    engineer: repair.engineer,
-    reporter: repair.reporter?.split(' (')[0] || repair.reporter, // ตัดส่วน (ฝ่าย) ออก
-}));
+export const mockSimpleRepairs: SimpleRepairData[] = mockCompleteRepairs.map(
+    (repair) => ({
+        id: repair.id,
+        machine: repair.machine,
+        problem: repair.problem,
+        date: repair.requestDate,
+        status: repair.status,
+        engineer: repair.engineer,
+        reporter: repair.reporter?.split(" (")[0] || repair.reporter, // ตัดส่วน (ฝ่าย) ออก
+    })
+);
 
 // ฟังก์ชันช่วยในการดึงข้อมูล
 export const getRepairById = (id: string): CompleteRepairData | undefined => {
-    return mockCompleteRepairs.find(repair => repair.id === id);
+    // ตรงตัวก่อน
+    let found = mockCompleteRepairs.find((repair) => repair.id === id);
+    if (found) return found;
+    // รองรับกรณีส่งรหัสใบร้อง R... มา ให้แมปไปยัง P... ด้วยเลขชุดเดียวกัน
+    if (id?.startsWith("R")) {
+        const converted = `P${id.slice(1)}`;
+        found = mockCompleteRepairs.find((repair) => repair.id === converted);
+        if (found) return found;
+    }
+    return undefined;
 };
 
-export const getRepairsByStatus = (status: CompleteRepairData['status']): CompleteRepairData[] => {
-    return mockCompleteRepairs.filter(repair => repair.status === status);
+export const getRepairsByStatus = (
+    status: CompleteRepairData["status"]
+): CompleteRepairData[] => {
+    return mockCompleteRepairs.filter((repair) => repair.status === status);
 };
 
-export const getRepairsByEngineer = (engineer: string): CompleteRepairData[] => {
-    return mockCompleteRepairs.filter(repair => repair.engineer === engineer);
+export const getRepairsByEngineer = (
+    engineer: string
+): CompleteRepairData[] => {
+    return mockCompleteRepairs.filter((repair) => repair.engineer === engineer);
 };
 
 export const getAllRepairs = (): CompleteRepairData[] => {
@@ -367,22 +383,22 @@ export const convertToRepairDetailFormat = (repair: CompleteRepairData) => {
     return {
         id: repair.id,
         machine: repair.machine,
-        machineCode: repair.machineCode || '',
+        machineCode: repair.machineCode || "",
         location: repair.location,
         problem: repair.problem,
-        requestDate: `${repair.requestDate} ${repair.requestTime || ''}`.trim(),
-        reporter: repair.reporter || '',
-        workType: repair.workType || 'maintenance',
+        requestDate: `${repair.requestDate} ${repair.requestTime || ""}`.trim(),
+        reporter: repair.reporter || "",
+        workType: repair.workType || "maintenance",
         status: repair.status,
-        engineer: repair.engineer || '',
-        urgency: repair.urgency || 'normal',
+        engineer: repair.engineer || "",
+        urgency: repair.urgency || "normal",
         images: repair.images || [],
-        notes: repair.notes || '',
+        notes: repair.notes || "",
         repairDetails: repair.repairDetails || {
-            startDate: '',
+            startDate: "",
             endDate: null,
-            description: '',
-            cause: '',
+            description: "",
+            cause: "",
             result: null,
             usedParts: [],
         },
