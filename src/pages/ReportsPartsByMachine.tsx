@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import {
     Table,
     TableBody,
@@ -92,6 +93,12 @@ export default function ReportsPartsByMachine() {
         setComponentId("");
     };
 
+    const clearFilters = () => {
+        setMachineId("");
+        setSectionId("");
+        setComponentId("");
+    };
+
     return (
         <MainLayout>
             <div className="p-6 space-y-6">
@@ -180,19 +187,24 @@ export default function ReportsPartsByMachine() {
                                 </Select>
                             </div>
                         </div>
+                        <div className="mt-4 flex justify-end space-x-2">
+                            <Button variant="info">ค้นหา</Button>
+                            <Button
+                                variant="outline"
+                                onClick={clearFilters}
+                                disabled={
+                                    !machineId && !sectionId && !componentId
+                                }
+                            >
+                                ล้างการค้นหา
+                            </Button>
+                        </div>
                     </CardContent>
                 </Card>
 
                 <Card className="shadow-card">
                     <CardHeader>
-                        <CardTitle className="text-lg">
-                            ตารางอะไหล่
-                            {rows.length > 0 && (
-                                <span className="ml-2 text-sm font-normal text-muted-foreground">
-                                    • คงเหลือรวม: {rows.reduce((sum, r) => sum + (r.qty || 0), 0)}
-                                </span>
-                            )}
-                        </CardTitle>
+                        <CardTitle className="text-lg">ตารางอะไหล่</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="overflow-x-auto">
@@ -203,6 +215,7 @@ export default function ReportsPartsByMachine() {
                                         <TableHead>ส่วนประกอบ</TableHead>
                                         <TableHead>ชิ้นส่วน</TableHead>
                                         <TableHead>อะไหล่</TableHead>
+                                        <TableHead>จำนวนคงเหลือ</TableHead>
                                         <TableHead>จำนวนใช้</TableHead>
                                     </TableRow>
                                 </TableHeader>
@@ -215,6 +228,9 @@ export default function ReportsPartsByMachine() {
                                             <TableCell>{r.section}</TableCell>
                                             <TableCell>{r.component}</TableCell>
                                             <TableCell>{r.part}</TableCell>
+                                            <TableCell>
+                                                {r.qty} {r.unit}
+                                            </TableCell>
                                             <TableCell>
                                                 {r.used} {r.unit}
                                             </TableCell>
