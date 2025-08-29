@@ -17,6 +17,8 @@ import { CloseJob } from "./pages/CloseJob";
 import { Reports } from "./pages/Reports";
 import ReportsStats from "./pages/ReportsStats";
 import ReportsRequests from "./pages/ReportsRequests";
+import ReportsPartsByMachine from "./pages/ReportsPartsByMachine";
+import ReportsPartsByPart from "./pages/ReportsPartsByPart";
 import { PMManagement } from "./pages/PMManagement";
 import MasterData from "./pages/MasterData";
 import NotFound from "./pages/NotFound";
@@ -45,6 +47,8 @@ const App = () => (
             <Route path="/reports" element={<Reports />} />
             <Route path="/reports-stats" element={<ReportsStats />} />
             <Route path="/reports-requests" element={<ReportsRequests />} />
+            <Route path="/reports-parts-by-machine" element={<ReportsPartsByMachine />} />
+            <Route path="/reports-parts-by-part" element={<ReportsPartsByPart />} />
             <Route path="/master-data" element={<MasterData />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

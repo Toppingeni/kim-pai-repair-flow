@@ -573,6 +573,33 @@ export const mockSpareParts: SparePart[] = [
         defaultUsage: 1,
         stock: 3,
     },
+    // เพิ่มตัวอย่างการใช้คาร์บอนแปรงในหลายเครื่องจักร
+    {
+        id: "p21",
+        componentId: "c8", // อยู่ที่เครื่อง m2 (ส่วน s4)
+        name: "คาร์บอนแปรง",
+        code: "CBN-BRS-021",
+        category: "คาร์บอน",
+        status: "Active",
+        qty: 12,
+        used: 3,
+        unit: "ตัว",
+        defaultUsage: 2,
+        stock: 9,
+    },
+    {
+        id: "p22",
+        componentId: "c11", // อยู่ที่เครื่อง m3 (ส่วน s6)
+        name: "คาร์บอนแปรง",
+        code: "CBN-BRS-022",
+        category: "คาร์บอน",
+        status: "Active",
+        qty: 7,
+        used: 1,
+        unit: "ตัว",
+        defaultUsage: 2,
+        stock: 6,
+    },
 ];
 
 // ข้อมูลระดับความสำคัญ

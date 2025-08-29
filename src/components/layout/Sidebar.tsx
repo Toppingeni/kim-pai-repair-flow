@@ -36,6 +36,8 @@ export function Sidebar({ userRole }: SidebarProps) {
       children: [
         { title: "รายงานสถิติ", url: "/reports-stats", icon: Bell },
         { title: "รายงานแจ้งซ่อม", url: "/reports-requests", icon: FileText },
+        { title: "รายงานอะไหล่ตามเครื่องจักร", url: "/reports-parts-by-machine", icon: FileText },
+        { title: "รายงานอะไหล่ตามอะไหล่", url: "/reports-parts-by-part", icon: FileText },
       ],
     },
     // { title: "การจัดการ PM", url: "/pm-management", icon: Calendar }, // ซ่อนไว้สำหรับ Phase 2

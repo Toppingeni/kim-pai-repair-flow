@@ -5,6 +5,13 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  optimizeDeps: {
+    include: [
+      "@mui/x-date-pickers/DatePicker",
+      "@mui/x-date-pickers/DateTimePicker",
+      "@mui/x-date-pickers/TimePicker",
+    ],
+  },
   server: {
     host: "::",
     port: process.env.PORT ? parseInt(process.env.PORT) : 8080,
