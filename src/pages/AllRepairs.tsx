@@ -14,65 +14,10 @@ import {
   RepairRequest, 
   RepairProcess 
 } from "@/data/masterData";
+import { getSimpleRepairs } from "@/data/allRepairsMockData";
 
-// Mock data - ใช้รูปแบบรหัสเอกสารตาม NewRepairForm (R{YY}{MM}0001)
-const mockAllRepairs = [
-  {
-    id: "R24070001",
-    machine: "Extruder A",
-    problem: "เสียงดังผิดปกติ จากมอเตอร์หลัก",
-    date: "07/07/2568",
-    status: "progress" as const,
-    engineer: "นายสมชาย",
-  },
-  {
-    id: "R24070002",
-    machine: "Packing M/C",
-    problem: "แพ็คไม่แน่น สายพานหลวม",
-    date: "05/07/2568",
-    status: "waiting" as const,
-    engineer: "นางสาวอร",
-  },
-  {
-    id: "R24070003",
-    machine: "Boiler #1",
-    problem: "แรงดันตก วาล์วเสียหาย",
-    date: "02/07/2568",
-    status: "completed" as const,
-    engineer: "นายสมชาย",
-  },
-  {
-    id: "R24070004",
-    machine: "Compressor",
-    problem: "อุณหภูมิสูงผิดปกติ",
-    date: "08/07/2568",
-    status: "new" as const,
-  },
-  {
-    id: "R24070005",
-    machine: "Conveyor",
-    problem: "มอเตอร์ไม่หมุน ขาดการหล่อลื่น",
-    date: "08/07/2568",
-    status: "pending" as const,
-    engineer: "นางสาวอร",
-  },
-  {
-    id: "R24070006",
-    machine: "Mixer A",
-    problem: "ใบมีดสึกหรอ",
-    date: "06/07/2568",
-    status: "progress" as const,
-    engineer: "นายวิชัย",
-  },
-  {
-    id: "R24070007",
-    machine: "Cooling Tower",
-    problem: "ปั๊มน้ำไม่ทำงาน",
-    date: "04/07/2568",
-    status: "completed" as const,
-    engineer: "นายสมชาย",
-  },
-];
+// ใช้ข้อมูล Mock จากไฟล์รวม
+const mockAllRepairs = getSimpleRepairs();
 
 export function AllRepairs() {
   const [activeTab, setActiveTab] = useState("requests");

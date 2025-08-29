@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { useUserRole } from "@/contexts/UserRoleContext";
+import { getRepairById, convertToRepairDetailFormat } from "@/data/allRepairsMockData";
 import {
     ArrowLeft,
     Calendar,
@@ -52,106 +53,7 @@ interface RepairData {
     repairDetails: RepairDetails;
 }
 
-// Mock data for repair details
-const mockRepairData: Record<string, RepairData> = {
-    "M-001": {
-        id: "M-001",
-        machine: "Extruder A",
-        machineCode: "EXT-001",
-        location: "อาคาร 1, Line 1",
-        problem:
-            "เสียงดังผิดปกติจากมอเตอร์หลัก เมื่อเครื่องทำงานที่ความเร็วสูง",
-        requestDate: "07/07/2568 14:30",
-        reporter: "สมศรี (ฝ่ายผลิต)",
-        workType: "maintenance",
-        status: "progress",
-        engineer: "นายสมชาย",
-        urgency: "normal",
-        images: ["machine-sound.jpg", "motor-close.jpg"],
-        notes: "เสียงดังมากขึ้นเรื่อยๆ ต้องการตรวจสอบด่วน",
-        repairDetails: {
-            startDate: "07/07/2568 15:00",
-            endDate: "08/07/2568 16:30",
-            description: "เปลี่ยนแบริ่งมอเตอร์หลักและตรวจสอบระบบขับเคลื่อน",
-            cause: "แบริ่งมอเตอร์สึกหรอเนื่องจากใช้งานมานาน",
-            result: "success",
-            usedParts: [
-                {
-                    name: "แบริ่ง SKF 6308",
-                    code: "BRG-001",
-                    quantity: 2,
-                    status: "ใช้แล้ว",
-                },
-                {
-                    name: "น้ำมันเกียร์",
-                    code: "OIL-001",
-                    quantity: 1,
-                    status: "ใช้แล้ว",
-                },
-            ],
-        },
-    },
-    "M-002": {
-        id: "M-002",
-        machine: "Packing M/C",
-        machineCode: "PACK-001",
-        location: "อาคาร 1, Line 2",
-        problem: "แพ็คไม่แน่น สินค้าหลุดออกจากบรรจุภัณฑ์",
-        requestDate: "05/07/2568 09:15",
-        reporter: "สมศรี (ฝ่ายผลิต)",
-        workType: "emergency",
-        status: "waiting",
-        engineer: "นางสาวอร",
-        urgency: "high",
-        images: ["packing-loose.jpg"],
-        notes: "ส่งผลกระทบต่อคุณภาพสินค้า",
-        repairDetails: {
-            startDate: "05/07/2568 10:00",
-            endDate: "06/07/2568 16:30",
-            description: "ปรับแรงดันระบบนิวเมติก และเปลี่ยนซีลยาง",
-            cause: "ซีลยางชำรุด ทำให้แรงดันลด",
-            result: "success",
-            usedParts: [
-                {
-                    name: "ซีลยาง",
-                    code: "SEAL-002",
-                    quantity: 4,
-                    status: "ใช้แล้ว",
-                },
-            ],
-        },
-    },
-    "M-003": {
-        id: "M-003",
-        machine: "Conveyor Belt",
-        machineCode: "CONV-001",
-        location: "อาคาร 2, Line 1",
-        problem: "สายพานลื่น ทำให้ขนส่งสินค้าไม่ได้",
-        requestDate: "01/07/2568 08:00",
-        reporter: "สมชาย (ฝ่ายผลิต)",
-        workType: "maintenance",
-        status: "completed",
-        engineer: "นายวิชัย",
-        urgency: "high",
-        images: ["conveyor-belt.jpg"],
-        notes: "ส่งผลกระทบต่อการผลิต",
-        repairDetails: {
-            startDate: "01/07/2568 09:00",
-            endDate: null,
-            description: "ตรวจสอบสายพานและระบบขับเคลื่อน",
-            cause: "สายพานยืดเนื่องจากใช้งานมานาน",
-            result: null,
-            usedParts: [
-                {
-                    name: "สายพาน",
-                    code: "BELT-001",
-                    quantity: 1,
-                    status: "รอรับของ",
-                },
-            ],
-        },
-    },
-};
+// ใช้ข้อมูล Mock จากไฟล์รวม
 
 export function RepairDetail() {
     const { id } = useParams();
@@ -159,9 +61,9 @@ export function RepairDetail() {
     const { toast } = useToast();
     const { userRole } = useUserRole();
 
-    const repairData: RepairData | null = id ? mockRepairData[id] : null;
-
-    if (!repairData) {
+    const completeRepairData = id ? getRepairById(id) : null;
+    
+    if (!completeRepairData) {
         return (
             <MainLayout>
                 <div className="flex-1 p-6">
@@ -177,6 +79,8 @@ export function RepairDetail() {
             </MainLayout>
         );
     }
+    
+    const repairData = convertToRepairDetailFormat(completeRepairData);
 
     const statusConfig = {
         new: {

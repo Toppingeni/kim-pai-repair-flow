@@ -16,38 +16,10 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { RepairRequestInfo } from "@/components/shared/RepairRequestInfo";
+import { getRepairById } from "@/data/allRepairsMockData";
 import { Star, Clock, Calendar, User, Wrench } from "lucide-react";
 
-// Mock data สำหรับข้อมูลใบแจ้งซ่อม
-const mockRepairData = {
-    id: "R24070008",
-    machine: "Conveyor Belt #3",
-    problem: "สายพานขาด",
-    section: "ฝ่ายผลิต A",
-    location: "โรงงาน 1 ชั้น 2",
-    priority: "สูง",
-    reporter: "นายสมศักดิ์ ใจดี",
-    contactNumber: "081-234-5678",
-    reportedDate: "08/07/2568",
-    reportedTime: "08:30",
-    actualStartDate: "08/07/2568",
-    actualStartTime: "09:15",
-    actualEndDate: "08/07/2568",
-    actualEndTime: "14:30",
-    engineer: "นายสมชาย",
-    description:
-        "สายพานลำเลียงขาดจากการใช้งานหนัก ต้องเปลี่ยนสายพานใหม่ทั้งเส้น",
-    images: ["/api/placeholder/300/200", "/api/placeholder/300/200"],
-    usedParts: [
-        {
-            code: "CB-001",
-            name: "สายพานลำเลียง 10m",
-            quantity: 1,
-            unit: "เส้น",
-        },
-        { code: "BT-002", name: "น็อตยึดสายพาน", quantity: 8, unit: "ตัว" },
-    ],
-};
+// ใช้ข้อมูล Mock จากไฟล์รวม
 
 // Component สำหรับให้คะแนนดาว
 interface StarRatingProps {
@@ -123,6 +95,9 @@ export function CloseJob() {
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
     const [additionalNotes, setAdditionalNotes] = useState("");
 
+    // ดึงข้อมูลจาก mock data
+    const mockRepairData = getRepairById(repairId!);
+
     // State สำหรับ checkbox การทดสอบ
     const [testChecks, setTestChecks] = useState({
         machineTest: false,
@@ -132,20 +107,51 @@ export function CloseJob() {
         procedureNotified: false,
     });
 
+    // ตรวจสอบว่ามีข้อมูลหรือไม่
+    if (!mockRepairData) {
+        return (
+            <MainLayout>
+                <div className="container mx-auto px-4 py-8">
+                    <div className="text-center">
+                        <h2 className="text-2xl font-bold mb-4">ไม่พบข้อมูลใบแจ้งซ่อม</h2>
+                        <p className="text-gray-600 mb-4">
+                            ไม่พบข้อมูลใบแจ้งซ่อมหมายเลข {repairId}
+                        </p>
+                        <Button onClick={() => navigate(-1)} variant="outline">
+                            กลับ
+                        </Button>
+                    </div>
+                </div>
+            </MainLayout>
+        );
+    }
+
     // คำนวณเวลาสูญเสียทั้งหมด
     const calculateTotalLostTime = () => {
-        const startDateTime = new Date(
-            `2024-07-08 ${mockRepairData.actualStartTime}`
+        if (!mockRepairData.repairDetails) return "ไม่มีข้อมูล";
+        
+        const notificationDateTime = new Date(
+            `${mockRepairData.requestDate} ${mockRepairData.requestTime || '00:00'}`
         );
-        const endDateTime = new Date(
-            `2024-07-08 ${mockRepairData.actualEndTime}`
+        const operationStartDateTime = new Date(
+            `${mockRepairData.repairDetails.startDate} ${mockRepairData.repairDetails.startTime || '00:00'}`
         );
-        const diffMs = endDateTime.getTime() - startDateTime.getTime();
-        const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-        const diffMinutes = Math.floor(
-            (diffMs % (1000 * 60 * 60)) / (1000 * 60)
+        const operationEndDateTime = new Date(
+            `${mockRepairData.repairDetails.endDate || mockRepairData.repairDetails.startDate} ${mockRepairData.repairDetails.endTime || '23:59'}`
         );
-        return `${diffHours} ชั่วโมง ${diffMinutes} นาที`;
+
+        const lostTime1 =
+            operationStartDateTime.getTime() - notificationDateTime.getTime();
+        const lostTime2 =
+            operationEndDateTime.getTime() - operationStartDateTime.getTime();
+        const totalLostTime = lostTime1 + lostTime2;
+
+        const hours = Math.floor(totalLostTime / (1000 * 60 * 60));
+        const minutes = Math.floor(
+            (totalLostTime % (1000 * 60 * 60)) / (1000 * 60)
+        );
+
+        return `${hours} ชั่วโมง ${minutes} นาที`;
     };
 
     const handleCheckboxChange = (key: keyof typeof testChecks) => {
@@ -200,15 +206,15 @@ export function CloseJob() {
                         id: mockRepairData.id,
                         machine: mockRepairData.machine,
                         problem: mockRepairData.problem,
-                        section: mockRepairData.section,
+                        section: mockRepairData.section || 'ไม่ระบุ',
                         location: mockRepairData.location,
-                        priority: mockRepairData.priority,
+                        priority: mockRepairData.priority || 'ปานกลาง',
                         reporter: mockRepairData.reporter,
-                        contactNumber: mockRepairData.contactNumber,
-                        reportedDate: mockRepairData.reportedDate,
-                        reportedTime: mockRepairData.reportedTime,
-                        description: mockRepairData.description,
-                        images: mockRepairData.images,
+                        contactNumber: mockRepairData.contactNumber || '',
+                        reportedDate: mockRepairData.requestDate,
+                        reportedTime: mockRepairData.requestTime || '',
+                        description: mockRepairData.notes || '',
+                        images: mockRepairData.images || [],
                     }}
                     title={`ข้อมูลใบแจ้งซ่อม - ${mockRepairData.id}`}
                     defaultExpanded={isExpanded}
@@ -223,7 +229,7 @@ export function CloseJob() {
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-2">
-                            {mockRepairData.usedParts.map((part, index) => (
+                            {mockRepairData.repairDetails?.usedParts?.map((part, index) => (
                                 <div
                                     key={index}
                                     className="flex justify-between items-center p-2 bg-muted/50 rounded"
@@ -235,7 +241,11 @@ export function CloseJob() {
                                         {part.quantity} {part.unit}
                                     </span>
                                 </div>
-                            ))}
+                            )) || (
+                                <p className="text-muted-foreground text-center py-4">
+                                    ไม่มีข้อมูลอะไหล่ที่ใช้
+                                </p>
+                            )}
                         </div>
                     </CardContent>
                 </Card>
@@ -256,8 +266,8 @@ export function CloseJob() {
                                     วันที่แจ้งซ่อม
                                 </Label>
                                 <p className="text-foreground font-medium">
-                                    {mockRepairData.reportedDate}{" "}
-                                    {mockRepairData.reportedTime}
+                                    {mockRepairData.requestDate}{" "}
+                                    {mockRepairData.requestTime}
                                 </p>
                             </div>
                             <div className="space-y-2">
@@ -266,8 +276,8 @@ export function CloseJob() {
                                     วันที่เริ่มปฏิบัติงาน
                                 </Label>
                                 <p className="text-foreground font-medium">
-                                    {mockRepairData.actualStartDate}{" "}
-                                    {mockRepairData.actualStartTime}
+                                    {mockRepairData.repairDetails?.startDate || 'ไม่มีข้อมูล'}{" "}
+                                    {mockRepairData.repairDetails?.startTime || ''}
                                 </p>
                             </div>
                             <div className="space-y-2">
@@ -276,8 +286,8 @@ export function CloseJob() {
                                     วันที่เสร็จสิ้น
                                 </Label>
                                 <p className="text-foreground font-medium">
-                                    {mockRepairData.actualEndDate}{" "}
-                                    {mockRepairData.actualEndTime}
+                                    {mockRepairData.repairDetails?.endDate || 'ไม่มีข้อมูล'}{" "}
+                                    {mockRepairData.repairDetails?.endTime || ''}
                                 </p>
                             </div>
                             <div className="space-y-2">
