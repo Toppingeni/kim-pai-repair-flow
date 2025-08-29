@@ -13,6 +13,7 @@ interface OriginalRequest {
   section?: string;
   contactNumber?: string;
   priority?: string;
+  priorityLabel?: string;
   description?: string;
   reportedDate?: string;
   reportedTime?: string;
@@ -22,7 +23,15 @@ interface OriginalRequestInfoProps {
   request: OriginalRequest;
 }
 
+import { getPriorityLevelById } from "@/data/masterData";
+
 export function OriginalRequestInfo({ request }: OriginalRequestInfoProps) {
+  // แปลง priority id -> label ถ้ามาเป็น id (level1, level2, ...)
+  const priorityText = request.priorityLabel
+    ? request.priorityLabel
+    : request.priority
+    ? getPriorityLevelById(request.priority)?.label || request.priority
+    : undefined;
   // แปลงข้อมูลให้เข้ากับ RepairRequestInfo component
   const repairRequestData = {
     id: request.id,
@@ -34,7 +43,7 @@ export function OriginalRequestInfo({ request }: OriginalRequestInfoProps) {
     reportedTime: request.reportedTime || request.reportDate?.split(' ')[1],
     reporter: request.reporter,
     contactNumber: request.contactNumber,
-    priority: request.priority,
+    priority: priorityText,
     problem: request.problem,
     description: request.description,
     images: request.images,
