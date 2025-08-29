@@ -135,17 +135,17 @@ export function RepairTable({ repairs, userRole, title }: RepairTableProps) {
     const getActionButtons = (repair: RepairItem) => {
         const buttons = [];
 
-        buttons.push(
-            <Button
-                key="view"
-                variant="outline"
-                size="sm"
-                onClick={() => handleViewDetail(repair.id)}
-                className="mr-2"
-            >
-                ดูรายละเอียด
-            </Button>
-        );
+        // buttons.push(
+        //     <Button
+        //         key="view"
+        //         variant="outline"
+        //         size="sm"
+        //         onClick={() => handleViewDetail(repair.id)}
+        //         className="mr-2"
+        //     >
+        //         ดูรายละเอียด
+        //     </Button>
+        // );
 
         if (userRole === "engineering") {
             if (repair.status === "new") {

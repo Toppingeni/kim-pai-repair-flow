@@ -60,7 +60,7 @@ export function RepairDetail() {
     const navigate = useNavigate();
     const { toast } = useToast();
     const { userRole } = useUserRole();
-
+    
     const completeRepairData = id ? getRepairById(id) : null;
     
     if (!completeRepairData) {
