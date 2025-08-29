@@ -1,8 +1,9 @@
 import { useMemo, useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { SparePartPickerDialog } from "@/components/reports/SparePartPickerDialog";
 import {
     Table,
     TableBody,
@@ -35,13 +36,16 @@ type Group = {
 };
 
 export default function ReportsPartsByPart() {
-    const [query, setQuery] = useState("");
+    const [selectedIds, setSelectedIds] = useState<string[]>([]);
+    const [pickerOpen, setPickerOpen] = useState(false);
 
     const groups = useMemo<Group[]>(() => {
         const byName = new Map<string, Group>();
-        const filtered = mockSpareParts.filter((p) =>
-            p.name.toLowerCase().includes(query.toLowerCase())
-        );
+        const source =
+            selectedIds.length > 0
+                ? mockSpareParts.filter((p) => selectedIds.includes(p.id))
+                : mockSpareParts;
+        const filtered = source;
         for (const p of filtered) {
             const comp = mockComponents.find((c) => c.id === p.componentId);
             const sec = comp
@@ -77,7 +81,7 @@ export default function ReportsPartsByPart() {
         return Array.from(byName.values()).sort((a, b) =>
             a.part.localeCompare(b.part, "th")
         );
-    }, [query]);
+    }, [selectedIds]);
 
     return (
         <MainLayout>
@@ -94,19 +98,33 @@ export default function ReportsPartsByPart() {
 
                 <Card className="shadow-card">
                     <CardHeader>
-                        <CardTitle className="text-lg">ตัวกรอง</CardTitle>
+                        <CardTitle className="text-lg">
+                            ตัวกรอง
+                            {selectedIds.length > 0 && (
+                                <>
+                                    <Badge variant="secondary">
+                                        เลือกแล้ว: {selectedIds.length}
+                                    </Badge>
+                                </>
+                            )}
+                        </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div className="space-y-2 md:col-span-1">
-                                <Label htmlFor="search">ค้นหาอะไหล่</Label>
-                                <Input
-                                    id="search"
-                                    value={query}
-                                    onChange={(e) => setQuery(e.target.value)}
-                                    placeholder="พิมพ์ชื่ออะไหล่"
-                                />
+                        <div className="flex flex-wrap items-center gap-3 justify-between">
+                            <div className="flex items-center gap-3">
+                                <Button onClick={() => setPickerOpen(true)}>
+                                    เลือกอะไหล่จากคลัง
+                                </Button>
                             </div>
+                            {selectedIds.length > 0 && (
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setSelectedIds([])}
+                                >
+                                    ล้างการเลือก
+                                </Button>
+                            )}
                         </div>
                     </CardContent>
                 </Card>
@@ -194,6 +212,12 @@ export default function ReportsPartsByPart() {
                         </div>
                     </CardContent>
                 </Card>
+                <SparePartPickerDialog
+                    open={pickerOpen}
+                    onOpenChange={setPickerOpen}
+                    selectedIds={selectedIds}
+                    onConfirm={(ids) => setSelectedIds(ids)}
+                />
             </div>
         </MainLayout>
     );
