@@ -36,8 +36,8 @@ export function Sidebar({ userRole }: SidebarProps) {
       children: [
         { title: "รายงานสถิติ", url: "/reports-stats", icon: Bell },
         { title: "รายงานแจ้งซ่อม", url: "/reports-requests", icon: FileText },
-        { title: "รายงานอะไหล่ตามเครื่องจักร", url: "/reports-parts-by-machine", icon: FileText },
-        { title: "รายงานอะไหล่ตามอะไหล่", url: "/reports-parts-by-part", icon: FileText },
+        { title: "รายงานข้อมูลอะไหล่", subtitle: "(ดูตามเครื่องจักร)", url: "/reports-parts-by-machine", icon: FileText },
+        { title: "รายงานข้อมูลอะไหล่", subtitle: "(ดูตามอะไหล่)", url: "/reports-parts-by-part", icon: FileText },
       ],
     },
     // { title: "การจัดการ PM", url: "/pm-management", icon: Calendar }, // ซ่อนไว้สำหรับ Phase 2
@@ -70,7 +70,12 @@ export function Sidebar({ userRole }: SidebarProps) {
                       }`}
                     >
                       {child.icon && <child.icon className="h-4 w-4" />}
-                      <span className="font-medium">{child.title}</span>
+                      <span className="flex flex-col leading-tight">
+                        <span className="font-medium">{child.title}</span>
+                        {child.subtitle && (
+                          <span className="text-xs text-muted-foreground">{child.subtitle}</span>
+                        )}
+                      </span>
                     </NavLink>
                   ))}
                 </div>
