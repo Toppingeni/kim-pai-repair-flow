@@ -1,174 +1,29 @@
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  Clock, 
-  DollarSign, 
-  BarChart3, 
-  PieChart, 
-  Download,
-  Calendar,
-  AlertTriangle,
-  FileText
-} from "lucide-react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { AlertTriangle, FileText } from "lucide-react";
 
-import { getReportsMachineBreakdown, getReportsAllRepairsRows } from "@/data/reportsData";
+import { ReportFilters } from "@/components/reports/ReportFilters";
+import { getReportsAllRepairsRows, getReportsMachineBreakdown } from "@/data/reportsData";
 
-// Mock data for reports
-const monthlyStats = {
-  totalRepairs: 15,
-  completedRepairs: 12,
-  avgRepairTime: 14.2,
-  totalCost: 186500,
-  mostProblematicMachine: "Extruder A",
-  topEngineer: "นายสมชาย",
-};
-
-const machineBreakdown = getReportsMachineBreakdown();
-
-const engineerPerformance = [
-  { name: "นายสมชาย", repairs: 6, avgTime: "12.5 ชม.", efficiency: "92%" },
-  { name: "นางสาวอร", repairs: 4, avgTime: "15.8 ชม.", efficiency: "88%" },
-  { name: "นายวิชัย", repairs: 2, avgTime: "18.3 ชม.", efficiency: "85%" },
-];
-
-const costAnalysis = [
-  { category: "อะไหล่", amount: 125000, percentage: "67%" },
-  { category: "ค่าแรง", amount: 45000, percentage: "24%" },
-  { category: "วัสดุสิ้นเปลือง", amount: 16500, percentage: "9%" },
-];
-
-// Mock data for all repair requests
-const allRepairRequests = getReportsAllRepairsRows();
-/*
-  {
-    id: "M-001",
-    machine: "Extruder A",
-    problem: "เสียงดังผิดปกติจากมอเตอร์หลัก",
-    reportDate: "07/07/2568",
-    status: "progress",
-    reporter: "สมศรี (ฝ่ายผลิต)",
-    engineer: "นายสมชาย",
-    startDate: "07/07/2568 15:00",
-    endDate: "08/07/2568 16:30",
-    duration: "25.5 ชม.",
-    workMethod: "เปลี่ยนแบริ่งมอเตอร์หลัก และปรับแรงดันลมเข้าระบบ",
-    rootCause: "แบริ่งมอเตอร์สึกหรอเนื่องจากใช้งานมานาน",
-    prevention: "จัดตารางบำรุงรักษาเชิงป้องกันทุก 3 เดือน",
-    cost: "32,500"
-  },
-  {
-    id: "M-002",
-    machine: "Packing M/C",
-    problem: "แพ็คไม่แน่น สายพานหลวม",
-    reportDate: "05/07/2568",
-    status: "waiting",
-    reporter: "วิชัย (ฝ่ายผลิต)",
-    engineer: "นางสาวอร",
-    startDate: "-",
-    endDate: "-",
-    duration: "-",
-    workMethod: "-",
-    rootCause: "-",
-    prevention: "-",
-    cost: "-"
-  },
-  {
-    id: "M-003",
-    machine: "Boiler #1",
-    problem: "แรงดันตก วาล์วเสียหาย",
-    reportDate: "02/07/2568",
-    status: "completed",
-    reporter: "สมชาย (ฝ่ายผลิต)",
-    engineer: "นายสมชาย",
-    startDate: "02/07/2568 09:00",
-    endDate: "02/07/2568 17:00",
-    duration: "8.0 ชม.",
-    workMethod: "เปลี่ยนวาล์วใหม่และทดสอบแรงดัน",
-    rootCause: "วาล์วเก่าสึกหรอและมีการรั่วซึม",
-    prevention: "ตรวจสอบวาล์วทุก 6 เดือน และเปลี่ยนซีลยางทุกปี",
-    cost: "15,800"
-  },
-  {
-    id: "M-004",
-    machine: "Compressor",
-    problem: "อุณหภูมิสูงผิดปกติ",
-    reportDate: "08/07/2568",
-    status: "new",
-    reporter: "อนุชา (ฝ่ายผลิต)",
-    engineer: "-",
-    startDate: "-",
-    endDate: "-",
-    duration: "-",
-    workMethod: "-",
-    rootCause: "-",
-    prevention: "-",
-    cost: "-"
-  },
-  {
-    id: "M-005",
-    machine: "Conveyor",
-    problem: "สายพานขาด มอเตอร์ร้อน",
-    reportDate: "01/07/2568",
-    status: "completed",
-    reporter: "มานะ (ฝ่ายผลิต)",
-    engineer: "นายวิชัย",
-    startDate: "01/07/2568 13:30",
-    endDate: "02/07/2568 10:00",
-    duration: "20.5 ชม.",
-    workMethod: "เปลี่ยนสายพานใหม่และทำความสะอาดมอเตอร์",
-    rootCause: "สายพานใช้งานเกินอายุการใช้งาน",
-    prevention: "เปลี่ยนสายพานทุก 12 เดือน และตรวจสอบความตึงทุกสัปดาห์",
-    cost: "8,200"
-  },
-  {
-    id: "M-006",
-    machine: "Cooling Tower",
-    problem: "พัดลมไม่หมุน น้ำไม่เย็น",
-    reportDate: "28/06/2568",
-    status: "completed",
-    reporter: "สุรชัย (ฝ่ายผลิต)",
-    engineer: "นางสาวอร",
-    startDate: "29/06/2568 08:00",
-    endDate: "29/06/2568 15:30",
-    duration: "7.5 ชม.",
-    workMethod: "เปลี่ยนมอเตอร์พัดลมและทำความสะอาดระบบ",
-    rootCause: "มอเตอร์พัดลมเสียหายจากความชื้น",
-    prevention: "ติดตั้งระบบป้องกันความชื้นและตรวจสอบทุก 2 เดือน",
-    cost: "22,300"
-  }
-*/
-
-// Helper function to get status badge
 const getStatusBadge = (status: string) => {
   const statusConfig = {
     new: { label: "ใหม่", className: "bg-blue-100 text-blue-800" },
     waiting: { label: "รอยืนยัน", className: "bg-yellow-100 text-yellow-800" },
     progress: { label: "กำลังดำเนินการ", className: "bg-orange-100 text-orange-800" },
-    completed: { label: "เสร็จสิ้น", className: "bg-green-100 text-green-800" }
-  };
-  const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.new;
+    completed: { label: "เสร็จสิ้น", className: "bg-green-100 text-green-800" },
+    pending: { label: "รออะไหล่", className: "bg-red-100 text-red-800" },
+  } as const;
+  const config = (statusConfig as any)[status] || statusConfig.new;
   return config;
 };
 
 export function Reports() {
+  const machineBreakdown = getReportsMachineBreakdown();
+  const allRepairRequests = getReportsAllRepairsRows();
+
   return (
     <MainLayout>
       <div className="p-6 space-y-6">
@@ -177,379 +32,174 @@ export function Reports() {
           <p className="text-muted-foreground mt-2">วิเคราะห์ข้อมูลการซ่อมบำรุงและประสิทธิภาพ</p>
         </div>
 
-        {/* Report Controls */}
-        <Card className="shadow-card">
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
-              ตัวเลือกรายงาน
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">ประเภทรายงาน</label>
-                <Select defaultValue="monthly">
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="daily">รายวัน</SelectItem>
-                    <SelectItem value="weekly">รายสัปดาห์</SelectItem>
-                    <SelectItem value="monthly">รายเดือน</SelectItem>
-                    <SelectItem value="quarterly">รายไตรมาส</SelectItem>
-                    <SelectItem value="yearly">รายปี</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">เดือน/ปี</label>
-                <Select defaultValue="07-2568">
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="07-2568">กรกฎาคม 2568</SelectItem>
-                    <SelectItem value="06-2568">มิถุนายน 2568</SelectItem>
-                    <SelectItem value="05-2568">พฤษภาคม 2568</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">เครื่องจักร</label>
-                <Select defaultValue="all">
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">ทั้งหมด</SelectItem>
-                    <SelectItem value="extruder">Extruder</SelectItem>
-                    <SelectItem value="packing">Packing Machine</SelectItem>
-                    <SelectItem value="boiler">Boiler</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">การดำเนินการ</label>
-                <div className="flex space-x-2">
-                  <Button variant="default" className="flex-1">ค้นหา</Button>
-                  <Button variant="outline">
-                    <Download className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <Tabs defaultValue="stats" className="w-full">
+          <div className="border-b">
+            <TabsList className="grid w-full grid-cols-2 h-auto rounded-none bg-transparent">
+              <TabsTrigger value="stats" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent">
+                รายงานสถิติ
+              </TabsTrigger>
+              <TabsTrigger value="requests" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent">
+                รายงานแจ้งซ่อม
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
-        {/* Key Metrics - ซ่อนไว้สำหรับ Phase 2 */}
-        {/*
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="shadow-card">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-2xl font-bold text-foreground">{monthlyStats.totalRepairs}</div>
-                  <div className="text-sm text-muted-foreground">งานซ่อมทั้งหมด</div>
-                </div>
-                <BarChart3 className="h-8 w-8 text-primary" />
-              </div>
-              <div className="flex items-center mt-2 text-sm">
-                <TrendingUp className="h-4 w-4 text-success mr-1" />
-                <span className="text-success">+15%</span>
-                <span className="text-muted-foreground ml-1">จากเดือนก่อน</span>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="shadow-card">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-2xl font-bold text-foreground">{monthlyStats.avgRepairTime}</div>
-                  <div className="text-sm text-muted-foreground">เฉลี่ยชั่วโมง/งาน</div>
-                </div>
-                <Clock className="h-8 w-8 text-status-progress" />
-              </div>
-              <div className="flex items-center mt-2 text-sm">
-                <TrendingDown className="h-4 w-4 text-success mr-1" />
-                <span className="text-success">-8%</span>
-                <span className="text-muted-foreground ml-1">ดีขึ้น</span>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="shadow-card">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-2xl font-bold text-foreground">฿{monthlyStats.totalCost.toLocaleString()}</div>
-                  <div className="text-sm text-muted-foreground">ค่าใช้จ่ายรวม</div>
-                </div>
-                <DollarSign className="h-8 w-8 text-status-warning" />
-              </div>
-              <div className="flex items-center mt-2 text-sm">
-                <TrendingUp className="h-4 w-4 text-destructive mr-1" />
-                <span className="text-destructive">+12%</span>
-                <span className="text-muted-foreground ml-1">จากเดือนก่อน</span>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="shadow-card">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-2xl font-bold text-foreground">{((monthlyStats.completedRepairs / monthlyStats.totalRepairs) * 100).toFixed(0)}%</div>
-                  <div className="text-sm text-muted-foreground">อัตราซ่อมสำเร็จ</div>
-                </div>
-                <PieChart className="h-8 w-8 text-success" />
-              </div>
-              <div className="flex items-center mt-2 text-sm">
-                <TrendingUp className="h-4 w-4 text-success mr-1" />
-                <span className="text-success">+5%</span>
-                <span className="text-muted-foreground ml-1">จากเดือนก่อน</span>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-        */}
-
-        {/* Charts Section */}
-        <div className="grid grid-cols-1 gap-6">
-          {/* Machine Breakdown */}
-          <Card className="shadow-card">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5" />
-                การแจ้งซ่อมแยกตามเครื่องจักร
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>เครื่องจักร</TableHead>
-                    <TableHead>จำนวนครั้ง</TableHead>
-                    <TableHead>เวลาหยุด</TableHead>
-                    <TableHead>ค่าใช้จ่าย</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {machineBreakdown.map((machine) => (
-                    <TableRow key={machine.machine}>
-                      <TableCell className="font-medium">{machine.machine}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <span>{machine.repairs}</span>
-                          <div className="w-16 bg-muted rounded-full h-2">
-                            <div 
-                              className="bg-primary h-2 rounded-full" 
-                              style={{ width: `${Math.min(100, (machine.repairs / (machineBreakdown[0]?.repairs || 1)) * 100)}%` }}
-                            />
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>{machine.downtimeHours.toFixed(1)} ชม.</TableCell>
-                      <TableCell>฿{machine.cost.toLocaleString()}</TableCell>
+          <TabsContent value="stats" className="space-y-6">
+            <ReportFilters />
+            <Card className="shadow-card">
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <AlertTriangle className="h-5 w-5" />
+                  การแจ้งซ่อมแยกตามเครื่องจักร
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>เครื่องจักร</TableHead>
+                      <TableHead>จำนวนครั้ง</TableHead>
+                      <TableHead>เวลาหยุด</TableHead>
+                      <TableHead>ค่าใช้จ่าย</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-
-          {/* Engineer Performance - ซ่อนไว้สำหรับ Phase 2 */}
-          {/*
-          <Card className="shadow-card">
-            <CardHeader>
-              <CardTitle className="text-lg">ประสิทธิภาพทีมวิศวกร</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>ชื่อ</TableHead>
-                    <TableHead>งานที่รับ</TableHead>
-                    <TableHead>เฉลี่ยเวลา</TableHead>
-                    <TableHead>ประสิทธิภาพ</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {engineerPerformance.map((engineer) => (
-                    <TableRow key={engineer.name}>
-                      <TableCell className="font-medium">{engineer.name}</TableCell>
-                      <TableCell>{engineer.repairs}</TableCell>
-                      <TableCell>{engineer.avgTime}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <span className="text-success font-medium">{engineer.efficiency}</span>
-                          <div className="w-16 bg-muted rounded-full h-2">
-                            <div 
-                              className="bg-success h-2 rounded-full" 
-                              style={{ width: engineer.efficiency }}
-                            />
-                          </div>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-          */}
-        </div>
-
-        {/* Cost Analysis - ซ่อนไว้สำหรับ Phase 2 */}
-        {/*
-        <Card className="shadow-card">
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <DollarSign className="h-5 w-5" />
-              การวิเคราะห์ค่าใช้จ่าย
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {costAnalysis.map((item) => (
-                <div key={item.category} className="text-center p-4 bg-muted/10 rounded-lg">
-                  <div className="text-2xl font-bold text-foreground">฿{item.amount.toLocaleString()}</div>
-                  <div className="text-sm text-muted-foreground">{item.category}</div>
-                  <div className="text-lg font-medium text-primary mt-1">{item.percentage}</div>
-                </div>
-              ))}
-            </div>
-            <div className="mt-6 p-4 bg-card border rounded-lg">
-              <h4 className="font-medium mb-2">ข้อเสนอแนะ:</h4>
-              <ul className="text-sm text-muted-foreground space-y-1">
-                <li>• ค่าใช้จ่ายอะไหล่สูง ควรพิจารณาซื้อล่วงหน้าเพื่อลดราคา</li>
-                <li>• Extruder A มีปัญหาบ่อย ควรจัดบำรุงรักษาเชิงป้องกัน</li>
-                <li>• เวลาซ่อมเฉลี่ยดีขึ้น แสดงว่าทีมมีประสิทธิภาพเพิ่มขึ้น</li>
-              </ul>
-            </div>
-          </CardContent>
-        </Card>
-        */}
-
-        {/* All Repair Requests */}
-        <Card className="shadow-card">
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <FileText className="h-5 w-5" />
-              รายการแจ้งซ่อมทั้งหมด
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="min-w-[100px]">รหัสใบแจ้งซ่อม</TableHead>
-                    <TableHead className="min-w-[120px]">เครื่องจักร</TableHead>
-                    <TableHead className="min-w-[200px]">ปัญหาเบื้องต้น</TableHead>
-                    <TableHead className="min-w-[100px]">วันที่แจ้ง</TableHead>
-                    <TableHead className="min-w-[100px]">สถานะ</TableHead>
-                    <TableHead className="min-w-[150px]">ผู้แจ้ง</TableHead>
-                    <TableHead className="min-w-[120px]">ผู้รับผิดชอบ</TableHead>
-                    <TableHead className="min-w-[140px]">วันที่/เวลาเริ่มซ่อม</TableHead>
-                    <TableHead className="min-w-[140px]">วันที่/เวลาสิ้นสุดซ่อม</TableHead>
-                    <TableHead className="min-w-[100px]">เวลาที่ใช้</TableHead>
-                    <TableHead className="min-w-[250px]">ลักษณะงานที่ทำ/วิธีการซ่อม</TableHead>
-                    <TableHead className="min-w-[200px]">สาเหตุความเสียหาย</TableHead>
-                    <TableHead className="min-w-[250px]">การป้องกันและแก้ไขที่ต้นเหตุ</TableHead>
-                    <TableHead className="min-w-[100px]">ค่าใช้จ่าย</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {allRepairRequests.map((repair) => {
-                    const statusBadge = getStatusBadge(repair.status);
-                    return (
-                      <TableRow key={repair.id}>
-                        <TableCell className="font-medium">{repair.id}</TableCell>
-                        <TableCell>{repair.machine}</TableCell>
-                        <TableCell className="max-w-[200px]">
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <div className="truncate cursor-help">
-                                  {repair.problem}
-                                </div>
-                              </TooltipTrigger>
-                              <TooltipContent className="max-w-xs">
-                                <p>{repair.problem}</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        </TableCell>
-                        <TableCell>{repair.reportDate}</TableCell>
+                  </TableHeader>
+                  <TableBody>
+                    {machineBreakdown.map((machine) => (
+                      <TableRow key={machine.machine}>
+                        <TableCell className="font-medium">{machine.machine}</TableCell>
                         <TableCell>
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusBadge.className}`}>
-                            {statusBadge.label}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <span>{machine.repairs}</span>
+                            <div className="w-16 bg-muted rounded-full h-2">
+                              <div
+                                className="bg-primary h-2 rounded-full"
+                                style={{ width: `${Math.min(100, (machine.repairs / (machineBreakdown[0]?.repairs || 1)) * 100)}%` }}
+                              />
+                            </div>
+                          </div>
                         </TableCell>
-                        <TableCell>{repair.reporter}</TableCell>
-                        <TableCell>{repair.engineer}</TableCell>
-                        <TableCell>{repair.startDate}</TableCell>
-                        <TableCell>{repair.endDate}</TableCell>
-                        <TableCell>{repair.durationHours !== null ? `${repair.durationHours.toFixed(1)} ชม.` : '-'}</TableCell>
-                        <TableCell className="max-w-[250px]">
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <div className="truncate cursor-help">
-                                  {repair.workMethod}
-                                </div>
-                              </TooltipTrigger>
-                              <TooltipContent className="max-w-xs">
-                                <p>{repair.workMethod}</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        </TableCell>
-                        <TableCell className="max-w-[200px]">
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <div className="truncate cursor-help">
-                                  {repair.rootCause}
-                                </div>
-                              </TooltipTrigger>
-                              <TooltipContent className="max-w-xs">
-                                <p>{repair.rootCause}</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        </TableCell>
-                        <TableCell className="max-w-[250px]">
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <div className="truncate cursor-help">
-                                  {repair.prevention}
-                                </div>
-                              </TooltipTrigger>
-                              <TooltipContent className="max-w-xs">
-                                <p>{repair.prevention}</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          {repair.cost !== "-" ? `฿${repair.cost}` : "-"}
-                        </TableCell>
+                        <TableCell>{machine.downtimeHours.toFixed(1)} ชม.</TableCell>
+                        <TableCell>฿{machine.cost.toLocaleString()}</TableCell>
                       </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </div>
-            <div className="mt-4 text-sm text-muted-foreground">
-              แสดง {allRepairRequests.length} รายการจากทั้งหมด {allRepairRequests.length} รายการ
-            </div>
-          </CardContent>
-        </Card>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="requests" className="space-y-6">
+            <ReportFilters />
+            <Card className="shadow-card">
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <FileText className="h-5 w-5" />
+                  รายการแจ้งซ่อมทั้งหมด
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="min-w-[100px]">รหัสใบแจ้งซ่อม</TableHead>
+                        <TableHead className="min-w-[120px]">เครื่องจักร</TableHead>
+                        <TableHead className="min-w-[200px]">ปัญหาเบื้องต้น</TableHead>
+                        <TableHead className="min-w-[100px]">วันที่แจ้ง</TableHead>
+                        <TableHead className="min-w-[100px]">สถานะ</TableHead>
+                        <TableHead className="min-w-[150px]">ผู้แจ้ง</TableHead>
+                        <TableHead className="min-w-[120px]">ผู้รับผิดชอบ</TableHead>
+                        <TableHead className="min-w-[140px]">วันที่/เวลาเริ่ม</TableHead>
+                        <TableHead className="min-w-[140px]">วันที่/เวลาสิ้นสุด</TableHead>
+                        <TableHead className="min-w-[100px]">ระยะเวลา</TableHead>
+                        <TableHead className="min-w-[250px]">ลักษณะงานที่ทำ/วิธีการซ่อม</TableHead>
+                        <TableHead className="min-w-[200px]">สาเหตุความเสียหาย</TableHead>
+                        <TableHead className="min-w-[250px]">การป้องกันและแก้ไขที่ต้นเหตุ</TableHead>
+                        <TableHead className="min-w-[100px]">ค่าใช้จ่าย</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {allRepairRequests.map((repair) => {
+                        const statusBadge = getStatusBadge(repair.status);
+                        return (
+                          <TableRow key={repair.id}>
+                            <TableCell className="font-medium">{repair.id}</TableCell>
+                            <TableCell>{repair.machine}</TableCell>
+                            <TableCell className="max-w-[200px]">
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <div className="truncate cursor-help">{repair.problem}</div>
+                                  </TooltipTrigger>
+                                  <TooltipContent className="max-w-xs">
+                                    <p>{repair.problem}</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            </TableCell>
+                            <TableCell>{repair.reportDate}</TableCell>
+                            <TableCell>
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusBadge.className}`}>
+                                {statusBadge.label}
+                              </span>
+                            </TableCell>
+                            <TableCell>{repair.reporter}</TableCell>
+                            <TableCell>{repair.engineer}</TableCell>
+                            <TableCell>{repair.startDate}</TableCell>
+                            <TableCell>{repair.endDate}</TableCell>
+                            <TableCell>{repair.durationHours !== null ? `${repair.durationHours.toFixed(1)} ชม.` : '-'}</TableCell>
+                            <TableCell className="max-w-[250px]">
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <div className="truncate cursor-help">{repair.workMethod}</div>
+                                  </TooltipTrigger>
+                                  <TooltipContent className="max-w-xs">
+                                    <p>{repair.workMethod}</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            </TableCell>
+                            <TableCell className="max-w-[200px]">
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <div className="truncate cursor-help">{repair.rootCause}</div>
+                                  </TooltipTrigger>
+                                  <TooltipContent className="max-w-xs">
+                                    <p>{repair.rootCause}</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            </TableCell>
+                            <TableCell className="max-w-[250px]">
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <div className="truncate cursor-help">{repair.prevention}</div>
+                                  </TooltipTrigger>
+                                  <TooltipContent className="max-w-xs">
+                                    <p>{repair.prevention}</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            </TableCell>
+                            <TableCell className="font-medium">{repair.cost !== '-' ? `฿${repair.cost}` : '-'}</TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </div>
+                <div className="mt-4 text-sm text-muted-foreground">
+                  แสดง {allRepairRequests.length} รายการจากทั้งหมด {allRepairRequests.length} รายการ
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </MainLayout>
   );
 }
+

@@ -15,6 +15,8 @@ import { RepairDetail } from "./pages/RepairDetail";
 import { RepairHistory } from "./pages/RepairHistory";
 import { CloseJob } from "./pages/CloseJob";
 import { Reports } from "./pages/Reports";
+import ReportsStats from "./pages/ReportsStats";
+import ReportsRequests from "./pages/ReportsRequests";
 import { PMManagement } from "./pages/PMManagement";
 import MasterData from "./pages/MasterData";
 import NotFound from "./pages/NotFound";
@@ -39,7 +41,10 @@ const App = () => (
             <Route path="/close-job/:id" element={<CloseJob />} />
             <Route path="/pm-management" element={<PMManagement />} />
             <Route path="/repair-history" element={<RepairHistory />} />
+            {/* Legacy reports route kept for compatibility */}
             <Route path="/reports" element={<Reports />} />
+            <Route path="/reports-stats" element={<ReportsStats />} />
+            <Route path="/reports-requests" element={<ReportsRequests />} />
             <Route path="/master-data" element={<MasterData />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
