@@ -12,7 +12,8 @@ import {
   getAllRepairRequests, 
   getAllRepairProcesses, 
   RepairRequest, 
-  RepairProcess 
+  RepairProcess,
+  getTechnicianById 
 } from "@/data/masterData";
 import { getSimpleRepairs } from "@/data/allRepairsMockData";
 
@@ -54,6 +55,13 @@ export function AllRepairs() {
   const convertProcessesToTableData = (processes: RepairProcess[]) => {
     return processes.map(process => {
       const relatedRequest = repairRequests.find(r => r.id === process.requestId);
+      // แปลง ID ของช่างเป็นชื่อจริง
+      const technicianNames = process.assignedTechnicians
+        .map(techId => {
+          const technician = getTechnicianById(techId);
+          return technician ? technician.name : techId;
+        });
+      
       return {
         id: process.id,
         documentNumber: process.documentNumber,
@@ -69,7 +77,7 @@ export function AllRepairs() {
                  process.status === "waiting_parts" ? "pending" :
                  process.status === "waiting_approval" ? "waiting" :
                  process.status === "completed" ? "completed" : "completed") as "new" | "progress" | "waiting" | "completed" | "pending",
-        engineers: process.assignedTechnicians.join(", "),
+        engineer: technicianNames, // ใช้ชื่อช่างจริงแทน ID (เป็น array)
         estimatedCompletion: process.estimatedEndDate || "",
         actualCompletion: process.actualEndDate || ""
       };
@@ -238,6 +246,7 @@ export function AllRepairs() {
                   repairs={convertRequestsToTableData(repairRequests)}
                   userRole="engineering"
                   title="รายการใบร้องของงานซ่อม"
+                  showEngineerColumn={false}
                 />
               </TabsContent>
 
@@ -246,6 +255,7 @@ export function AllRepairs() {
                   repairs={convertProcessesToTableData(repairProcesses)}
                   userRole="engineering"
                   title="รายการใบแจ้งซ่อม"
+                  showEngineerColumn={true}
                 />
               </TabsContent>
             </Tabs>

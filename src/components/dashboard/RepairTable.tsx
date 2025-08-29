@@ -27,13 +27,14 @@ interface RepairItem {
         | "completed"
         | "pending"
         | "cancelled";
-    engineer?: string;
+    engineer?: string | string[]; // รองรับทั้ง string และ array
 }
 
 interface RepairTableProps {
     repairs: RepairItem[];
     userRole: "production" | "engineering";
     title: string;
+    showEngineerColumn?: boolean; // เพิ่ม prop สำหรับควบคุมการแสดงคอลัมน์ผู้รับผิดชอบ
 }
 
 interface ApprovalFormData {
@@ -89,7 +90,7 @@ const StatusBadge = ({ status }: { status: keyof typeof statusConfig }) => {
     );
 };
 
-export function RepairTable({ repairs, userRole, title }: RepairTableProps) {
+export function RepairTable({ repairs, userRole, title, showEngineerColumn = true }: RepairTableProps) {
     const navigate = useNavigate();
     const { acceptJob } = useRepairActions();
     const [selectedRepair, setSelectedRepair] = useState<RepairItem | null>(
@@ -210,7 +211,7 @@ export function RepairTable({ repairs, userRole, title }: RepairTableProps) {
                                 <TableHead>ปัญหาเบื้องต้น</TableHead>
                                 <TableHead>วันที่แจ้ง</TableHead>
                                 <TableHead>สถานะ</TableHead>
-                                <TableHead>ผู้รับผิดชอบ</TableHead>
+                                {showEngineerColumn && <TableHead>ผู้รับผิดชอบ</TableHead>}
                                 <TableHead>การดำเนินการ</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -226,9 +227,21 @@ export function RepairTable({ repairs, userRole, title }: RepairTableProps) {
                                     <TableCell>
                                         <StatusBadge status={repair.status} />
                                     </TableCell>
-                                    <TableCell>
-                                        {repair.engineer || "-"}
-                                    </TableCell>
+                                    {showEngineerColumn && (
+                                         <TableCell>
+                                             {Array.isArray(repair.engineer) ? (
+                                                 <div className="space-y-1">
+                                                     {repair.engineer.map((name, index) => (
+                                                         <div key={index} className="text-xs">
+                                                             {name}
+                                                         </div>
+                                                     ))}
+                                                 </div>
+                                             ) : (
+                                                 repair.engineer || "-"
+                                             )}
+                                         </TableCell>
+                                     )}
                                     <TableCell>
                                         {getActionButtons(repair)}
                                     </TableCell>
