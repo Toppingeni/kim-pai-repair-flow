@@ -134,7 +134,7 @@ export default function ReportsPartsByMachine() {
                         <CardTitle className="text-lg">ตัวกรอง</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                             <div className="space-y-2">
                                 <Label>เครื่องจักร</Label>
                                 <Select
@@ -203,19 +203,16 @@ export default function ReportsPartsByMachine() {
                                     </SelectContent>
                                 </Select>
                             </div>
-                        </div>
-                        <div className="mt-4 flex justify-end space-x-2">
-                            <Button onClick={applySearch} disabled={!machineId}>ค้นหา</Button>
-                            <Button
-                                variant="outline"
-                                onClick={clearFilters}
-                                disabled={
-                                    !machineId && !sectionId && !componentId &&
-                                    !appliedMachineId && !appliedSectionId && !appliedComponentId
-                                }
-                            >
-                                ล้างการค้นหา
-                            </Button>
+                            <div className="flex items-end justify-end gap-2">
+                                <Button onClick={applySearch} disabled={!machineId}>ค้นหา</Button>
+                                <Button
+                                    variant="outline"
+                                    onClick={clearFilters}
+                                    disabled={!machineId && !sectionId && !componentId && !appliedMachineId && !appliedSectionId && !appliedComponentId}
+                                >
+                                    ล้างการค้นหา
+                                </Button>
+                            </div>
                         </div>
                     </CardContent>
                 </Card>
