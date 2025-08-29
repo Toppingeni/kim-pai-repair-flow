@@ -389,6 +389,7 @@ export function NewRepairForm() {
                                                 </div>
                                                 <button
                                                     type="button"
+                                                    title="ลบรูปภาพนี้"
                                                     onClick={() =>
                                                         removeImage(index)
                                                     }
