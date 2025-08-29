@@ -45,9 +45,9 @@ export const mockWorkOrderApproval = {
     assignedEngineers: ["eng1", "eng2"],
     requiredParts: [
         { partId: "BRG-001", quantity: 2, estimatedCost: 5000 },
-        { partId: "SEAL-001", quantity: 1, estimatedCost: 1500 }
+        { partId: "SEAL-001", quantity: 1, estimatedCost: 1500 },
     ],
-    notes: "ต้องหยุดเครื่องจักรในช่วงเวลาดังกล่าว และเตรียมอะไหล่ล่วงหน้า"
+    notes: "ต้องหยุดเครื่องจักรในช่วงเวลาดังกล่าว และเตรียมอะไหล่ล่วงหน้า",
 };
 
 export const mockRepairHistory = [
