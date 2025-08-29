@@ -29,6 +29,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+import { getReportsMachineBreakdown, getReportsAllRepairsRows } from "@/data/reportsData";
+
 // Mock data for reports
 const monthlyStats = {
   totalRepairs: 15,
@@ -39,14 +41,7 @@ const monthlyStats = {
   topEngineer: "นายสมชาย",
 };
 
-const machineBreakdown = [
-  { machine: "Extruder A", repairs: 4, downtime: "28.5 ชม.", cost: "65,000" },
-  { machine: "Packing M/C", repairs: 3, downtime: "15.2 ชม.", cost: "32,500" },
-  { machine: "Boiler #1", repairs: 2, downtime: "19.8 ชม.", cost: "43,500" },
-  { machine: "Compressor", repairs: 3, downtime: "12.3 ชม.", cost: "28,000" },
-  { machine: "Conveyor", repairs: 2, downtime: "8.5 ชม.", cost: "12,500" },
-  { machine: "Cooling Tower", repairs: 1, downtime: "4.5 ชม.", cost: "5,000" },
-];
+const machineBreakdown = getReportsMachineBreakdown();
 
 const engineerPerformance = [
   { name: "นายสมชาย", repairs: 6, avgTime: "12.5 ชม.", efficiency: "92%" },
@@ -61,7 +56,8 @@ const costAnalysis = [
 ];
 
 // Mock data for all repair requests
-const allRepairRequests = [
+const allRepairRequests = getReportsAllRepairsRows();
+/*
   {
     id: "M-001",
     machine: "Extruder A",
@@ -158,7 +154,7 @@ const allRepairRequests = [
     prevention: "ติดตั้งระบบป้องกันความชื้นและตรวจสอบทุก 2 เดือน",
     cost: "22,300"
   }
-];
+*/
 
 // Helper function to get status badge
 const getStatusBadge = (status: string) => {
@@ -349,13 +345,13 @@ export function Reports() {
                           <div className="w-16 bg-muted rounded-full h-2">
                             <div 
                               className="bg-primary h-2 rounded-full" 
-                              style={{ width: `${(machine.repairs / 4) * 100}%` }}
+                              style={{ width: `${Math.min(100, (machine.repairs / (machineBreakdown[0]?.repairs || 1)) * 100)}%` }}
                             />
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell>{machine.downtime}</TableCell>
-                      <TableCell>฿{machine.cost}</TableCell>
+                      <TableCell>{machine.downtimeHours.toFixed(1)} ชม.</TableCell>
+                      <TableCell>฿{machine.cost.toLocaleString()}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -496,7 +492,7 @@ export function Reports() {
                         <TableCell>{repair.engineer}</TableCell>
                         <TableCell>{repair.startDate}</TableCell>
                         <TableCell>{repair.endDate}</TableCell>
-                        <TableCell>{repair.duration}</TableCell>
+                        <TableCell>{repair.durationHours !== null ? `${repair.durationHours.toFixed(1)} ชม.` : '-'}</TableCell>
                         <TableCell className="max-w-[250px]">
                           <TooltipProvider>
                             <Tooltip>
