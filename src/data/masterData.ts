@@ -82,7 +82,8 @@ export interface Technician {
     level: "Junior" | "Senior" | "Expert";
     status: EntityStatus;
     contactNumber?: string;
-    organization: string;
+    bchId: string; // รหัสสาขาอ้างอิง branchMaster.id
+    organization: string; // ชื่อสถานที่จาก branchMaster
     email?: string;
     createdAt: string;
     updatedAt: string;
@@ -791,7 +792,8 @@ export const mockTechnicians: Technician[] = [
         level: "Senior",
         status: "Active",
         contactNumber: "081-234-5678",
-        organization: "เป่าฟิล์ม เวลโกรว์ ซอย 6",
+        bchId: "6",
+        organization: branchMaster.find((b) => b.id === "6")?.name || "",
         email: "somchai.w@company.com",
         createdAt: "1/1/2567",
         updatedAt: "15/1/2567",
@@ -805,7 +807,8 @@ export const mockTechnicians: Technician[] = [
         level: "Expert",
         status: "Active",
         contactNumber: "082-345-6789",
-        organization: "ฟิล์ม ลาดกระบัง",
+        bchId: "L",
+        organization: branchMaster.find((b) => b.id === "L")?.name || "",
         email: "wichai.t@company.com",
         createdAt: "5/1/2567",
         updatedAt: "20/1/2567",
@@ -819,7 +822,8 @@ export const mockTechnicians: Technician[] = [
         level: "Senior",
         status: "Active",
         contactNumber: "083-456-7890",
-        organization: "ฉีดฟิล์ม เวลโกรว์ ซอย 6",
+        bchId: "A",
+        organization: branchMaster.find((b) => b.id === "A")?.name || "",
         email: "suda.c@company.com",
         createdAt: "10/1/2567",
         updatedAt: "25/1/2567",
@@ -833,7 +837,8 @@ export const mockTechnicians: Technician[] = [
         level: "Expert",
         status: "Active",
         contactNumber: "084-567-8901",
-        organization: "ฉีดฟิล์ม เวลโกรว์ ซอย 6",
+        bchId: "A",
+        organization: branchMaster.find((b) => b.id === "A")?.name || "",
         email: "anucha.s@company.com",
         createdAt: "15/1/2567",
         updatedAt: "30/1/2567",
@@ -847,7 +852,8 @@ export const mockTechnicians: Technician[] = [
         level: "Junior",
         status: "Active",
         contactNumber: "085-678-9012",
-        organization: "หลอด เวลโกรว์ ซอย 2 (BOI)",
+        bchId: "2",
+        organization: branchMaster.find((b) => b.id === "2")?.name || "",
         email: "prayuth.c@company.com",
         createdAt: "20/1/2567",
         updatedAt: "5/2/2567",
@@ -861,7 +867,8 @@ export const mockTechnicians: Technician[] = [
         level: "Expert",
         status: "Active",
         contactNumber: "086-789-0123",
-        organization: "ฟิล์ม เวลโกรว์ ซอย 6",
+        bchId: "6",
+        organization: branchMaster.find((b) => b.id === "6")?.name || "",
         email: "surachai.h@company.com",
         createdAt: "1/12/2566",
         updatedAt: "10/2/2567",
@@ -1336,6 +1343,16 @@ export const getAllTechnicians = (): Technician[] => {
     return mockTechnicians.filter(
         (technician) => technician.status === "Active"
     );
+};
+
+// คืนช่างทั้งหมดโดยจัดให้สาขาที่ระบุอยู่บนสุด
+export const getAllTechniciansPreferred = (bchId?: string): Technician[] => {
+    const all = getAllTechnicians();
+    if (!bchId) return all;
+    return [
+        ...all.filter((t) => t.bchId === bchId),
+        ...all.filter((t) => t.bchId !== bchId),
+    ];
 };
 
 export const getTechniciansByLevel = (
