@@ -1,6 +1,7 @@
 export const mockOriginalRequest = {
-    id: "RR-A-68090001", // ใช้รูปแบบเดียวกับหน้าสร้างใบแจ้งซ่อมใหม่ (R{YY}{MM}{NNNN})
+    id: "RR-A-68090001", // RR-[bchId]-[YYMMXXXX] โดย bchId ของ COL3 คือ A, วันที่ตัวอย่าง 68(ปีพ.ศ.) 09(เดือน) 0001
     documentNumber: "RR-A-68090001", // RR-[bchId]-[YYMMXXXX] โดย bchId ของ COL3 คือ A, วันที่ตัวอย่าง 68(ปีพ.ศ.) 09(เดือน) 0001
+    requestId: "RR-A-68090001", // id และ documentNumber เป็นตัวเดียวกัน
     machine: "เครื่องฉีดฟิล์ม Extrusion Line-COL",
     machineId: "COL3", // ให้ตรงกับ masterData ชุดใหม่
     location: "โรงงาน A - ชั้น 2", // เพิ่มสถานที่ตั้งให้ตรงกับ NewRepairForm
@@ -94,3 +95,65 @@ export const mockRepairHistory = [
         notes: "เปลี่ยนแนวทางการซ่อม มุ่งเน้นที่ระบบขับเคลื่อน",
     },
 ];
+import { 
+    getAllRepairRequests, 
+    getAllRepairProcesses, 
+    getTechnicianById,
+    type RepairRequest,
+    type RepairProcess
+} from "@/data/masterData";
+
+// รูปแบบข้อมูลอย่างง่ายสำหรับตารางรายการซ่อมของฉัน
+export type SimpleRepairItem = {
+    id: string;
+    machine: string;
+    problem: string;
+    date: string;
+    contactNumber?: string;
+    status: "new" | "progress" | "waiting" | "completed" | "pending" | "cancelled";
+    engineer?: string | string[];
+};
+
+// รวมข้อมูลจาก Request และ Process ให้อยู่ในรูปแบบที่ใช้แสดงผล
+export function getMyRepairs(): SimpleRepairItem[] {
+    const requests: RepairRequest[] = getAllRepairRequests();
+    const processes: RepairProcess[] = getAllRepairProcesses();
+
+    const reqItems: SimpleRepairItem[] = requests.map((r) => ({
+        id: r.id,
+        machine: r.machine,
+        problem: r.problem,
+        date: r.reportDate,
+        contactNumber: r.contactNumber,
+        status: (r.status === "pending" ? "new" : "cancelled"),
+    }));
+
+    const procItems: SimpleRepairItem[] = processes.map((p) => {
+        const related = requests.find((r) => r.id === p.requestId);
+        const names = p.assignedTechnicians
+            .map((id) => getTechnicianById(id)?.name || id);
+        const status: SimpleRepairItem["status"] =
+            p.status === "assigned" || p.status === "in_progress"
+                ? "progress"
+                : p.status === "waiting_parts"
+                ? "pending"
+                : p.status === "waiting_approval"
+                ? "waiting"
+                : p.status === "completed"
+                ? "completed"
+                : "cancelled";
+
+        return {
+            id: p.id,
+            machine: related?.machine || "",
+            problem: related?.problem || "",
+            date: related?.reportDate || "",
+            contactNumber: related?.contactNumber,
+            status,
+            engineer: names,
+        };
+    });
+
+    // รวมรายการ และอาจ sort ตามวันที่หากต้องการ
+    return [...reqItems, ...procItems];
+}

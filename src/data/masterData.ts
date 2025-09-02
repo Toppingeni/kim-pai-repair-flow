@@ -871,8 +871,8 @@ export const mockTechnicians: Technician[] = [
 // ข้อมูลใบร้องของงานซ่อม (Request)
 export const mockRepairRequests: RepairRequest[] = [
     {
-        id: "R24070001",
-        documentNumber: "REQ-2024-001",
+        id: "RR-A-67070001",
+        documentNumber: "RR-A-67070001",
         machineId: "COL3",
         machine: "เครื่องฉีดฟิล์ม Extrusion Line-COL",
         location: "อาคาร A ชั้น 1",
@@ -893,8 +893,8 @@ export const mockRepairRequests: RepairRequest[] = [
         updatedBy: "วิศวกร ประจำแผนก",
     },
     {
-        id: "R24070002",
-        documentNumber: "REQ-2024-002",
+        id: "RR-6-67070002",
+        documentNumber: "RR-6-67070002",
         machineId: "LS91",
         machine: "W6-เครื่องผ่า/กรอ SLITTER 1",
         location: "อาคาร B ชั้น 2",
@@ -913,8 +913,8 @@ export const mockRepairRequests: RepairRequest[] = [
         createdBy: "นายวิชัย ช่างเทคนิค",
     },
     {
-        id: "R24070003",
-        documentNumber: "REQ-2024-003",
+        id: "RR-A-67070003",
+        documentNumber: "RR-A-67070003",
         machineId: "COL3",
         machine: "เครื่องฉีดฟิล์ม Extrusion Line-COL",
         location: "อาคาร A ชั้น 1",
@@ -934,8 +934,8 @@ export const mockRepairRequests: RepairRequest[] = [
         updatedBy: "วิศวกร ประจำแผนก",
     },
     {
-        id: "R24070004",
-        documentNumber: "REQ-2024-004",
+        id: "RR-6-67070004",
+        documentNumber: "RR-6-67070004",
         machineId: "LM81",
         machine: "W6-เครื่อง METALLIZER 1",
         location: "อาคาร C ชั้น 1",
@@ -955,8 +955,8 @@ export const mockRepairRequests: RepairRequest[] = [
         updatedBy: "หัวหน้าแผนก สุรชัย",
     },
     {
-        id: "R24070005",
-        documentNumber: "REQ-2024-005",
+        id: "RR-6-68070005",
+        documentNumber: "RR-6-68070005",
         machineId: "FD01",
         machine: "W6-เครื่องผ่า/กรอ Folding",
         location: "อาคาร 2, Line 2",
@@ -976,8 +976,8 @@ export const mockRepairRequests: RepairRequest[] = [
         updatedBy: "วิศวกร ประจำแผนก",
     },
     {
-        id: "R24070006",
-        documentNumber: "REQ-2024-006",
+        id: "RR-B-68070006",
+        documentNumber: "RR-B-68070006",
         machineId: "BM01",
         machine: "W6-เครื่องผสมเม็ด MIX 1",
         location: "อาคาร 1, Line 3",
@@ -997,8 +997,8 @@ export const mockRepairRequests: RepairRequest[] = [
         updatedBy: "วิศวกร ประจำแผนก",
     },
     {
-        id: "R24070007",
-        documentNumber: "REQ-2024-007",
+        id: "RR-6-68070007",
+        documentNumber: "RR-6-68070007",
         machineId: "LM82",
         machine: "W6-เครื่อง METALLIZER 2",
         location: "อาคาร 1, หลังคา",
@@ -1018,8 +1018,8 @@ export const mockRepairRequests: RepairRequest[] = [
         updatedBy: "นายสมชาย วิชาการ",
     },
     {
-        id: "R24070008",
-        documentNumber: "REQ-2024-008",
+        id: "RR-6-68070008",
+        documentNumber: "RR-6-68070008",
         machineId: "SS01",
         machine: "W6-เครื่องผ่า/กรอ SideSeal-01",
         location: "โรงงาน 1 ชั้น 2",
@@ -1045,7 +1045,7 @@ export const mockRepairRequests: RepairRequest[] = [
 export const mockRepairProcesses: RepairProcess[] = [
     {
         id: "P24070001",
-        requestId: "R24070001",
+        requestId: "RR-A-67070001",
         documentNumber: "PROC-2024-001",
         assignedTechnicians: ["tech1", "tech4"],
         estimatedStartDate: "15/7/2567",
@@ -1081,7 +1081,7 @@ export const mockRepairProcesses: RepairProcess[] = [
     },
     {
         id: "P24070003",
-        requestId: "R24070003",
+        requestId: "RR-A-67070003",
         documentNumber: "PROC-2024-003",
         assignedTechnicians: ["tech2", "tech3"],
         estimatedStartDate: "17/7/2567",
@@ -1107,7 +1107,7 @@ export const mockRepairProcesses: RepairProcess[] = [
     },
     {
         id: "P24070002",
-        requestId: "R24070002",
+        requestId: "RR-6-67070002",
         documentNumber: "PROC-2024-002",
         assignedTechnicians: ["tech2"],
         estimatedStartDate: "19/7/2567",
@@ -1123,7 +1123,7 @@ export const mockRepairProcesses: RepairProcess[] = [
     },
     {
         id: "P24070004",
-        requestId: "R24070004",
+        requestId: "RR-6-67070004",
         documentNumber: "PROC-2024-004",
         assignedTechnicians: ["tech3", "tech4"],
         estimatedStartDate: "08/07/2568",
@@ -1139,7 +1139,7 @@ export const mockRepairProcesses: RepairProcess[] = [
     },
     {
         id: "P24070005",
-        requestId: "R24070002",
+        requestId: "RR-6-67070002",
         documentNumber: "PROC-2024-005",
         assignedTechnicians: ["tech2"],
         estimatedStartDate: "08/07/2568",
@@ -1155,7 +1155,7 @@ export const mockRepairProcesses: RepairProcess[] = [
     },
     {
         id: "P24070006",
-        requestId: "R24070003",
+        requestId: "RR-A-67070003",
         documentNumber: "PROC-2024-006",
         assignedTechnicians: ["tech2"],
         estimatedStartDate: "06/07/2568",
@@ -1181,7 +1181,7 @@ export const mockRepairProcesses: RepairProcess[] = [
     },
     {
         id: "P24070007",
-        requestId: "R24070004",
+        requestId: "RR-6-67070004",
         documentNumber: "PROC-2024-007",
         assignedTechnicians: ["tech1", "tech2"],
         estimatedStartDate: "04/07/2568",
@@ -1217,7 +1217,7 @@ export const mockRepairProcesses: RepairProcess[] = [
     },
     {
         id: "P24070008",
-        requestId: "R24070001",
+        requestId: "RR-A-67070001",
         documentNumber: "PROC-2024-008",
         assignedTechnicians: ["tech1"],
         estimatedStartDate: "08/07/2568",
