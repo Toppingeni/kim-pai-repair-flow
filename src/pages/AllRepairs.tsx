@@ -32,6 +32,33 @@ export function AllRepairs() {
   }, [activeTab]);
   const repairRequests = getAllRepairRequests();
   const repairProcesses = getAllRepairProcesses();
+  const [statusFilter, setStatusFilter] = useState<
+    "all" | "new" | "progress" | "pending" | "waiting" | "completed" | "cancelled"
+  >("all");
+
+  // ช่วยเลือกการ์ดแล้วเปลี่ยนแท็บและตัวกรองให้เหมาะสม
+  const selectSummary = (
+    key: "new" | "progress" | "pending" | "waiting" | "cancelled" | "completed"
+  ) => {
+    // ถ้าคลิกซ้ำที่การ์ดเดิม ให้ล้างตัวกรอง
+    if (isSelected(key)) {
+      setStatusFilter("all");
+      return;
+    }
+    // เลือกการ์ดใหม่: ตั้งแท็บให้ถูกหมวด และตั้งตัวกรอง
+    if (key === "new" || key === "cancelled") {
+      setActiveTab("requests");
+    } else {
+      setActiveTab("processes");
+    }
+    setStatusFilter(key);
+  };
+
+  const isSelected = (key: "new" | "progress" | "pending" | "waiting" | "cancelled" | "completed") => {
+    if ((key === "new" || key === "cancelled") && activeTab !== "requests") return false;
+    if (!(key === "new" || key === "cancelled") && activeTab !== "processes") return false;
+    return statusFilter === key;
+  };
   
   // แปลงข้อมูลจาก RepairRequest และ RepairProcess ให้เข้ากับ RepairTable
   const convertRequestsToTableData = (requests: RepairRequest[]) => {
@@ -170,7 +197,14 @@ export function AllRepairs() {
 
         {/* Summary Stats - แสดงสถิติรวมของทั้งสองประเภท */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          <Card className="bg-gradient-to-br from-status-new/10 to-status-new/5 border-status-new/20">
+          <Card
+            role="button"
+            tabIndex={0}
+            onClick={() => selectSummary("new")}
+            className={`bg-gradient-to-br from-status-new/10 to-status-new/5 border-status-new/20 cursor-pointer hover:shadow-md transition ${
+              isSelected("new") ? "ring-2 ring-status-new border-status-new" : ""
+            }`}
+          >
             <CardContent className="p-4 text-center">
               <div className="text-2xl font-bold text-status-new">
                 {repairRequests.filter(r => r.status === "pending").length + repairProcesses.filter(r => r.status === "assigned").length}
@@ -178,7 +212,14 @@ export function AllRepairs() {
               <div className="text-sm text-muted-foreground">งานใหม่</div>
             </CardContent>
           </Card>
-          <Card className="bg-gradient-to-br from-status-progress/10 to-status-progress/5 border-status-progress/20">
+          <Card
+            role="button"
+            tabIndex={0}
+            onClick={() => selectSummary("progress")}
+            className={`bg-gradient-to-br from-status-progress/10 to-status-progress/5 border-status-progress/20 cursor-pointer hover:shadow-md transition ${
+              isSelected("progress") ? "ring-2 ring-status-progress border-status-progress" : ""
+            }`}
+          >
             <CardContent className="p-4 text-center">
               <div className="text-2xl font-bold text-status-progress">
                 {repairProcesses.filter(r => r.status === "in_progress").length}
@@ -186,7 +227,14 @@ export function AllRepairs() {
               <div className="text-sm text-muted-foreground">กำลังซ่อม</div>
             </CardContent>
           </Card>
-          <Card className="bg-gradient-to-br from-status-pending/10 to-status-pending/5 border-status-pending/20">
+          <Card
+            role="button"
+            tabIndex={0}
+            onClick={() => selectSummary("pending")}
+            className={`bg-gradient-to-br from-status-pending/10 to-status-pending/5 border-status-pending/20 cursor-pointer hover:shadow-md transition ${
+              isSelected("pending") ? "ring-2 ring-status-pending border-status-pending" : ""
+            }`}
+          >
             <CardContent className="p-4 text-center">
               <div className="text-2xl font-bold text-status-pending">
                 {repairProcesses.filter(r => r.status === "waiting_parts").length}
@@ -194,7 +242,14 @@ export function AllRepairs() {
               <div className="text-sm text-muted-foreground">รออะไหล่</div>
             </CardContent>
           </Card>
-          <Card className="bg-gradient-to-br from-status-waiting/10 to-status-waiting/5 border-status-waiting/20">
+          <Card
+            role="button"
+            tabIndex={0}
+            onClick={() => selectSummary("waiting")}
+            className={`bg-gradient-to-br from-status-waiting/10 to-status-waiting/5 border-status-waiting/20 cursor-pointer hover:shadow-md transition ${
+              isSelected("waiting") ? "ring-2 ring-status-waiting border-status-waiting" : ""
+            }`}
+          >
             <CardContent className="p-4 text-center">
               <div className="text-2xl font-bold text-status-waiting">
                 {repairProcesses.filter(r => r.status === "waiting_approval").length}
@@ -202,7 +257,14 @@ export function AllRepairs() {
               <div className="text-sm text-muted-foreground">รอยืนยัน</div>
             </CardContent>
           </Card>
-          <Card className="bg-gradient-to-br from-red-500/10 to-red-500/5 border-red-500/20">
+          <Card
+            role="button"
+            tabIndex={0}
+            onClick={() => selectSummary("cancelled")}
+            className={`bg-gradient-to-br from-red-500/10 to-red-500/5 border-red-500/20 cursor-pointer hover:shadow-md transition ${
+              isSelected("cancelled") ? "ring-2 ring-red-500 border-red-500" : ""
+            }`}
+          >
             <CardContent className="p-4 text-center">
               <div className="text-2xl font-bold text-red-600">
                 {repairRequests.filter(r => r.status === "rejected").length}
@@ -210,7 +272,14 @@ export function AllRepairs() {
               <div className="text-sm text-muted-foreground">ยกเลิก</div>
             </CardContent>
           </Card>
-          <Card className="bg-gradient-to-br from-status-completed/10 to-status-completed/5 border-status-completed/20">
+          <Card
+            role="button"
+            tabIndex={0}
+            onClick={() => selectSummary("completed")}
+            className={`bg-gradient-to-br from-status-completed/10 to-status-completed/5 border-status-completed/20 cursor-pointer hover:shadow-md transition ${
+              isSelected("completed") ? "ring-2 ring-status-completed border-status-completed" : ""
+            }`}
+          >
             <CardContent className="p-4 text-center">
               <div className="text-2xl font-bold text-status-completed">
                 {repairProcesses.filter(r => r.status === "completed").length}
@@ -245,7 +314,7 @@ export function AllRepairs() {
 
               <TabsContent value="requests" className="m-0">
                 <RepairTable
-                  repairs={convertRequestsToTableData(repairRequests)}
+                  repairs={convertRequestsToTableData(repairRequests).filter(r => statusFilter === "all" || r.status === statusFilter)}
                   userRole="engineering"
                   title="รายการใบร้องของงานซ่อม"
                   showEngineerColumn={false}
@@ -255,7 +324,7 @@ export function AllRepairs() {
 
               <TabsContent value="processes" className="m-0">
                 <RepairTable
-                  repairs={convertProcessesToTableData(repairProcesses)}
+                  repairs={convertProcessesToTableData(repairProcesses).filter(r => statusFilter === "all" || r.status === statusFilter)}
                   userRole="engineering"
                   title="รายการใบแจ้งซ่อม"
                   showEngineerColumn={true}

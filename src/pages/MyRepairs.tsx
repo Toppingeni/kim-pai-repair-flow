@@ -48,7 +48,14 @@ export function MyRepairs() {
 
         {/* Summary Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="shadow-card">
+          <Card
+            role="button"
+            tabIndex={0}
+            onClick={() => setStatusFilter("all")}
+            className={`shadow-card cursor-pointer hover:shadow-md transition ${
+              statusFilter === "all" ? "ring-2 ring-primary border-primary" : ""
+            }`}
+          >
             <CardContent className="p-4">
               <div className="text-center">
                 <div className="text-2xl font-bold text-foreground">{statusCounts.all}</div>
@@ -56,7 +63,14 @@ export function MyRepairs() {
               </div>
             </CardContent>
           </Card>
-          <Card className="shadow-card bg-gradient-to-br from-status-progress/10 to-status-progress/5 border-status-progress/20">
+          <Card
+            role="button"
+            tabIndex={0}
+            onClick={() => setStatusFilter("progress")}
+            className={`shadow-card cursor-pointer hover:shadow-md transition bg-gradient-to-br from-status-progress/10 to-status-progress/5 border-status-progress/20 ${
+              statusFilter === "progress" ? "ring-2 ring-status-progress border-status-progress" : ""
+            }`}
+          >
             <CardContent className="p-4">
               <div className="text-center">
                 <div className="text-2xl font-bold text-status-progress">{statusCounts.progress}</div>
@@ -64,7 +78,14 @@ export function MyRepairs() {
               </div>
             </CardContent>
           </Card>
-          <Card className="shadow-card bg-gradient-to-br from-status-waiting/10 to-status-waiting/5 border-status-waiting/20">
+          <Card
+            role="button"
+            tabIndex={0}
+            onClick={() => setStatusFilter("waiting")}
+            className={`shadow-card cursor-pointer hover:shadow-md transition bg-gradient-to-br from-status-waiting/10 to-status-waiting/5 border-status-waiting/20 ${
+              statusFilter === "waiting" ? "ring-2 ring-status-waiting border-status-waiting" : ""
+            }`}
+          >
             <CardContent className="p-4">
               <div className="text-center">
                 <div className="text-2xl font-bold text-status-waiting">{statusCounts.waiting}</div>
@@ -72,7 +93,14 @@ export function MyRepairs() {
               </div>
             </CardContent>
           </Card>
-          <Card className="shadow-card bg-gradient-to-br from-status-completed/10 to-status-completed/5 border-status-completed/20">
+          <Card
+            role="button"
+            tabIndex={0}
+            onClick={() => setStatusFilter("completed")}
+            className={`shadow-card cursor-pointer hover:shadow-md transition bg-gradient-to-br from-status-completed/10 to-status-completed/5 border-status-completed/20 ${
+              statusFilter === "completed" ? "ring-2 ring-status-completed border-status-completed" : ""
+            }`}
+          >
             <CardContent className="p-4">
               <div className="text-center">
                 <div className="text-2xl font-bold text-status-completed">{statusCounts.completed}</div>
