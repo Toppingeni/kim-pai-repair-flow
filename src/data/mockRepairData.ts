@@ -97,50 +97,63 @@ export const mockRepairHistory = [
 ];
 
 // ข้อมูล mock สำหรับหน้า "รายการใบแจ้งซ่อมของฉัน"
+import { getMachineById, getTechniciansByIds } from "@/data/masterData";
+
+const machineName = (machineId: string) =>
+    getMachineById(machineId)?.name || machineId;
+const technicianNames = (ids: string[]) =>
+    getTechniciansByIds(ids).map((t) => t.name);
+
 export const mockUserRepairs = [
+    // อิงจาก mockOriginalRequest แต่อัปเดตปัญหาให้ตรงกับเครื่องจักร
     {
         id: mockOriginalRequest.documentNumber,
-        machine: mockOriginalRequest.machine,
-        problem: mockOriginalRequest.problem,
+        machineId: "COL3",
+        machine: machineName("COL3"),
+        problem: "มอเตอร์ขับหลอมทำงานผิดปกติ มีเสียงดังและสั่น",
         date: mockOriginalRequest.reportedDate,
         contactNumber: mockOriginalRequest.contactNumber,
         status: "waiting" as const,
-        engineer: "นายสมชาย",
+        engineer: technicianNames(["tech1"])[0],
     },
     {
         id: "RR-A-68090002",
-        machine: "Packing M/C",
-        problem: "แพ็คไม่แน่น",
+        machineId: "LS91",
+        machine: machineName("LS91"),
+        problem: "ใบมีดตัดไม่คม ตัดฟิล์มไม่เรียบ ต้องเปลี่ยน",
         date: "16/07/2567",
         contactNumber: "081-111-2222",
         status: "completed" as const,
-        engineer: "นางสาวอร",
+        engineer: technicianNames(["tech3"])[0],
     },
     {
         id: "RR-A-68090003",
-        machine: "Conveyor Belt #3",
-        problem: "สายพานขาด",
+        machineId: "LM81",
+        machine: machineName("LM81"),
+        problem: "ระบบสุญญากาศตก คุณภาพการเคลือบไม่สม่ำเสมอ",
         date: "14/07/2567",
         contactNumber: "081-333-4444",
         status: "completed" as const,
-        engineer: "นายสมชาย",
+        engineer: technicianNames(["tech1"])[0],
     },
     {
         id: "RR-A-68090004",
-        machine: "Boiler #1",
-        problem: "แรงดันตก",
+        machineId: "COL3",
+        machine: machineName("COL3"),
+        problem: "อุณหภูมิหัวฉีดแกว่ง เซ็นเซอร์วัดอุณหภูมิผิดปกติ",
         date: "12/07/2567",
         contactNumber: "081-555-6666",
         status: "completed" as const,
-        engineer: ["นางสาวอร", "นายวิชัย"],
+        engineer: technicianNames(["tech3", "tech4"]),
     },
     {
         id: "RR-A-68090005",
-        machine: "Mixer #2",
-        problem: "ใบผสมชำรุด",
+        machineId: "LM81",
+        machine: machineName("LM81"),
+        problem: "ระบบความร้อนห้องเคลือบทำงานไม่เต็มประสิทธิภาพ",
         date: "10/07/2567",
         contactNumber: "081-777-8888",
         status: "progress" as const,
-        engineer: "นายวิชัย",
+        engineer: technicianNames(["tech2"])[0],
     },
 ];
