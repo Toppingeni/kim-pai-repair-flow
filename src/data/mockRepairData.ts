@@ -1,10 +1,13 @@
+import { branchMaster } from "@/data/masterData";
+
 export const mockOriginalRequest = {
     id: "RR-A-68090001", // RR-[bchId]-[YYMMXXXX] โดย bchId ของ COL3 คือ A, วันที่ตัวอย่าง 68(ปีพ.ศ.) 09(เดือน) 0001
     documentNumber: "RR-A-68090001", // RR-[bchId]-[YYMMXXXX] โดย bchId ของ COL3 คือ A, วันที่ตัวอย่าง 68(ปีพ.ศ.) 09(เดือน) 0001
     requestId: "RR-A-68090001", // id และ documentNumber เป็นตัวเดียวกัน
     machine: "เครื่องฉีดฟิล์ม Extrusion Line-COL",
     machineId: "COL3", // ให้ตรงกับ masterData ชุดใหม่
-    location: "โรงงาน A - ชั้น 2", // เพิ่มสถานที่ตั้งให้ตรงกับ NewRepairForm
+    bchId: "A", // อ้างอิง branchMaster
+    location: branchMaster.find((b) => b.id === "A")?.name || "โรงงาน A", // อ้างอิงจาก branchMaster
     section: "หน่วยหลอมพลาสติก (Extruder)", // เพิ่มส่วนประกอบ
     problem: "มอเตอร์ทำงานผิดปกติ เสียงดังผิดปกติ และมีการสั่นสะเทือน",
     reporter: "ช่างเทคนิค สมชาย",

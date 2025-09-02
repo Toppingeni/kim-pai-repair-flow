@@ -278,6 +278,7 @@ export function RepairTable({ repairs, userRole, title, showEngineerColumn = tru
                         description: mockOriginalRequest.additionalDetails,
                         images: mockOriginalRequest.images,
                         location: mockOriginalRequest.location,
+                        bchId: (mockOriginalRequest as any).bchId,
                         reportedDate: mockOriginalRequest.reportedDate,
                         reportedTime: mockOriginalRequest.reportedTime,
                         reporter: mockOriginalRequest.reporter,

@@ -24,6 +24,7 @@ import { X } from "lucide-react";
 import {
     getPriorityLevelById,
     getAllTechnicians,
+    getAllTechniciansPreferred,
     getTechniciansByIds,
     getAllWorkTypes,
     Technician,
@@ -47,6 +48,7 @@ interface RepairData {
     reportedDate?: string;
     reportedTime?: string;
     reporter?: string;
+    bchId?: string;
 }
 
 interface ApprovalFormData {
@@ -91,10 +93,11 @@ export function ApprovalDialog({
 
     // โหลดข้อมูลช่างเทคนิค
     useEffect(() => {
-        const technicians = getAllTechnicians();
+        // เรียงช่างให้สาขาที่เกี่ยวข้องอยู่บนสุด หากทราบ bchId
+        const technicians = getAllTechniciansPreferred(repairData.bchId);
         setAvailableTechnicians(technicians);
         setFilteredTechnicians(technicians);
-    }, []);
+    }, [repairData.bchId]);
 
     // กรองช่างตามคำค้นหา
     useEffect(() => {
