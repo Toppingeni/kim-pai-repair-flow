@@ -23,6 +23,7 @@ import {
     mockMachines,
     getSectionsByMachineId,
     getAllPriorityLevels,
+    getBranchById,
     type Section,
     type PriorityLevel,
 } from "@/data/masterData";
@@ -33,18 +34,13 @@ const machines = mockMachines
     .map((machine) => ({
         id: machine.id,
         name: machine.name,
-        location: getLocationByMachineId(machine.id), // ฟังก์ชันสำหรับกำหนดสถานที่ตั้ง
+        // ดึงสถานที่จาก branchMaster โดยอ้างอิง bchId ของเครื่อง
+        location:
+            (machine.bchId && getBranchById(machine.bchId)?.name) ||
+            "ไม่ระบุสถานที่",
     }));
 
-// ฟังก์ชันสำหรับกำหนดสถานที่ตั้งตาม machine id
-function getLocationByMachineId(machineId: string): string {
-    const locationMap: { [key: string]: string } = {
-        m1: "อาคาร 1, Line 1", // เครื่องอัดฟิล์ม Extruder Line 1
-        m2: "อาคาร 1, Line 2", // เครื่องตัดฟิล์ม Slitting Machine A
-        m3: "อาคาร 2, Line 1", // เครื่องพิมพ์ฟิล์ม Printing Press B
-    };
-    return locationMap[machineId] || "ไม่ระบุสถานที่";
-}
+// ยกเลิกการ map แบบ hard-coded และใช้ branchMaster แทน
 
 // ฟังก์ชันสำหรับสร้างเลขที่เอกสาร
 function generateDocumentNumber(): string {

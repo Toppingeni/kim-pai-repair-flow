@@ -1,8 +1,8 @@
 export const mockOriginalRequest = {
     id: "R24070001", // ใช้รูปแบบเดียวกับหน้าสร้างใบแจ้งซ่อมใหม่ (R{YY}{MM}{NNNN})
     documentNumber: "R24070001",
-    machine: "เครื่องอัดฟิล์ม Extruder Line 1",
-    machineId: "m1", // เพิ่ม machineId ที่ตรงกับ masterData
+    machine: "เครื่องฉีดฟิล์ม Extrusion Line-COL",
+    machineId: "COL3", // ให้ตรงกับ masterData ชุดใหม่
     location: "โรงงาน A - ชั้น 2", // เพิ่มสถานที่ตั้งให้ตรงกับ NewRepairForm
     section: "หน่วยหลอมพลาสติก (Extruder)", // เพิ่มส่วนประกอบ
     problem: "มอเตอร์ทำงานผิดปกติ เสียงดังผิดปกติ และมีการสั่นสะเทือน",

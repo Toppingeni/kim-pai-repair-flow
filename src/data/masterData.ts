@@ -5,6 +5,7 @@ export type EntityStatus = "Active" | "Inactive";
 export interface Machine {
     id: string;
     name: string;
+    bchId?: string; // รหัสสาขา/โรงงาน เช่น K, B, W, 6, 2 ...
     status: EntityStatus;
     sectionsCount: number;
     createdAt: string;
@@ -12,6 +13,27 @@ export interface Machine {
     createdBy: string;
     updatedBy: string;
 }
+
+// สาขา/หน่วยงาน (Branch/Organization)
+export interface Branch {
+    id: string; // รหัสสาขา เช่น K, B, W, S, L, 6, 2, H, R, A
+    name: string; // ชื่อสาขา
+    status: EntityStatus;
+}
+
+// Master ข้อมูลสาขา ตามที่ผู้ใช้ระบุ
+export const branchMaster: Branch[] = [
+    { id: "K", name: "หลอด เวลโกรว์ ซอย 2 (BOI)", status: "Active" },
+    { id: "B", name: "เป่าฟิล์ม เวลโกรว์ ซอย 6", status: "Active" },
+    { id: "W", name: "Sticker เวลโกรว์ ซอย 6", status: "Active" },
+    { id: "S", name: "Sticker ถ.จันทน์", status: "Active" },
+    { id: "L", name: "ฟิล์ม ลาดกระบัง", status: "Active" },
+    { id: "6", name: "ฟิล์ม เวลโกรว์ ซอย 6", status: "Active" },
+    { id: "2", name: "หลอด เวลโกรว์ ซอย 2", status: "Active" },
+    { id: "H", name: "บริษัท ไทย โอ.พี.พี. จำกัด (มหาชน)", status: "Active" },
+    { id: "R", name: "หจก.เหรียญทองการพิมพ์", status: "Active" },
+    { id: "A", name: "ฉีดฟิล์ม เวลโกรว์ ซอย 6", status: "Active" },
+];
 
 export interface Section {
     id: string;
@@ -129,7 +151,13 @@ export interface RepairProcess {
         quantity: number;
         unit: string;
     }[];
-    status: "assigned" | "in_progress" | "waiting_parts" | "waiting_approval" | "completed" | "cancelled";
+    status:
+        | "assigned"
+        | "in_progress"
+        | "waiting_parts"
+        | "waiting_approval"
+        | "completed"
+        | "cancelled";
     notes?: string;
     approvedBy?: string;
     approvedAt?: string;
@@ -141,78 +169,121 @@ export interface RepairProcess {
 
 // ข้อมูลเครื่องจักรในโรงงานผลิตฟิล์ม
 export const mockMachines: Machine[] = [
+    // { id: "BS01", name: "W6-เครื่องผ่า/กรอ SLITTER 1", bchId: "B", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "BB01", name: "W6-เครื่องเป่าฟิล์ม BLOW 1", bchId: "B", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "BM01", name: "W6-เครื่องผสมเม็ด MIX 1", bchId: "B", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "LS95", name: "W6-เครื่องผ่า/กรอ SLITTER 5", bchId: "6", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "LS96", name: "W6-เครื่องผ่า/กรอ SLITTER 6", bchId: "6", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "LK55", name: "LK-เครื่องผ่า/กรอ SLITTER 5", bchId: "L", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "LK11", name: "LK-เครื่องฉีดฟิล์ม", bchId: "L", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "LK41", name: "LK-เครื่องกรอ 1", bchId: "L", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "LK42", name: "LK-เครื่องกรอ 2", bchId: "L", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "LK50", name: "LK-เครื่องผ่าใหญ่", bchId: "L", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "LK52", name: "LK-เครื่องผ่า/กรอ SLITTER 2", bchId: "L", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "LK53", name: "LK-เครื่องผ่า/กรอ SLITTER 3", bchId: "L", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "LK54", name: "LK-เครื่องผ่า/กรอ SLITTER 4", bchId: "L", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "LK56", name: "LK-เครื่องผ่า/กรอ SLITTER 6", bchId: "L", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "LK58", name: "LK-เครื่องผ่า/กรอ SLITTER 8", bchId: "L", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "LK90", name: "LK-เครื่องพับ 1", bchId: "L", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "LK91", name: "LK-เครื่องพับ 2", bchId: "L", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "LK10", name: "LK-เครื่องผสมเม็ด", bchId: "L", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
     {
-        id: "m1",
-        name: "เครื่องอัดฟิล์ม Extruder Line 1",
+        id: "LS91",
+        name: "W6-เครื่องผ่า/กรอ SLITTER 1",
+        bchId: "6",
         status: "Active",
-        sectionsCount: 3,
-        createdAt: "19/1/2567",
-        updatedAt: "16/1/2567",
-        createdBy: "วิศวกร สมชาย",
-        updatedBy: "หัวหน้าแผนก สุรชัย",
+        sectionsCount: 0,
+        createdAt: "1/1/2567",
+        updatedAt: "1/1/2567",
+        createdBy: "ระบบ",
+        updatedBy: "ระบบ",
     },
+    // { id: "LS92", name: "W6-เครื่องผ่า/กรอ SLITTER 2", bchId: "6", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "LS93", name: "W6-เครื่องผ่า/กรอ SLITTER 3", bchId: "6", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
     {
-        id: "m2",
-        name: "เครื่องตัดฟิล์ม Slitting Machine A",
+        id: "LM81",
+        name: "W6-เครื่อง METALLIZER 1",
+        bchId: "6",
         status: "Active",
-        sectionsCount: 2,
-        createdAt: "9/1/2567",
-        updatedAt: "24/1/2567",
-        createdBy: "ช่างเทคนิค วิชัย",
-        updatedBy: "วิศวกร สมหญิง",
+        sectionsCount: 0,
+        createdAt: "1/1/2567",
+        updatedAt: "1/1/2567",
+        createdBy: "ระบบ",
+        updatedBy: "ระบบ",
     },
+    // { id: "LM82", name: "W6-เครื่อง METALLIZER 2", bchId: "6", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "LS94", name: "W6-เครื่องผ่า/กรอ SLITTER 4", bchId: "6", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "LS97", name: "W6-เครื่องผ่า/กรอ SLITTER 7", bchId: "6", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "LS98", name: "W6-เครื่องผ่า/กรอ SLITTER 8", bchId: "6", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "SS01", name: "W6-เครื่องผ่า/กรอ SideSeal-01", bchId: "6", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "BB02", name: "W6-เครื่องเป่าฟิล์ม BLOW 2", bchId: "B", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "FD01", name: "W6-เครื่องผ่า/กรอ Folding", bchId: "6", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "BB12", name: "W6-เครื่องเป่าฟิล์ม BLOW 2.", bchId: "B", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
     {
-        id: "m3",
-        name: "เครื่องพิมพ์ฟิล์ม Printing Press B",
-        status: "Inactive",
-        sectionsCount: 1,
-        createdAt: "5/1/2567",
-        updatedAt: "20/1/2567",
-        createdBy: "วิศวกร อนุชา",
-        updatedBy: "หัวหน้าแผนก สุรชัย",
+        id: "COL3",
+        name: "เครื่องฉีดฟิล์ม Extrusion Line-COL",
+        bchId: "A",
+        status: "Active",
+        sectionsCount: 0,
+        createdAt: "1/1/2567",
+        updatedAt: "1/1/2567",
+        createdBy: "ระบบ",
+        updatedBy: "ระบบ",
     },
+    // { id: "LADT", name: "กลุ่มเครื่องผ่ากรอ CPP", bchId: "A", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "LAD2", name: "เครื่องผ่ากรอ SV-1", bchId: "A", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "LAST", name: "กลุ่มเครื่องกรอ", bchId: "A", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "LAE2", name: "เครื่องฉีดฟิล์ม CPP Extrusion Line-BGE", bchId: "A", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "LAD3", name: "เครื่องผ่ากรอ Kampf - 1", bchId: "A", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "LAD4", name: "เครื่องผ่ากรอ Kampf - 2", bchId: "A", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "LADE", name: "Kampf กลุ่มเครื่องผ่ากรอ Kampf 1-2", bchId: "A", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "MAN1", name: "แรงงานคน 1 คน", bchId: "A", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "LAD6", name: "เครื่องผ่ากรอ SV-2", bchId: "A", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "LAD7", name: "เครื่องผ่ากรอ SV-3", bchId: "A", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "BB21", name: "W6-เครื่องเป่าฟิล์ม BLOW 1.", bchId: "B", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
+    // { id: "BB00", name: "W6-เครื่องเป่าฟิล์ม BLOW 0", bchId: "B", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
 ];
 
 // ข้อมูลส่วนประกอบของเครื่องจักร
 export const mockSections: Section[] = [
     {
         id: "s1",
-        machineId: "m1",
+        machineId: "COL3",
         name: "หน่วยหลอมพลาสติก (Extruder)",
         status: "Active",
         componentsCount: 3,
     },
     {
         id: "s2",
-        machineId: "m1",
+        machineId: "COL3",
         name: "หน่วยขึ้นรูป (Die Head)",
         status: "Active",
         componentsCount: 2,
     },
     {
         id: "s3",
-        machineId: "m1",
+        machineId: "COL3",
         name: "หน่วยม้วนฟิล์ม (Winding Unit)",
         status: "Active",
         componentsCount: 2,
     },
     {
         id: "s4",
-        machineId: "m2",
+        machineId: "LS91",
         name: "หน่วยตัด (Cutting Unit)",
         status: "Active",
         componentsCount: 2,
     },
     {
         id: "s5",
-        machineId: "m2",
+        machineId: "LS91",
         name: "หน่วยควบคุม (Control System)",
         status: "Active",
         componentsCount: 1,
     },
     {
         id: "s6",
-        machineId: "m3",
+        machineId: "LM81",
         name: "หน่วยพิมพ์ (Printing Unit)",
         status: "Inactive",
         componentsCount: 1,
@@ -802,8 +873,8 @@ export const mockRepairRequests: RepairRequest[] = [
     {
         id: "R24070001",
         documentNumber: "REQ-2024-001",
-        machineId: "m1",
-        machine: "เครื่องอัดฟิล์ม Extruder Line 1",
+        machineId: "COL3",
+        machine: "เครื่องฉีดฟิล์ม Extrusion Line-COL",
         location: "อาคาร A ชั้น 1",
         section: "หน่วยหลอมพลาสติก (Extruder)",
         problem: "เครื่องหยุดทำงานกะทันหัน ไฟแสดงสถานะขาว",
@@ -813,7 +884,8 @@ export const mockRepairRequests: RepairRequest[] = [
         priority: "level1",
         priorityLabel: "ระดับ 1 หยุดทันที",
         contactNumber: "081-123-4567",
-        additionalDetails: "เครื่องหยุดทำงานขณะกำลังผลิต ส่งผลกระทบต่อแผนการผลิต",
+        additionalDetails:
+            "เครื่องหยุดทำงานขณะกำลังผลิต ส่งผลกระทบต่อแผนการผลิต",
         status: "pending",
         createdAt: "15/7/2567 08:30",
         updatedAt: "15/7/2567 09:00",
@@ -823,8 +895,8 @@ export const mockRepairRequests: RepairRequest[] = [
     {
         id: "R24070002",
         documentNumber: "REQ-2024-002",
-        machineId: "m2",
-        machine: "เครื่องตัดฟิล์ม Slitting Machine A",
+        machineId: "LS91",
+        machine: "W6-เครื่องผ่า/กรอ SLITTER 1",
         location: "อาคาร B ชั้น 2",
         section: "หน่วยตัด (Cutting Unit)",
         problem: "ใบมีดตัดไม่คม ตัดฟิล์มไม่เรียบ",
@@ -843,8 +915,8 @@ export const mockRepairRequests: RepairRequest[] = [
     {
         id: "R24070003",
         documentNumber: "REQ-2024-003",
-        machineId: "m1",
-        machine: "เครื่องอัดฟิล์ม Extruder Line 1",
+        machineId: "COL3",
+        machine: "เครื่องฉีดฟิล์ม Extrusion Line-COL",
         location: "อาคาร A ชั้น 1",
         section: "หน่วยม้วนฟิล์ม (Winding Unit)",
         problem: "ลูกกลิ้งม้วนฟิล์มสั่นผิดปกติ",
@@ -864,8 +936,8 @@ export const mockRepairRequests: RepairRequest[] = [
     {
         id: "R24070004",
         documentNumber: "REQ-2024-004",
-        machineId: "m3",
-        machine: "เครื่องพิมพ์ฟิล์ม Printing Press B",
+        machineId: "LM81",
+        machine: "W6-เครื่อง METALLIZER 1",
         location: "อาคาร C ชั้น 1",
         section: "หน่วยพิมพ์ (Printing Unit)",
         problem: "หัวพิมพ์สีไม่ออกสี",
@@ -885,8 +957,8 @@ export const mockRepairRequests: RepairRequest[] = [
     {
         id: "R24070005",
         documentNumber: "REQ-2024-005",
-        machineId: "m4",
-        machine: "Conveyor",
+        machineId: "FD01",
+        machine: "W6-เครื่องผ่า/กรอ Folding",
         location: "อาคาร 2, Line 2",
         section: "ฝ่ายขนส่ง",
         problem: "มอเตอร์ไม่หมุน ขาดการหล่อลื่น",
@@ -906,8 +978,8 @@ export const mockRepairRequests: RepairRequest[] = [
     {
         id: "R24070006",
         documentNumber: "REQ-2024-006",
-        machineId: "m5",
-        machine: "Mixer A",
+        machineId: "BM01",
+        machine: "W6-เครื่องผสมเม็ด MIX 1",
         location: "อาคาร 1, Line 3",
         section: "ฝ่ายผสม",
         problem: "ใบมีดสึกหรอ",
@@ -927,8 +999,8 @@ export const mockRepairRequests: RepairRequest[] = [
     {
         id: "R24070007",
         documentNumber: "REQ-2024-007",
-        machineId: "m6",
-        machine: "Cooling Tower",
+        machineId: "LM82",
+        machine: "W6-เครื่อง METALLIZER 2",
         location: "อาคาร 1, หลังคา",
         section: "ฝ่ายสาธารณูปโภค",
         problem: "ปั๊มน้ำไม่ทำงาน",
@@ -948,8 +1020,8 @@ export const mockRepairRequests: RepairRequest[] = [
     {
         id: "R24070008",
         documentNumber: "REQ-2024-008",
-        machineId: "m7",
-        machine: "Conveyor Belt #3",
+        machineId: "SS01",
+        machine: "W6-เครื่องผ่า/กรอ SideSeal-01",
         location: "โรงงาน 1 ชั้น 2",
         section: "ฝ่ายผลิต A",
         problem: "สายพานขาด",
@@ -959,7 +1031,8 @@ export const mockRepairRequests: RepairRequest[] = [
         priority: "level1",
         priorityLabel: "ระดับ 1 เครื่องจักรหยุดทำงาน",
         contactNumber: "081-234-5678",
-        additionalDetails: "สายพานลำเลียงขาดจากการใช้งานหนัก ต้องเปลี่ยนสายพานใหม่ทั้งเส้น",
+        additionalDetails:
+            "สายพานลำเลียงขาดจากการใช้งานหนัก ต้องเปลี่ยนสายพานใหม่ทั้งเส้น",
         status: "pending",
         createdAt: "08/07/2568 08:30",
         updatedAt: "08/07/2568 14:30",
@@ -1203,6 +1276,15 @@ export const getSparePartsByComponentId = (
     );
 };
 
+// ฟังก์ชันสำหรับ Branch Master
+export const getBranchById = (id: string): Branch | undefined => {
+    return branchMaster.find((b) => b.id === id);
+};
+
+export const getAllBranches = (): Branch[] => {
+    return branchMaster.filter((b) => b.status === "Active");
+};
+
 // ฟังก์ชันสำหรับอัปเดตจำนวน count
 export const updateSectionCount = (
     machineId: string,
@@ -1298,11 +1380,13 @@ export const getAllRepairRequests = (): RepairRequest[] => {
 };
 
 export const getRepairRequestById = (id: string): RepairRequest | undefined => {
-    return mockRepairRequests.find(request => request.id === id);
+    return mockRepairRequests.find((request) => request.id === id);
 };
 
-export const getRepairRequestsByStatus = (status: RepairRequest['status']): RepairRequest[] => {
-    return mockRepairRequests.filter(request => request.status === status);
+export const getRepairRequestsByStatus = (
+    status: RepairRequest["status"]
+): RepairRequest[] => {
+    return mockRepairRequests.filter((request) => request.status === status);
 };
 
 // ฟังก์ชันช่วยสำหรับ RepairProcess
@@ -1311,19 +1395,30 @@ export const getAllRepairProcesses = (): RepairProcess[] => {
 };
 
 export const getRepairProcessById = (id: string): RepairProcess | undefined => {
-    return mockRepairProcesses.find(process => process.id === id);
+    return mockRepairProcesses.find((process) => process.id === id);
 };
 
-export const getRepairProcessByRequestId = (requestId: string): RepairProcess | undefined => {
-    return mockRepairProcesses.find(process => process.requestId === requestId);
+export const getRepairProcessByRequestId = (
+    requestId: string
+): RepairProcess | undefined => {
+    return mockRepairProcesses.find(
+        (process) => process.requestId === requestId
+    );
 };
 
-export const getRepairProcessesByStatus = (status: RepairProcess['status']): RepairProcess[] => {
-    return mockRepairProcesses.filter(process => process.status === status);
+export const getRepairProcessesByStatus = (
+    status: RepairProcess["status"]
+): RepairProcess[] => {
+    return mockRepairProcesses.filter((process) => process.status === status);
 };
 
 // ฟังก์ชันช่วยสำหรับความสัมพันธ์ระหว่าง Request และ Process
-export const getRepairRequestWithProcess = (requestId: string): { request: RepairRequest | undefined, process: RepairProcess | undefined } => {
+export const getRepairRequestWithProcess = (
+    requestId: string
+): {
+    request: RepairRequest | undefined;
+    process: RepairProcess | undefined;
+} => {
     const request = getRepairRequestById(requestId);
     const process = getRepairProcessByRequestId(requestId);
     return { request, process };
@@ -1331,18 +1426,18 @@ export const getRepairRequestWithProcess = (requestId: string): { request: Repai
 
 // ฟังก์ชันสำหรับประเภทงานซ่อม
 export const getAllWorkTypes = (): WorkType[] => {
-    return mockWorkTypes.filter(wt => wt.status === "Active");
+    return mockWorkTypes.filter((wt) => wt.status === "Active");
 };
 
 export const getWorkTypeById = (id: string): WorkType | undefined => {
-    return mockWorkTypes.find(wt => wt.id === id);
+    return mockWorkTypes.find((wt) => wt.id === id);
 };
 
 // ฟังก์ชันสำหรับสาเหตุของปัญหา
 export const getAllProblemCauses = (): ProblemCause[] => {
-    return mockProblemCauses.filter(pc => pc.status === "Active");
+    return mockProblemCauses.filter((pc) => pc.status === "Active");
 };
 
 export const getProblemCauseById = (id: string): ProblemCause | undefined => {
-    return mockProblemCauses.find(pc => pc.id === id);
+    return mockProblemCauses.find((pc) => pc.id === id);
 };
