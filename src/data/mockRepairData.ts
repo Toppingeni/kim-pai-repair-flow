@@ -95,65 +95,52 @@ export const mockRepairHistory = [
         notes: "เปลี่ยนแนวทางการซ่อม มุ่งเน้นที่ระบบขับเคลื่อน",
     },
 ];
-import { 
-    getAllRepairRequests, 
-    getAllRepairProcesses, 
-    getTechnicianById,
-    type RepairRequest,
-    type RepairProcess
-} from "@/data/masterData";
 
-// รูปแบบข้อมูลอย่างง่ายสำหรับตารางรายการซ่อมของฉัน
-export type SimpleRepairItem = {
-    id: string;
-    machine: string;
-    problem: string;
-    date: string;
-    contactNumber?: string;
-    status: "new" | "progress" | "waiting" | "completed" | "pending" | "cancelled";
-    engineer?: string | string[];
-};
-
-// รวมข้อมูลจาก Request และ Process ให้อยู่ในรูปแบบที่ใช้แสดงผล
-export function getMyRepairs(): SimpleRepairItem[] {
-    const requests: RepairRequest[] = getAllRepairRequests();
-    const processes: RepairProcess[] = getAllRepairProcesses();
-
-    const reqItems: SimpleRepairItem[] = requests.map((r) => ({
-        id: r.id,
-        machine: r.machine,
-        problem: r.problem,
-        date: r.reportDate,
-        contactNumber: r.contactNumber,
-        status: (r.status === "pending" ? "new" : "cancelled"),
-    }));
-
-    const procItems: SimpleRepairItem[] = processes.map((p) => {
-        const related = requests.find((r) => r.id === p.requestId);
-        const names = p.assignedTechnicians
-            .map((id) => getTechnicianById(id)?.name || id);
-        const status: SimpleRepairItem["status"] =
-            p.status === "assigned" || p.status === "in_progress"
-                ? "progress"
-                : p.status === "waiting_parts"
-                ? "pending"
-                : p.status === "waiting_approval"
-                ? "waiting"
-                : p.status === "completed"
-                ? "completed"
-                : "cancelled";
-
-        return {
-            id: p.id,
-            machine: related?.machine || "",
-            problem: related?.problem || "",
-            date: related?.reportDate || "",
-            contactNumber: related?.contactNumber,
-            status,
-            engineer: names,
-        };
-    });
-
-    // รวมรายการ และอาจ sort ตามวันที่หากต้องการ
-    return [...reqItems, ...procItems];
-}
+// ข้อมูล mock สำหรับหน้า "รายการใบแจ้งซ่อมของฉัน"
+export const mockUserRepairs = [
+    {
+        id: mockOriginalRequest.documentNumber,
+        machine: mockOriginalRequest.machine,
+        problem: mockOriginalRequest.problem,
+        date: mockOriginalRequest.reportedDate,
+        contactNumber: mockOriginalRequest.contactNumber,
+        status: "waiting" as const,
+        engineer: "นายสมชาย",
+    },
+    {
+        id: "RR-A-68090002",
+        machine: "Packing M/C",
+        problem: "แพ็คไม่แน่น",
+        date: "16/07/2567",
+        contactNumber: "081-111-2222",
+        status: "completed" as const,
+        engineer: "นางสาวอร",
+    },
+    {
+        id: "RR-A-68090003",
+        machine: "Conveyor Belt #3",
+        problem: "สายพานขาด",
+        date: "14/07/2567",
+        contactNumber: "081-333-4444",
+        status: "completed" as const,
+        engineer: "นายสมชาย",
+    },
+    {
+        id: "RR-A-68090004",
+        machine: "Boiler #1",
+        problem: "แรงดันตก",
+        date: "12/07/2567",
+        contactNumber: "081-555-6666",
+        status: "completed" as const,
+        engineer: ["นางสาวอร", "นายวิชัย"],
+    },
+    {
+        id: "RR-A-68090005",
+        machine: "Mixer #2",
+        problem: "ใบผสมชำรุด",
+        date: "10/07/2567",
+        contactNumber: "081-777-8888",
+        status: "progress" as const,
+        engineer: "นายวิชัย",
+    },
+];

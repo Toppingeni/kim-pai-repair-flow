@@ -331,6 +331,8 @@ export const mockCompleteRepairs: CompleteRepairData[] = [
     },
 ];
 
+import { mockOriginalRequest, mockUserRepairs } from "@/data/mockRepairData";
+
 // ข้อมูล Mock สำหรับตารางแบบย่อ (Dashboard, AllRepairs)
 export const mockSimpleRepairs: SimpleRepairData[] = mockCompleteRepairs.map(
     (repair) => ({
@@ -349,11 +351,80 @@ export const getRepairById = (id: string): CompleteRepairData | undefined => {
     // ตรงตัวก่อน
     let found = mockCompleteRepairs.find((repair) => repair.id === id);
     if (found) return found;
-    // รองรับกรณีส่งรหัสใบร้อง R... มา ให้แมปไปยัง P... ด้วยเลขชุดเดียวกัน
-    if (id?.startsWith("R")) {
+    // รองรับกรณีรหัสรูปแบบ R... (เช่น R24070001) ให้แมปไปยัง P... ด้วยเลขชุดเดียวกัน
+    if (id?.startsWith("R") && !id.startsWith("RR-")) {
         const converted = `P${id.slice(1)}`;
         found = mockCompleteRepairs.find((repair) => repair.id === converted);
         if (found) return found;
+    }
+    // รองรับกรณีรหัสรูปแบบ RR-... (เช่น RR-A-68090001)
+    if (id?.startsWith("RR-")) {
+        // พยายามหาข้อมูลแบบย่อจาก mockUserRepairs ก่อน
+        const simple = mockUserRepairs.find((r) => r.id === id);
+        if (simple) {
+            const engineerName = Array.isArray(simple.engineer)
+                ? simple.engineer.join(", ")
+                : simple.engineer || undefined;
+            return {
+                id: simple.id,
+                machine: simple.machine,
+                location: mockOriginalRequest.location,
+                section: mockOriginalRequest.section,
+                problem: simple.problem,
+                requestDate: simple.date,
+                requestTime: mockOriginalRequest.reportedTime,
+                reporter: mockOriginalRequest.reporter,
+                contactNumber: mockOriginalRequest.contactNumber,
+                workType: "maintenance",
+                status: simple.status as CompleteRepairData["status"],
+                engineer: engineerName,
+                urgency: undefined,
+                priority: mockOriginalRequest.priorityLabel,
+                images: mockOriginalRequest.images,
+                notes: mockOriginalRequest.additionalDetails,
+                repairDetails: {
+                    startDate: simple.date,
+                    startTime: undefined,
+                    endDate: null,
+                    endTime: undefined,
+                    description: "",
+                    cause: "",
+                    result: null,
+                    usedParts: [],
+                },
+            };
+        }
+        // ถ้าไม่พบ ให้ fallback กลับไปที่ mockOriginalRequest (กรณีเป็น RR-A-68090001)
+        if (mockOriginalRequest.documentNumber === id) {
+            return {
+                id: mockOriginalRequest.documentNumber,
+                machine: mockOriginalRequest.machine,
+                location: mockOriginalRequest.location,
+                section: mockOriginalRequest.section,
+                problem: mockOriginalRequest.problem,
+                requestDate: mockOriginalRequest.reportedDate,
+                requestTime: mockOriginalRequest.reportedTime,
+                reporter: mockOriginalRequest.reporter,
+                contactNumber: mockOriginalRequest.contactNumber,
+                workType: "maintenance",
+                status: "waiting",
+                engineer: undefined,
+                urgency: undefined,
+                priority: mockOriginalRequest.priorityLabel,
+                images: mockOriginalRequest.images,
+                notes: mockOriginalRequest.additionalDetails,
+                repairDetails: {
+                    startDate: mockOriginalRequest.reportedDate,
+                    startTime: mockOriginalRequest.reportedTime,
+                    endDate: null,
+                    endTime: undefined,
+                    description: "",
+                    cause: "",
+                    result: null,
+                    usedParts: [],
+                },
+            };
+        }
     }
     return undefined;
 };

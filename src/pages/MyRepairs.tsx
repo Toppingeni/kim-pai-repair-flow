@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { RepairTable } from "@/components/dashboard/RepairTable";
+import { mockUserRepairs } from "@/data/mockRepairData";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,57 +15,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Search, Filter } from "lucide-react";
 
-// Mock data for user's repair requests - ใช้รูปแบบรหัสเอกสารตาม NewRepairForm (R{YY}{MM}0001)
-const mockUserRepairs = [
-  {
-    id: "R24070001",
-    machine: "Extruder A",
-    problem: "เสียงดังผิดปกติ",
-    date: "07/07/2568",
-    status: "progress" as const,
-    engineer: "นายสมชาย",
-  },
-  {
-    id: "R24070002", 
-    machine: "Packing M/C",
-    problem: "แพ็คไม่แน่น",
-    date: "05/07/2568",
-    status: "waiting" as const,
-    engineer: "นางสาวอร",
-  },
-  {
-    id: "R24070008",
-    machine: "Conveyor Belt #3",
-    problem: "สายพานขาด",
-    date: "08/07/2568",
-    status: "waiting" as const,
-    engineer: "นายสมชาย",
-  },
-  {
-    id: "R24070003",
-    machine: "Boiler #1", 
-    problem: "แรงดันตก",
-    date: "02/07/2568",
-    status: "completed" as const,
-    engineer: "นายสมชาย",
-  },
-  {
-    id: "R24070006",
-    machine: "Mixer #2",
-    problem: "ใบผสมชำรุด",
-    date: "01/07/2568", 
-    status: "completed" as const,
-    engineer: "นางสาวอร",
-  },
-  {
-    id: "R24070007",
-    machine: "Dryer",
-    problem: "อุณหภูมิไม่คงที่",
-    date: "29/06/2568",
-    status: "completed" as const,
-    engineer: "นายสมชาย",
-  },
-];
+// ใช้ข้อมูล mockUserRepairs จาก mockRepairData
 
 export function MyRepairs() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -187,6 +138,7 @@ export function MyRepairs() {
         <RepairTable
           repairs={filteredRepairs}
           userRole="production"
+          showContactColumn
           title={`รายการใบแจ้งซ่อม (${filteredRepairs.length} รายการ)`}
         />
       </div>
