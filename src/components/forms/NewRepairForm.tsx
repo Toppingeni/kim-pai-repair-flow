@@ -20,6 +20,14 @@ import {
 } from "@/components/ui/tooltip";
 import { Info, X } from "lucide-react";
 import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import {
     mockMachines,
     getSectionsByMachineId,
     getAllPriorityLevels,
@@ -60,7 +68,8 @@ function generateDocumentNumber(bchId?: string): string {
 const priorityLevels: PriorityLevel[] = getAllPriorityLevels();
 
 export function NewRepairForm() {
-    const [documentNumber, setDocumentNumber] = useState<string>(generateDocumentNumber());
+    // แสดง AUTO บนฟอร์ม จนกว่าจะกดบันทึกและส่ง
+    const [documentNumber] = useState<string>("AUTO");
     const [selectedMachine, setSelectedMachine] = useState("");
     const [selectedSection, setSelectedSection] = useState("");
 
@@ -69,23 +78,18 @@ export function NewRepairForm() {
     const [selectedImages, setSelectedImages] = useState<File[]>([]);
     const [availableSections, setAvailableSections] = useState<Section[]>([]);
 
+    // Dialog แจ้งเลขที่ใบคำร้องหลังส่ง
+    const [showSubmittedDialog, setShowSubmittedDialog] = useState(false);
+    const [submittedDocNumber, setSubmittedDocNumber] = useState<string>("");
+
     const selectedMachineData = machines.find((m) => m.id === selectedMachine);
     const selectedSectionData = availableSections.find(
         (s) => s.id === selectedSection
     );
 
-    // ฟังก์ชันสำหรับจัดการ format เบอร์ติดต่อ
-    const handleContactNumberChange = (
-        e: React.ChangeEvent<HTMLInputElement>
-    ) => {
-        const value = e.target.value.replace(/\D/g, ""); // เอาตัวอักษรที่ไม่ใช่ตัวเลขออก
-        if (value.length <= 10) {
-            let formatted = value;
-            if (value.length > 3) {
-                formatted = value.slice(0, 3) + "-" + value.slice(3);
-            }
-            setContactNumber(formatted);
-        }
+    // เบอร์ติดต่อ: รับเป็นข้อความอิสระ ไม่บังคับรูปแบบ
+    const handleContactNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setContactNumber(e.target.value);
     };
 
     // ฟังก์ชันสำหรับจัดการการเลือกไฟล์รูปภาพ
@@ -102,11 +106,7 @@ export function NewRepairForm() {
         setSelectedImages((prev) => prev.filter((_, i) => i !== index));
     };
 
-    // อัปเดตเลขที่เอกสารเมื่อเลือกเครื่องจักร (ดึง bchId จากเครื่อง)
-    useEffect(() => {
-        const m = machines.find((x) => x.id === selectedMachine);
-        setDocumentNumber(generateDocumentNumber(m?.bchId));
-    }, [selectedMachine]);
+    // ไม่ต้องอัปเดตเลขที่เอกสารตามเครื่อง ให้แสดง AUTO จนกว่าจะส่ง
 
     // อัปเดตส่วนประกอบเมื่อเลือกเครื่องจักร
     useEffect(() => {
@@ -124,15 +124,10 @@ export function NewRepairForm() {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        // Handle form submission
-        console.log("Form submitted", {
-            documentNumber,
-            selectedMachine,
-            selectedSection,
-            contactNumber,
-            priority,
-            images: selectedImages,
-        });
+        const m = machines.find((x) => x.id === selectedMachine);
+        const generated = generateDocumentNumber(m?.bchId);
+        setSubmittedDocNumber(generated);
+        setShowSubmittedDialog(true);
     };
 
     return (
@@ -274,13 +269,12 @@ export function NewRepairForm() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-1">
                                 <Label htmlFor="contact">เบอร์ติดต่อ</Label>
-                                <Input
-                                    id="contact"
-                                    value={contactNumber}
-                                    onChange={handleContactNumberChange}
-                                    placeholder="xxx-xxxxxxx"
-                                    maxLength={11}
-                                />
+                        <Input
+                            id="contact"
+                            value={contactNumber}
+                            onChange={handleContactNumberChange}
+                            placeholder="ระบุเบอร์ติดต่อ"
+                        />
                             </div>
                             <div className="space-y-1">
                                 <div className="flex items-center gap-2 mt-2">
@@ -424,6 +418,21 @@ export function NewRepairForm() {
                         บันทึกและส่งแจ้งซ่อม
                     </Button>
                 </div>
+
+                {/* Dialog แจ้งเลขที่ใบคำร้องหลังส่ง */}
+                <Dialog open={showSubmittedDialog} onOpenChange={setShowSubmittedDialog}>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>ส่งใบแจ้งซ่อมสำเร็จ</DialogTitle>
+                            <DialogDescription>
+                                เลขที่ใบคำร้องของคุณคือ {submittedDocNumber}
+                            </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter>
+                            <Button onClick={() => setShowSubmittedDialog(false)}>OK</Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
             </form>
         </div>
     );
