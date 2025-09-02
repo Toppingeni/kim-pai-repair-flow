@@ -88,7 +88,9 @@ export function NewRepairForm() {
     );
 
     // เบอร์ติดต่อ: รับเป็นข้อความอิสระ ไม่บังคับรูปแบบ
-    const handleContactNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleContactNumberChange = (
+        e: React.ChangeEvent<HTMLInputElement>
+    ) => {
         setContactNumber(e.target.value);
     };
 
@@ -134,7 +136,7 @@ export function NewRepairForm() {
         <div className="max-w-4xl mx-auto p-6 space-y-1">
             <div className="mb-3">
                 <h1 className="text-2xl font-bold text-foreground">
-                    สร้างใบแจ้งซ่อมใหม่
+                    สร้างใบร้องของงานซ่อมใหม่
                 </h1>
             </div>
 
@@ -269,12 +271,12 @@ export function NewRepairForm() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-1">
                                 <Label htmlFor="contact">เบอร์ติดต่อ</Label>
-                        <Input
-                            id="contact"
-                            value={contactNumber}
-                            onChange={handleContactNumberChange}
-                            placeholder="ระบุเบอร์ติดต่อ"
-                        />
+                                <Input
+                                    id="contact"
+                                    value={contactNumber}
+                                    onChange={handleContactNumberChange}
+                                    placeholder="ระบุเบอร์ติดต่อ"
+                                />
                             </div>
                             <div className="space-y-1">
                                 <div className="flex items-center gap-2 mt-2">
@@ -420,16 +422,23 @@ export function NewRepairForm() {
                 </div>
 
                 {/* Dialog แจ้งเลขที่ใบคำร้องหลังส่ง */}
-                <Dialog open={showSubmittedDialog} onOpenChange={setShowSubmittedDialog}>
+                <Dialog
+                    open={showSubmittedDialog}
+                    onOpenChange={setShowSubmittedDialog}
+                >
                     <DialogContent>
                         <DialogHeader>
-                            <DialogTitle>ส่งใบแจ้งซ่อมสำเร็จ</DialogTitle>
+                            <DialogTitle>ส่งใบสั่งงานซ่อมสำเร็จ</DialogTitle>
                             <DialogDescription>
                                 เลขที่ใบคำร้องของคุณคือ {submittedDocNumber}
                             </DialogDescription>
                         </DialogHeader>
                         <DialogFooter>
-                            <Button onClick={() => setShowSubmittedDialog(false)}>OK</Button>
+                            <Button
+                                onClick={() => setShowSubmittedDialog(false)}
+                            >
+                                OK
+                            </Button>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>

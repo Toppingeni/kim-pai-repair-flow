@@ -31,7 +31,7 @@ interface RepairRequestInfoProps {
 
 export function RepairRequestInfo({
     request,
-    title = "ข้อมูลใบแจ้งซ่อม",
+    title = "ข้อมูลใบสั่งงานซ่อม",
     defaultExpanded = false,
     className,
 }: RepairRequestInfoProps) {

@@ -99,7 +99,7 @@ export const mockRepairHistory = [
     },
 ];
 
-// ข้อมูล mock สำหรับหน้า "รายการใบแจ้งซ่อมของฉัน"
+// ข้อมูล mock สำหรับหน้า "รายการใบร้องของานซ่อมของฉัน"
 import { getMachineById, getTechniciansByIds } from "@/data/masterData";
 
 const machineName = (machineId: string) =>

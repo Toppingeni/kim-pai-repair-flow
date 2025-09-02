@@ -6,7 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { useUserRole } from "@/contexts/UserRoleContext";
-import { getRepairById, convertToRepairDetailFormat } from "@/data/allRepairsMockData";
+import {
+    getRepairById,
+    convertToRepairDetailFormat,
+} from "@/data/allRepairsMockData";
 import {
     ArrowLeft,
     Calendar,
@@ -60,16 +63,16 @@ export function RepairDetail() {
     const navigate = useNavigate();
     const { toast } = useToast();
     const { userRole } = useUserRole();
-    
+
     const completeRepairData = id ? getRepairById(id) : null;
-    
+
     if (!completeRepairData) {
         return (
             <MainLayout>
                 <div className="flex-1 p-6">
                     <div className="text-center">
                         <h1 className="text-2xl font-bold text-foreground">
-                            ไม่พบข้อมูลใบแจ้งซ่อม
+                            ไม่พบข้อมูลใบสั่งงานซ่อม
                         </h1>
                         <Button onClick={() => navigate(-1)} className="mt-4">
                             กลับหน้าเดิม
@@ -79,7 +82,7 @@ export function RepairDetail() {
             </MainLayout>
         );
     }
-    
+
     const repairData = convertToRepairDetailFormat(completeRepairData);
 
     const statusConfig = {
@@ -220,7 +223,7 @@ export function RepairDetail() {
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-2xl font-bold text-foreground">
-                            รายละเอียดใบแจ้งซ่อม {repairData.id}
+                            รายละเอียดใบสั่งงานซ่อม {repairData.id}
                         </h1>
                         <p className="text-muted-foreground">
                             {repairData.machine} - {repairData.location}

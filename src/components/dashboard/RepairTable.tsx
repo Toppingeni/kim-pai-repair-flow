@@ -92,7 +92,13 @@ const StatusBadge = ({ status }: { status: keyof typeof statusConfig }) => {
     );
 };
 
-export function RepairTable({ repairs, userRole, title, showEngineerColumn = true, showContactColumn = false }: RepairTableProps) {
+export function RepairTable({
+    repairs,
+    userRole,
+    title,
+    showEngineerColumn = true,
+    showContactColumn = false,
+}: RepairTableProps) {
     const navigate = useNavigate();
     const { acceptJob } = useRepairActions();
     const [selectedRepair, setSelectedRepair] = useState<RepairItem | null>(
@@ -208,13 +214,17 @@ export function RepairTable({ repairs, userRole, title, showEngineerColumn = tru
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>รหัสใบแจ้งซ่อม</TableHead>
+                                <TableHead>รหัสใบสั่งงานซ่อม</TableHead>
                                 <TableHead>เครื่องจักร</TableHead>
                                 <TableHead>ปัญหาเบื้องต้น</TableHead>
-                                {showContactColumn && <TableHead>เบอร์ติดต่อ</TableHead>}
+                                {showContactColumn && (
+                                    <TableHead>เบอร์ติดต่อ</TableHead>
+                                )}
                                 <TableHead>วันที่แจ้ง</TableHead>
                                 <TableHead>สถานะ</TableHead>
-                                {showEngineerColumn && <TableHead>ผู้รับผิดชอบ</TableHead>}
+                                {showEngineerColumn && (
+                                    <TableHead>ผู้รับผิดชอบ</TableHead>
+                                )}
                                 <TableHead>การดำเนินการ</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -227,27 +237,34 @@ export function RepairTable({ repairs, userRole, title, showEngineerColumn = tru
                                     <TableCell>{repair.machine}</TableCell>
                                     <TableCell>{repair.problem}</TableCell>
                                     {showContactColumn && (
-                                      <TableCell>{repair.contactNumber || '-'}</TableCell>
+                                        <TableCell>
+                                            {repair.contactNumber || "-"}
+                                        </TableCell>
                                     )}
                                     <TableCell>{repair.date}</TableCell>
                                     <TableCell>
                                         <StatusBadge status={repair.status} />
                                     </TableCell>
                                     {showEngineerColumn && (
-                                         <TableCell>
-                                             {Array.isArray(repair.engineer) ? (
-                                                 <div className="space-y-1">
-                                                     {repair.engineer.map((name, index) => (
-                                                         <div key={index} className="text-xs">
-                                                             {name}
-                                                         </div>
-                                                     ))}
-                                                 </div>
-                                             ) : (
-                                                 repair.engineer || "-"
-                                             )}
-                                         </TableCell>
-                                     )}
+                                        <TableCell>
+                                            {Array.isArray(repair.engineer) ? (
+                                                <div className="space-y-1">
+                                                    {repair.engineer.map(
+                                                        (name, index) => (
+                                                            <div
+                                                                key={index}
+                                                                className="text-xs"
+                                                            >
+                                                                {name}
+                                                            </div>
+                                                        )
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                repair.engineer || "-"
+                                            )}
+                                        </TableCell>
+                                    )}
                                     <TableCell>
                                         {getActionButtons(repair)}
                                     </TableCell>

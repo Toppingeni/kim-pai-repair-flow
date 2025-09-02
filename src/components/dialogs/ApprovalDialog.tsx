@@ -89,7 +89,9 @@ export function ApprovalDialog({
     >([]);
     const [showTechnicianDropdown, setShowTechnicianDropdown] = useState(false);
     const [technicianSearchQuery, setTechnicianSearchQuery] = useState("");
-    const [filteredTechnicians, setFilteredTechnicians] = useState<Technician[]>([]);
+    const [filteredTechnicians, setFilteredTechnicians] = useState<
+        Technician[]
+    >([]);
 
     // โหลดข้อมูลช่างเทคนิค
     useEffect(() => {
@@ -102,14 +104,26 @@ export function ApprovalDialog({
     // กรองช่างตามคำค้นหา
     useEffect(() => {
         if (technicianSearchQuery.trim() === "") {
-            setFilteredTechnicians(availableTechnicians.filter(tech => !formData.technicians.includes(tech.id)));
-        } else {
-            const filtered = availableTechnicians.filter(tech => 
-                !formData.technicians.includes(tech.id) && (
-                    tech.name.toLowerCase().includes(technicianSearchQuery.toLowerCase()) ||
-                    tech.employeeId.toLowerCase().includes(technicianSearchQuery.toLowerCase()) ||
-                    tech.specialization.some(spec => spec.toLowerCase().includes(technicianSearchQuery.toLowerCase()))
+            setFilteredTechnicians(
+                availableTechnicians.filter(
+                    (tech) => !formData.technicians.includes(tech.id)
                 )
+            );
+        } else {
+            const filtered = availableTechnicians.filter(
+                (tech) =>
+                    !formData.technicians.includes(tech.id) &&
+                    (tech.name
+                        .toLowerCase()
+                        .includes(technicianSearchQuery.toLowerCase()) ||
+                        tech.employeeId
+                            .toLowerCase()
+                            .includes(technicianSearchQuery.toLowerCase()) ||
+                        tech.specialization.some((spec) =>
+                            spec
+                                .toLowerCase()
+                                .includes(technicianSearchQuery.toLowerCase())
+                        ))
             );
             setFilteredTechnicians(filtered);
         }
@@ -216,8 +230,8 @@ export function ApprovalDialog({
                     </DialogHeader>
 
                     <div className="space-y-6">
-                        {/* ข้อมูลใบแจ้งซ่อม (Read-only) */}
-                        <RepairRequestInfo 
+                        {/* ข้อมูลใบสั่งงานซ่อม (Read-only) */}
+                        <RepairRequestInfo
                             request={{
                                 id: repairData.id,
                                 documentNumber: repairData.documentNumber,
@@ -234,7 +248,7 @@ export function ApprovalDialog({
                                 images: repairData.images,
                                 date: repairData.date,
                             }}
-                            title="ข้อมูลใบแจ้งซ่อม"
+                            title="ข้อมูลใบสั่งงานซ่อม"
                             defaultExpanded={true}
                         />
 
@@ -264,11 +278,16 @@ export function ApprovalDialog({
                                                 <SelectValue placeholder="เลือกประเภทงาน" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                {getAllWorkTypes().map((workType) => (
-                                                    <SelectItem key={workType.id} value={workType.id}>
-                                                        {workType.name}
-                                                    </SelectItem>
-                                                ))}
+                                                {getAllWorkTypes().map(
+                                                    (workType) => (
+                                                        <SelectItem
+                                                            key={workType.id}
+                                                            value={workType.id}
+                                                        >
+                                                            {workType.name}
+                                                        </SelectItem>
+                                                    )
+                                                )}
                                             </SelectContent>
                                         </Select>
                                     </div>
@@ -331,35 +350,55 @@ export function ApprovalDialog({
                                                     <div className="p-2 border-b">
                                                         <Input
                                                             placeholder="ค้นหาช่าง..."
-                                                            value={technicianSearchQuery}
-                                                            onChange={(e) => setTechnicianSearchQuery(e.target.value)}
+                                                            value={
+                                                                technicianSearchQuery
+                                                            }
+                                                            onChange={(e) =>
+                                                                setTechnicianSearchQuery(
+                                                                    e.target
+                                                                        .value
+                                                                )
+                                                            }
                                                             className="h-8 text-sm"
                                                             autoFocus
                                                         />
                                                     </div>
                                                     <div className="max-h-48 overflow-auto">
-                                                        {filteredTechnicians.map((tech) => (
-                                                            <div
-                                                                key={tech.id}
-                                                                className="px-3 py-2 hover:bg-accent cursor-pointer text-sm"
-                                                                onClick={() => {
-                                                                    handleAddTechnician(tech.id);
-                                                                    setTechnicianSearchQuery("");
-                                                                }}
-                                                            >
-                                                                <div className="font-medium">
-                                                                    {tech.name}
-                                                                </div>
-                                                                <div className="text-xs text-muted-foreground">
-                                                                    {
-                                                                        tech.organization
+                                                        {filteredTechnicians.map(
+                                                            (tech) => (
+                                                                <div
+                                                                    key={
+                                                                        tech.id
                                                                     }
+                                                                    className="px-3 py-2 hover:bg-accent cursor-pointer text-sm"
+                                                                    onClick={() => {
+                                                                        handleAddTechnician(
+                                                                            tech.id
+                                                                        );
+                                                                        setTechnicianSearchQuery(
+                                                                            ""
+                                                                        );
+                                                                    }}
+                                                                >
+                                                                    <div className="font-medium">
+                                                                        {
+                                                                            tech.name
+                                                                        }
+                                                                    </div>
+                                                                    <div className="text-xs text-muted-foreground">
+                                                                        {
+                                                                            tech.organization
+                                                                        }
+                                                                    </div>
                                                                 </div>
-                                                            </div>
-                                                        ))}
-                                                        {filteredTechnicians.length === 0 && (
+                                                            )
+                                                        )}
+                                                        {filteredTechnicians.length ===
+                                                            0 && (
                                                             <div className="px-3 py-2 text-sm text-muted-foreground">
-                                                                {technicianSearchQuery ? "ไม่พบช่างที่ตรงกับการค้นหา" : "ไม่มีช่างที่สามารถเลือกได้"}
+                                                                {technicianSearchQuery
+                                                                    ? "ไม่พบช่างที่ตรงกับการค้นหา"
+                                                                    : "ไม่มีช่างที่สามารถเลือกได้"}
                                                             </div>
                                                         )}
                                                     </div>

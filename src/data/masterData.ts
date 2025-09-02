@@ -133,9 +133,9 @@ export interface RepairRequest {
     updatedBy?: string;
 }
 
-// ใบแจ้งซ่อม (Process) - รหัสขึ้นต้นด้วย P
+// ใบสั่งงานซ่อม (Process) - รหัสขึ้นต้นด้วย P
 export interface RepairProcess {
-    id: string; // รหัสใบแจ้งซ่อม เช่น P24070001
+    id: string; // รหัสใบสั่งงานซ่อม เช่น P24070001
     requestId: string; // อ้างอิงไปยัง RepairRequest.id (ความสัมพันธ์ 1-1)
     documentNumber: string;
     assignedTechnicians: string[]; // อ้างอิงไปยัง Technician.id
@@ -1048,7 +1048,7 @@ export const mockRepairRequests: RepairRequest[] = [
     },
 ];
 
-// ข้อมูลใบแจ้งซ่อม (Process)
+// ข้อมูลใบสั่งงานซ่อม (Process)
 export const mockRepairProcesses: RepairProcess[] = [
     {
         id: "P24070001",
