@@ -1,6 +1,6 @@
 export const mockOriginalRequest = {
-    id: "R24070001", // ใช้รูปแบบเดียวกับหน้าสร้างใบแจ้งซ่อมใหม่ (R{YY}{MM}{NNNN})
-    documentNumber: "R24070001",
+    id: "RR-A-68090001", // ใช้รูปแบบเดียวกับหน้าสร้างใบแจ้งซ่อมใหม่ (R{YY}{MM}{NNNN})
+    documentNumber: "RR-A-68090001", // RR-[bchId]-[YYMMXXXX] โดย bchId ของ COL3 คือ A, วันที่ตัวอย่าง 68(ปีพ.ศ.) 09(เดือน) 0001
     machine: "เครื่องฉีดฟิล์ม Extrusion Line-COL",
     machineId: "COL3", // ให้ตรงกับ masterData ชุดใหม่
     location: "โรงงาน A - ชั้น 2", // เพิ่มสถานที่ตั้งให้ตรงกับ NewRepairForm
@@ -28,7 +28,7 @@ export const engineers = [
 // ข้อมูล mock สำหรับการอนุมัติใบสั่งงานซ่อม
 export const mockWorkOrderApproval = {
     id: "WO24070001",
-    repairRequestId: "R24070001",
+    repairRequestId: "RR-A-68090001",
     workType: "wt1", // อ้างอิงจาก masterData WorkType
     workTypeLabel: "BM (Break Down Maintenance)",
     plannedStartDate: "16/07/2567",

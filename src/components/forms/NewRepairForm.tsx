@@ -28,7 +28,7 @@ import {
     type PriorityLevel,
 } from "@/data/masterData";
 
-// แปลงข้อมูลจาก masterData ให้มีข้อมูลสถานที่ตั้ง
+// แปลงข้อมูลจาก masterData ให้มีข้อมูลสถานที่ตั้ง และ bchId
 const machines = mockMachines
     .filter((machine) => machine.status === "Active")
     .map((machine) => ({
@@ -38,25 +38,29 @@ const machines = mockMachines
         location:
             (machine.bchId && getBranchById(machine.bchId)?.name) ||
             "ไม่ระบุสถานที่",
+        bchId: machine.bchId,
     }));
 
 // ยกเลิกการ map แบบ hard-coded และใช้ branchMaster แทน
 
-// ฟังก์ชันสำหรับสร้างเลขที่เอกสาร
-function generateDocumentNumber(): string {
+// ฟังก์ชันสำหรับสร้างเลขที่เอกสาร RR-[bchId]-[YYMMXXXX]
+function generateDocumentNumber(bchId?: string): string {
     const now = new Date();
-    const year = now.getFullYear().toString().slice(-2);
-    const month = (now.getMonth() + 1).toString().padStart(2, "0");
-    const day = now.getDate().toString().padStart(2, "0");
-    const time = now.getTime().toString().slice(-4);
-    return `R${year}${month}0001`;
+    const beYear = now.getFullYear() + 543; // พ.ศ.
+    const yy = beYear.toString().slice(-2);
+    const mm = (now.getMonth() + 1).toString().padStart(2, "0");
+    const running = "0001"; // mock running number
+    const branch = bchId || "X"; // ถ้าไม่ทราบ bchId ให้เป็น X
+    return `RR-${branch}-${yy}${mm}${running}`;
 }
+
+// ยกเลิกเวอร์ชันเดิมของ generateDocumentNumber (ใช้เวอร์ชันที่รองรับ bchId ด้านบน)
 
 // ข้อมูลระดับความสำคัญจาก masterData
 const priorityLevels: PriorityLevel[] = getAllPriorityLevels();
 
 export function NewRepairForm() {
-    const [documentNumber] = useState(generateDocumentNumber());
+    const [documentNumber, setDocumentNumber] = useState<string>(generateDocumentNumber());
     const [selectedMachine, setSelectedMachine] = useState("");
     const [selectedSection, setSelectedSection] = useState("");
 
@@ -97,6 +101,12 @@ export function NewRepairForm() {
     const removeImage = (index: number) => {
         setSelectedImages((prev) => prev.filter((_, i) => i !== index));
     };
+
+    // อัปเดตเลขที่เอกสารเมื่อเลือกเครื่องจักร (ดึง bchId จากเครื่อง)
+    useEffect(() => {
+        const m = machines.find((x) => x.id === selectedMachine);
+        setDocumentNumber(generateDocumentNumber(m?.bchId));
+    }, [selectedMachine]);
 
     // อัปเดตส่วนประกอบเมื่อเลือกเครื่องจักร
     useEffect(() => {
