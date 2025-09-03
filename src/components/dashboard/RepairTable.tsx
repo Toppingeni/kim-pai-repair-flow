@@ -284,6 +284,7 @@ export function RepairTable({
                     onOpenChange={setShowApprovalDialog}
                     repairData={{
                         id: selectedRepair.id,
+                        machineId: (selectedRepair as any).machineId || (mockOriginalRequest as any).machineId,
                         machine: selectedRepair.machine,
                         problem: selectedRepair.problem,
                         date: selectedRepair.date,

@@ -3,6 +3,7 @@ import { RepairRequestInfo } from "@/components/shared/RepairRequestInfo";
 interface OriginalRequest {
     id: string;
     machine: string;
+    machineId?: string;
     problem: string;
     reporter: string;
     reportDate: string;
@@ -38,6 +39,7 @@ export function OriginalRequestInfo({ request }: OriginalRequestInfoProps) {
         documentNumber: request.documentNumber || request.id,
         location: request.location,
         machine: request.machine,
+        machineId: request.machineId,
         section: request.section,
         reportedDate: request.reportedDate || request.reportDate?.split(" ")[0],
         reportedTime: request.reportedTime || request.reportDate?.split(" ")[1],
@@ -55,6 +57,7 @@ export function OriginalRequestInfo({ request }: OriginalRequestInfoProps) {
             request={repairRequestData}
             title="ข้อมูลใบสั่งงานซ่อม"
             defaultExpanded={false}
+            editableSection
         />
     );
 }

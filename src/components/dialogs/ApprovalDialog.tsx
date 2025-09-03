@@ -34,6 +34,7 @@ import { RepairRequestInfo } from "@/components/shared/RepairRequestInfo";
 interface RepairData {
     id: string;
     machine: string;
+    machineId?: string;
     problem: string;
     date: string;
     status: string;
@@ -92,6 +93,14 @@ export function ApprovalDialog({
     const [filteredTechnicians, setFilteredTechnicians] = useState<
         Technician[]
     >([]);
+
+    // Editable Section state (for correcting Section)
+    const [editedSection, setEditedSection] = useState<string | undefined>(
+        repairData.section
+    );
+    useEffect(() => {
+        setEditedSection(repairData.section);
+    }, [repairData.section]);
 
     // โหลดข้อมูลช่างเทคนิค
     useEffect(() => {
@@ -237,7 +246,8 @@ export function ApprovalDialog({
                                 documentNumber: repairData.documentNumber,
                                 location: repairData.location,
                                 machine: repairData.machine,
-                                section: repairData.section,
+                                machineId: repairData.machineId,
+                                section: editedSection,
                                 reportedDate: repairData.reportedDate,
                                 reportedTime: repairData.reportedTime,
                                 reporter: repairData.reporter,
@@ -250,6 +260,8 @@ export function ApprovalDialog({
                             }}
                             title="ข้อมูลใบสั่งงานซ่อม"
                             defaultExpanded={true}
+                            editableSection
+                            onSectionChange={(name) => setEditedSection(name)}
                         />
 
                         {/* ฟอร์มอนุมัติงาน */}
