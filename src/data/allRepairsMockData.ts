@@ -58,7 +58,7 @@ export interface SimpleRepairData {
 // ข้อมูล Mock สำหรับการซ่อมแบบสมบูรณ์
 export const mockCompleteRepairs: CompleteRepairData[] = [
     {
-        id: "P24070001",
+        id: "RO-A-24070001",
         machine: "เครื่องอัดฟิล์ม Extruder Line 1",
         machineCode: "EXT-001",
         location: "อาคาร A ชั้น 1",
@@ -103,7 +103,7 @@ export const mockCompleteRepairs: CompleteRepairData[] = [
         },
     },
     {
-        id: "P24070002",
+        id: "RO-6-24070002",
         machine: "เครื่องตัดฟิล์ม Slitting Machine A",
         machineCode: "SLIT-001",
         location: "อาคาร B ชั้น 2",
@@ -132,7 +132,7 @@ export const mockCompleteRepairs: CompleteRepairData[] = [
         },
     },
     {
-        id: "P24070003",
+        id: "RO-A-24070003",
         machine: "เครื่องอัดฟิล์ม Extruder Line 1",
         machineCode: "EXT-001",
         location: "อาคาร A ชั้น 1",
@@ -168,7 +168,7 @@ export const mockCompleteRepairs: CompleteRepairData[] = [
         },
     },
     {
-        id: "P24070004",
+        id: "RO-6-24070004",
         machine: "Compressor",
         machineCode: "COMP-001",
         location: "อาคาร 1, ห้องเครื่องจักร",
@@ -186,7 +186,7 @@ export const mockCompleteRepairs: CompleteRepairData[] = [
         notes: "ตรวจพบจากการตรวจสอบประจำ",
     },
     {
-        id: "P24070005",
+        id: "RO-6-24070005",
         machine: "Conveyor",
         machineCode: "CONV-002",
         location: "อาคาร 2, Line 2",
@@ -205,7 +205,7 @@ export const mockCompleteRepairs: CompleteRepairData[] = [
         notes: "รอจัดลำดับความสำคัญ",
     },
     {
-        id: "P24070006",
+        id: "RO-A-24070006",
         machine: "Mixer A",
         machineCode: "MIX-001",
         location: "อาคาร 1, Line 3",
@@ -242,7 +242,7 @@ export const mockCompleteRepairs: CompleteRepairData[] = [
         },
     },
     {
-        id: "P24070007",
+        id: "RO-6-24070007",
         machine: "Cooling Tower",
         machineCode: "COOL-001",
         location: "อาคาร 1, หลังคา",
@@ -286,7 +286,7 @@ export const mockCompleteRepairs: CompleteRepairData[] = [
         },
     },
     {
-        id: "P24070008",
+        id: "RO-A-24070008",
         machine: "Conveyor Belt #3",
         machineCode: "CONV-003",
         location: "โรงงาน 1 ชั้น 2",

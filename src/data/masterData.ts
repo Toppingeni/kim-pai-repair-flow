@@ -111,7 +111,7 @@ export interface ProblemCause {
 
 // ใบร้องของงานซ่อม (Request) - รหัสขึ้นต้นด้วย R
 export interface RepairRequest {
-    id: string; // รหัสใบร้องของงานซ่อม เช่น R24070001
+    id: string;
     documentNumber: string;
     machineId: string;
     machine: string;
@@ -135,7 +135,7 @@ export interface RepairRequest {
 
 // ใบสั่งงานซ่อม (Process) - รหัสขึ้นต้นด้วย P
 export interface RepairProcess {
-    id: string; // รหัสใบสั่งงานซ่อม เช่น P24070001
+    id: string;
     requestId: string; // อ้างอิงไปยัง RepairRequest.id (ความสัมพันธ์ 1-1)
     documentNumber: string;
     assignedTechnicians: string[]; // อ้างอิงไปยัง Technician.id
@@ -1051,7 +1051,7 @@ export const mockRepairRequests: RepairRequest[] = [
 // ข้อมูลใบสั่งงานซ่อม (Process)
 export const mockRepairProcesses: RepairProcess[] = [
     {
-        id: "P24070001",
+        id: "RO-A-24070001",
         requestId: "RR-A-67070001",
         documentNumber: "PROC-2024-001",
         assignedTechnicians: ["tech1", "tech4"],
@@ -1087,7 +1087,7 @@ export const mockRepairProcesses: RepairProcess[] = [
         updatedBy: "นายสมชาย วิชาการ",
     },
     {
-        id: "P24070003",
+        id: "RO-A-24070003",
         requestId: "RR-A-67070003",
         documentNumber: "PROC-2024-003",
         assignedTechnicians: ["tech2", "tech3"],
@@ -1113,7 +1113,7 @@ export const mockRepairProcesses: RepairProcess[] = [
         updatedBy: "นายวิชัย เทคนิค",
     },
     {
-        id: "P24070002",
+        id: "RO-6-24070002",
         requestId: "RR-6-67070002",
         documentNumber: "PROC-2024-002",
         assignedTechnicians: ["tech2"],
@@ -1129,7 +1129,7 @@ export const mockRepairProcesses: RepairProcess[] = [
         updatedBy: "หัวหน้าแผนก สุรชัย",
     },
     {
-        id: "P24070004",
+        id: "RO-6-24070004",
         requestId: "RR-6-67070004",
         documentNumber: "PROC-2024-004",
         assignedTechnicians: ["tech3", "tech4"],
@@ -1145,7 +1145,7 @@ export const mockRepairProcesses: RepairProcess[] = [
         updatedBy: "หัวหน้าแผนก สุรชัย",
     },
     {
-        id: "P24070005",
+        id: "RO-6-24070005",
         requestId: "RR-6-67070002",
         documentNumber: "PROC-2024-005",
         assignedTechnicians: ["tech2"],
@@ -1161,7 +1161,7 @@ export const mockRepairProcesses: RepairProcess[] = [
         updatedBy: "หัวหน้าแผนก สุรชัย",
     },
     {
-        id: "P24070006",
+        id: "RO-A-24070006",
         requestId: "RR-A-67070003",
         documentNumber: "PROC-2024-006",
         assignedTechnicians: ["tech2"],
@@ -1187,7 +1187,7 @@ export const mockRepairProcesses: RepairProcess[] = [
         updatedBy: "นายวิชัย เทคนิค",
     },
     {
-        id: "P24070007",
+        id: "RO-6-24070007",
         requestId: "RR-6-67070004",
         documentNumber: "PROC-2024-007",
         assignedTechnicians: ["tech1", "tech2"],
@@ -1223,7 +1223,7 @@ export const mockRepairProcesses: RepairProcess[] = [
         updatedBy: "นายสมชาย วิชาการ",
     },
     {
-        id: "P24070008",
+        id: "RO-A-24070008",
         requestId: "RR-A-67070001",
         documentNumber: "PROC-2024-008",
         assignedTechnicians: ["tech1"],
