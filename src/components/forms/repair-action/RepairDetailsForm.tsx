@@ -32,8 +32,8 @@ interface RepairDetailsFormProps {
     onEngineerChange: (value: string) => void;
     repairResult: string;
     onRepairResultChange: (value: string) => void;
-    repairReason: string;
-    onRepairReasonChange: (value: string) => void;
+    repairReasons: Record<string, string>;
+    onRepairReasonChange: (status: string, value: string) => void;
     engineers: Engineer[];
 }
 
@@ -78,7 +78,7 @@ export function RepairDetailsForm({
     onEngineerChange,
     repairResult,
     onRepairResultChange,
-    repairReason,
+    repairReasons,
     onRepairReasonChange,
     engineers,
 }: RepairDetailsFormProps) {
@@ -363,8 +363,10 @@ export function RepairDetailsForm({
                             <Textarea
                                 placeholder="ระบุเหตุผล"
                                 rows={2}
-                                value={repairReason}
-                                onChange={(e) => onRepairReasonChange(e.target.value)}
+                                value={repairReasons[repairResult] || ""}
+                                onChange={(e) =>
+                                    onRepairReasonChange(repairResult, e.target.value)
+                                }
                             />
                         </div>
                     )}

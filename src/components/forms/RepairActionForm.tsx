@@ -22,8 +22,8 @@ export function RepairActionForm() {
         setSelectedEngineer,
         repairResult,
         setRepairResult,
-        repairReason,
-        setRepairReason,
+        repairReasons,
+        setRepairReasons,
         parts,
         addPart,
         removePart,
@@ -60,8 +60,10 @@ export function RepairActionForm() {
                     onEngineerChange={setSelectedEngineer}
                     repairResult={repairResult}
                     onRepairResultChange={setRepairResult}
-                    repairReason={repairReason}
-                    onRepairReasonChange={setRepairReason}
+                    repairReasons={repairReasons}
+                    onRepairReasonChange={(status, value) =>
+                        setRepairReasons((prev) => ({ ...prev, [status]: value }))
+                    }
                     engineers={engineers}
                 />
 
@@ -74,7 +76,7 @@ export function RepairActionForm() {
                 />
                 <ActionButtons
                     repairResult={repairResult}
-                    repairReason={repairReason}
+                    repairReason={repairReasons[repairResult]}
                     repairId={id || mockOriginalRequest.id}
                     onSave={() => handleSave()}
                 />
