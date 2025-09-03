@@ -4,6 +4,7 @@ import { Part } from "@/components/forms/repair-action/PartsManagementEnhanced";
 export function useRepairForm() {
   const [selectedEngineer, setSelectedEngineer] = useState("eng1");
   const [repairResult, setRepairResult] = useState("");
+  const [repairReason, setRepairReason] = useState("");
   const [parts, setParts] = useState<Part[]>([
     {
       id: "1",
@@ -66,6 +67,8 @@ export function useRepairForm() {
     setSelectedEngineer,
     repairResult,
     setRepairResult,
+    repairReason,
+    setRepairReason,
     parts,
     addPart,
     removePart,
