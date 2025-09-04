@@ -1123,6 +1123,53 @@ export const mockRepairRequests: RepairRequest[] = [
         createdBy: "นายสมศักดิ์ ใจดี",
         updatedBy: "นายสมชาย วิชาการ",
     },
+    // ใบร้องของานซ่อม - รถยนต์ (Car)
+    {
+        id: "RR-6-68080010",
+        documentNumber: "RR-6-68080010",
+        machineId: "CAR01",
+        machine: "รถยนต์ (Car)",
+        location: "ลานจอดรถ หน้าอาคาร",
+        section: "ระบบไฟฟ้า",
+        problem: "สตาร์ทไม่ติด แบตเตอรี่เสื่อมแรงดันตก",
+        reporter: "คุณเอก ฝ่ายขนส่ง",
+        reportDate: "09/07/2568",
+        reportTime: "09:15",
+        priority: "level2",
+        priorityLabel: "ระดับ 2 วิ่งอยู่แต่เสี่ยงต่อคุณภาพ",
+        contactNumber: "081-111-2222",
+        additionalDetails:
+            "ตรวจพบไฟหน้าและระบบไฟดับเป็นบางครั้ง ควรตรวจแบตเตอรี่และไดชาร์จ",
+        status: "pending",
+        createdAt: "09/07/2568 09:15",
+        updatedAt: "09/07/2568 09:20",
+        createdBy: "คุณเอก ฝ่ายขนส่ง",
+        updatedBy: "วิศวกร ประจำแผนก",
+    },
+    // ใบร้องของานซ่อม - เครื่องปรับอากาศ (Air Conditioner)
+    {
+        id: "RR-6-68080011",
+        documentNumber: "RR-6-68080011",
+        machineId: "AC01",
+        machine: "เครื่องปรับอากาศ (Air Conditioner)",
+        location: "อาคารสำนักงาน ชั้น 2",
+        section: "ชุดคอมเพรสเซอร์",
+        problem: "คอมเพรสเซอร์มีเสียงดังและไม่ทำความเย็น",
+        reporter: "คุณนิด ฝ่ายธุรการ",
+        reportDate: "09/07/2568",
+        reportTime: "13:45",
+        priority: "level3",
+        priorityLabel:
+            "ระดับ 3 วิ่งอยู่แต่ output drop ยังไม่กระทบคุณภาพ (ไม่ควรปล่อยทิ้งใว้)",
+        contactNumber: "082-222-3333",
+        additionalDetails:
+            "เครื่องทำงานต่อเนื่องแต่ลมไม่เย็น อุณหภูมิห้องสูง ควรตรวจสารทำความเย็นและคอมเพรสเซอร์",
+        status: "pending",
+        createdAt: "09/07/2568 13:45",
+        updatedAt: "09/07/2568 13:50",
+        createdBy: "คุณนิด ฝ่ายธุรการ",
+        updatedBy: "วิศวกร ประจำแผนก",
+    },
 ];
 
 // ข้อมูลใบสั่งงานซ่อม (Process)
