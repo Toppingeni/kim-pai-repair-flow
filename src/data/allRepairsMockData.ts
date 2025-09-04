@@ -35,7 +35,7 @@ export interface CompleteRepairData {
     reporter: string;
     contactNumber?: string;
     workType?: string;
-    status: "new" | "pending" | "progress" | "waiting" | "completed";
+    status: "new" | "pending" | "progress" | "waiting" | "completed" | "cancelled";
     engineer?: string;
     urgency?: string;
     priority?: string;
@@ -50,7 +50,7 @@ export interface SimpleRepairData {
     machine: string;
     problem: string;
     date: string;
-    status: "new" | "pending" | "progress" | "waiting" | "completed";
+    status: "new" | "pending" | "progress" | "waiting" | "completed" | "cancelled";
     engineer?: string;
     reporter?: string;
 }
@@ -380,7 +380,12 @@ export const getRepairById = (id: string): CompleteRepairData | undefined => {
                 reporter: req.reporter,
                 contactNumber: req.contactNumber,
                 workType: "maintenance",
-                status: "waiting",
+                status:
+                    req.status === "waiting"
+                        ? "waiting"
+                        : req.status === "new"
+                        ? "new"
+                        : "cancelled",
                 engineer: engineerName,
                 urgency: undefined,
                 priority: req.priorityLabel,

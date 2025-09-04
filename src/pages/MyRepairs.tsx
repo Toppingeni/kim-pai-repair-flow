@@ -21,22 +21,23 @@ export function MyRepairs() {
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
 
-    // แปลง mockRepairRequests -> รูปแบบที่ RepairTable ต้องการ แบบสอดคล้องกับ mockdata
-    const toTableStatus = (
-        s: "pending" | "waiting" | "rejected"
-    ): "new" | "waiting" | "cancelled" => {
-        if (s === "waiting") return "waiting";
-        if (s === "pending") return "new";
-        return "cancelled";
-    };
+    // ใช้สถานะจาก mockdata โดยตรง: new | waiting | cancelled
     const allRequests = getAllRepairRequests();
-    const myRepairs = allRequests.map((r) => ({
+    type RequestListStatus = "new" | "waiting" | "cancelled";
+    const myRepairs: {
+        id: string;
+        machine: string;
+        problem: string;
+        date: string;
+        contactNumber?: string;
+        status: RequestListStatus;
+    }[] = allRequests.map((r) => ({
         id: r.id,
         machine: r.machine,
         problem: r.problem,
         date: r.reportDate,
         contactNumber: r.contactNumber,
-        status: toTableStatus(r.status),
+        status: r.status as RequestListStatus,
     }));
 
     const filteredRepairs = myRepairs.filter((repair) => {

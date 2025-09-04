@@ -126,7 +126,7 @@ export interface RepairRequest {
     contactNumber?: string;
     additionalDetails?: string;
     images?: string[];
-    status: "pending" | "waiting" | "rejected"; // pending=ใหม่, waiting=รอยืนยันปิดงาน, rejected=ยกเลิก
+    status: "new" | "waiting" | "cancelled"; // new=งานใหม่, waiting=รอยืนยันปิดงาน, cancelled=ยกเลิก
     createdAt: string;
     updatedAt: string;
     createdBy: string;
@@ -1414,7 +1414,7 @@ export const mockRepairRequests: RepairRequest[] = [
         contactNumber: "081-123-4567",
         additionalDetails:
             "เครื่องหยุดทำงานขณะกำลังผลิต ส่งผลกระทบต่อแผนการผลิต",
-        status: "pending",
+        status: "new",
         createdAt: "15/7/2567 08:30",
         updatedAt: "15/7/2567 09:00",
         createdBy: "นายสมศักดิ์ ผู้ปฏิบัติการ",
@@ -1435,7 +1435,7 @@ export const mockRepairRequests: RepairRequest[] = [
         priorityLabel: "ระดับ 2 วิ่งอยู่แต่เสี่ยงต่อคุณภาพ",
         contactNumber: "082-345-6789",
         additionalDetails: "ใบมีดใช้งานมานาน ควรเปลี่ยนใหม่",
-        status: "pending",
+        status: "new",
         createdAt: "16/7/2567 14:15",
         updatedAt: "16/7/2567 14:15",
         createdBy: "นายวิชัย ช่างเทคนิค",
@@ -1455,7 +1455,7 @@ export const mockRepairRequests: RepairRequest[] = [
         priorityLabel: "ระดับ 3 วิ่งอยู่แต่ output drop ยังไม่กระทบคุณภาพ",
         contactNumber: "083-456-7890",
         additionalDetails: "ลูกกลิ้งสั่นมากขึ้นเรื่อยๆ อาจเป็นปัญหาแบริ่ง",
-        status: "pending",
+        status: "new",
         createdAt: "17/7/2567 10:45",
         updatedAt: "17/7/2567 11:00",
         createdBy: "นางสาวสุดา ช่างฝีมือ",
@@ -1476,7 +1476,7 @@ export const mockRepairRequests: RepairRequest[] = [
         priorityLabel: "ระดับ 4 เครื่องจักรมีปัญหา แต่ไม่ส่งผลต่อการผลิต",
         contactNumber: "084-567-8901",
         additionalDetails: "หัวพิมพ์อาจอุดตัน ต้องทำความสะอาด",
-        status: "rejected",
+        status: "cancelled",
         createdAt: "18/7/2567 16:20",
         updatedAt: "18/7/2567 17:00",
         createdBy: "นายอนุชา ซ่อมแซม",
@@ -1497,7 +1497,7 @@ export const mockRepairRequests: RepairRequest[] = [
         priorityLabel: "ระดับ 2 วิ่งอยู่แต่เสี่ยงต่อคุณภาพ",
         contactNumber: "084-567-8901",
         additionalDetails: "รอจัดลำดับความสำคัญ",
-        status: "pending",
+        status: "waiting",
         createdAt: "08/07/2568 11:30",
         updatedAt: "08/07/2568 12:00",
         createdBy: "สมหญิง (ฝ่ายผลิต)",
@@ -1518,7 +1518,7 @@ export const mockRepairRequests: RepairRequest[] = [
         priorityLabel: "ระดับ 2 วิ่งอยู่แต่เสี่ยงต่อคุณภาพ",
         contactNumber: "085-678-9012",
         additionalDetails: "กำลังดำเนินการซ่อม",
-        status: "pending",
+        status: "new",
         createdAt: "06/07/2568 13:15",
         updatedAt: "06/07/2568 14:00",
         createdBy: "สมปอง (ฝ่ายผลิต)",
@@ -1539,7 +1539,7 @@ export const mockRepairRequests: RepairRequest[] = [
         priorityLabel: "ระดับ 1 เครื่องจักรหยุดทำงาน",
         contactNumber: "086-789-0123",
         additionalDetails: "ซ่อมเสร็จแล้ว ระบบทำงานปกติ",
-        status: "pending",
+        status: "new",
         createdAt: "04/07/2568 07:30",
         updatedAt: "04/07/2568 15:30",
         createdBy: "สมคิด (ฝ่ายซ่อมบำรุง)",
@@ -1561,7 +1561,7 @@ export const mockRepairRequests: RepairRequest[] = [
         contactNumber: "081-234-5678",
         additionalDetails:
             "สายพานลำเลียงขาดจากการใช้งานหนัก ต้องเปลี่ยนสายพานใหม่ทั้งเส้น",
-        status: "pending",
+        status: "new",
         createdAt: "08/07/2568 08:30",
         updatedAt: "08/07/2568 14:30",
         createdBy: "นายสมศักดิ์ ใจดี",
@@ -1610,7 +1610,7 @@ export const mockRepairRequests: RepairRequest[] = [
         additionalDetails:
             "เครื่องทำงานต่อเนื่องแต่ลมไม่เย็น อุณหภูมิห้องสูง ควรตรวจสารทำความเย็นและคอมเพรสเซอร์",
         images: ["/src/data/imgs/ac_compressor.jpeg"],
-        status: "pending",
+        status: "new",
         createdAt: "09/07/2568 13:45",
         updatedAt: "09/07/2568 13:50",
         createdBy: "คุณนิด ฝ่ายธุรการ",

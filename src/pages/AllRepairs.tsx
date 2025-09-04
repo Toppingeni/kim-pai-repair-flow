@@ -104,7 +104,11 @@ export function AllRepairs() {
             reportDate: request.reportDate,
             date: request.reportDate, // เพิ่ม field date ที่ RepairItem ต้องการ
             priority: request.priorityLabel,
-            status: (request.status === "pending" ? "new" : "cancelled") as
+            status: (request.status === "new"
+                ? "new"
+                : request.status === "waiting"
+                ? "waiting"
+                : "cancelled") as
                 | "new"
                 | "progress"
                 | "waiting"
@@ -399,7 +403,7 @@ export function AllRepairs() {
                             <div className="text-2xl font-bold text-red-600">
                                 {
                                     repairRequests.filter(
-                                        (r) => r.status === "rejected"
+                                        (r) => r.status === "cancelled"
                                     ).length
                                 }
                             </div>
