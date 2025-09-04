@@ -332,7 +332,7 @@ export const mockCompleteRepairs: CompleteRepairData[] = [
 ];
 
 import { mockOriginalRequest, mockUserRepairs } from "@/data/mockRepairData";
-import { getRepairRequestById } from "@/data/masterData";
+import { getRepairRequestById, getRepairProcessByRequestId } from "@/data/masterData";
 
 // ข้อมูล Mock สำหรับตารางแบบย่อ (Dashboard, AllRepairs)
 export const mockSimpleRepairs: SimpleRepairData[] = mockCompleteRepairs.map(
@@ -363,12 +363,31 @@ export const getRepairById = (id: string): CompleteRepairData | undefined => {
         const req = getRepairRequestById(id);
         // ถ้ามีข้อมูลใบร้องใน master ใช้มันเป็นหลัก
         if (req) {
+            const proc = getRepairProcessByRequestId(req.id);
             const simple = mockUserRepairs.find((r) => r.id === id);
             const engineerName = simple
                 ? Array.isArray(simple.engineer)
                     ? simple.engineer.join(", ")
                     : (simple.engineer as string | undefined)
                 : undefined;
+            const usedParts = (proc?.usedParts || []).map((p) => ({
+                name: p.partName,
+                code: p.partCode,
+                quantity: p.quantity,
+                unit: p.unit,
+                status: "ใช้แล้ว",
+            }));
+            const mapProcStatus = (s: string | undefined): CompleteRepairData["status"] => {
+                if (s === "waiting_approval") return "waiting";
+                if (s === "waiting_parts") return "pending";
+                if (s === "assigned" || s === "in_progress") return "progress";
+                if (s === "completed") return "completed";
+                return req.status === "waiting"
+                    ? "waiting"
+                    : req.status === "new"
+                    ? "new"
+                    : "cancelled";
+            };
             return {
                 id: req.id,
                 machine: req.machine,
@@ -380,26 +399,21 @@ export const getRepairById = (id: string): CompleteRepairData | undefined => {
                 reporter: req.reporter,
                 contactNumber: req.contactNumber,
                 workType: "maintenance",
-                status:
-                    req.status === "waiting"
-                        ? "waiting"
-                        : req.status === "new"
-                        ? "new"
-                        : "cancelled",
+                status: mapProcStatus(proc?.status),
                 engineer: engineerName,
                 urgency: undefined,
                 priority: req.priorityLabel,
                 images: req.images,
                 notes: req.additionalDetails,
                 repairDetails: {
-                    startDate: req.reportDate,
-                    startTime: req.reportTime,
-                    endDate: null,
+                    startDate: proc?.actualStartDate || req.reportDate,
+                    startTime: proc?.actualStartDate ? undefined : req.reportTime,
+                    endDate: proc?.actualEndDate || null,
                     endTime: undefined,
-                    description: "",
+                    description: proc?.repairMethod || "",
                     cause: "",
                     result: null,
-                    usedParts: [],
+                    usedParts,
                 },
             };
         }
