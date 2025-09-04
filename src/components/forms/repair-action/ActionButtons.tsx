@@ -68,17 +68,17 @@ export function ActionButtons({
                     ส่งให้ฝ่ายผลิตยืนยันการปิดงาน
                 </Button>
             );
-            buttons.push(
-                <Button
-                    key="close"
-                    type="button"
-                    variant="destructive"
-                    onClick={handleCloseJob}
-                    disabled={loading}
-                >
-                    ปิดงาน
-                </Button>
-            );
+            // buttons.push(
+            //     <Button
+            //         key="close"
+            //         type="button"
+            //         variant="destructive"
+            //         onClick={handleCloseJob}
+            //         disabled={loading}
+            //     >
+            //         ปิดงาน
+            //     </Button>
+            // );
         }
 
         if (repairResult === "failed") {
