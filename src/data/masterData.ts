@@ -212,6 +212,18 @@ export const mockMachines: Machine[] = [
         createdBy: "ระบบ",
         updatedBy: "ระบบ",
     },
+    // เพิ่มเครื่องที่อ้างถึงในใบร้องของงาน
+    {
+        id: "BM01",
+        name: "W6-เครื่องผสมเม็ด MIX 1",
+        bchId: "B",
+        status: "Active",
+        sectionsCount: 0,
+        createdAt: "1/1/2567",
+        updatedAt: "1/1/2567",
+        createdBy: "ระบบ",
+        updatedBy: "ระบบ",
+    },
     // ตัวอย่างเพิ่ม: รถยนต์ และ เครื่องปรับอากาศ
     {
         id: "CAR01",
@@ -227,6 +239,39 @@ export const mockMachines: Machine[] = [
     {
         id: "AC01",
         name: "เครื่องปรับอากาศ (Air Conditioner)",
+        bchId: "6",
+        status: "Active",
+        sectionsCount: 0,
+        createdAt: "1/1/2567",
+        updatedAt: "1/1/2567",
+        createdBy: "ระบบ",
+        updatedBy: "ระบบ",
+    },
+    {
+        id: "LM82",
+        name: "W6-เครื่อง METALLIZER 2",
+        bchId: "6",
+        status: "Active",
+        sectionsCount: 0,
+        createdAt: "1/1/2567",
+        updatedAt: "1/1/2567",
+        createdBy: "ระบบ",
+        updatedBy: "ระบบ",
+    },
+    {
+        id: "SS01",
+        name: "W6-เครื่องผ่า/กรอ SideSeal-01",
+        bchId: "6",
+        status: "Active",
+        sectionsCount: 0,
+        createdAt: "1/1/2567",
+        updatedAt: "1/1/2567",
+        createdBy: "ระบบ",
+        updatedBy: "ระบบ",
+    },
+    {
+        id: "FD01",
+        name: "W6-เครื่องผ่า/กรอ Folding",
         bchId: "6",
         status: "Active",
         sectionsCount: 0,
@@ -1403,7 +1448,10 @@ export const mockRepairRequests: RepairRequest[] = [
         documentNumber: "RR-A-67070001",
         machineId: "COL3",
         machine: "เครื่องฉีดฟิล์ม Extrusion Line-COL",
-        location: "อาคาร A ชั้น 1",
+        location:
+            branchMaster.find(
+                (b) => b.id === (mockMachines.find((m) => m.id === "COL3")?.bchId || "")
+            )?.name || "",
         section: "หน่วยหลอมพลาสติก (Extruder)",
         problem: "เครื่องหยุดทำงานกะทันหัน ไฟแสดงสถานะขาว",
         reporter: "นายสมศักดิ์ ผู้ปฏิบัติการ",
@@ -1425,7 +1473,10 @@ export const mockRepairRequests: RepairRequest[] = [
         documentNumber: "RR-6-67070002",
         machineId: "LS91",
         machine: "W6-เครื่องผ่า/กรอ SLITTER 1",
-        location: "อาคาร B ชั้น 2",
+        location:
+            branchMaster.find(
+                (b) => b.id === (mockMachines.find((m) => m.id === "LS91")?.bchId || "")
+            )?.name || "",
         section: "หน่วยตัด (Cutting Unit)",
         problem: "ใบมีดตัดไม่คม ตัดฟิล์มไม่เรียบ",
         reporter: "นายวิชัย ช่างเทคนิค",
@@ -1445,7 +1496,10 @@ export const mockRepairRequests: RepairRequest[] = [
         documentNumber: "RR-A-67070003",
         machineId: "COL3",
         machine: "เครื่องฉีดฟิล์ม Extrusion Line-COL",
-        location: "อาคาร A ชั้น 1",
+        location:
+            branchMaster.find(
+                (b) => b.id === (mockMachines.find((m) => m.id === "COL3")?.bchId || "")
+            )?.name || "",
         section: "หน่วยม้วนฟิล์ม (Winding Unit)",
         problem: "ลูกกลิ้งม้วนฟิล์มสั่นผิดปกติ",
         reporter: "นางสาวสุดา ช่างฝีมือ",
@@ -1466,7 +1520,10 @@ export const mockRepairRequests: RepairRequest[] = [
         documentNumber: "RR-6-67070004",
         machineId: "LM81",
         machine: "W6-เครื่อง METALLIZER 1",
-        location: "อาคาร C ชั้น 1",
+        location:
+            branchMaster.find(
+                (b) => b.id === (mockMachines.find((m) => m.id === "LM81")?.bchId || "")
+            )?.name || "",
         section: "หน่วยพิมพ์ (Printing Unit)",
         problem: "หัวพิมพ์สีไม่ออกสี",
         reporter: "นายอนุชา ซ่อมแซม",
@@ -1487,7 +1544,10 @@ export const mockRepairRequests: RepairRequest[] = [
         documentNumber: "RR-6-68070005",
         machineId: "FD01",
         machine: "W6-เครื่องผ่า/กรอ Folding",
-        location: "อาคาร 2, Line 2",
+        location:
+            branchMaster.find(
+                (b) => b.id === (mockMachines.find((m) => m.id === "FD01")?.bchId || "")
+            )?.name || "",
         section: "ฝ่ายขนส่ง",
         problem: "มอเตอร์ไม่หมุน ขาดการหล่อลื่น",
         reporter: "สมหญิง (ฝ่ายผลิต)",
@@ -1508,7 +1568,10 @@ export const mockRepairRequests: RepairRequest[] = [
         documentNumber: "RR-B-68070006",
         machineId: "BM01",
         machine: "W6-เครื่องผสมเม็ด MIX 1",
-        location: "อาคาร 1, Line 3",
+        location:
+            branchMaster.find(
+                (b) => b.id === (mockMachines.find((m) => m.id === "BM01")?.bchId || "")
+            )?.name || "",
         section: "ฝ่ายผสม",
         problem: "ใบมีดสึกหรอ",
         reporter: "สมปอง (ฝ่ายผลิต)",
@@ -1529,7 +1592,10 @@ export const mockRepairRequests: RepairRequest[] = [
         documentNumber: "RR-6-68070007",
         machineId: "LM82",
         machine: "W6-เครื่อง METALLIZER 2",
-        location: "อาคาร 1, หลังคา",
+        location:
+            branchMaster.find(
+                (b) => b.id === (mockMachines.find((m) => m.id === "LM82")?.bchId || "")
+            )?.name || "",
         section: "ฝ่ายสาธารณูปโภค",
         problem: "ปั๊มน้ำไม่ทำงาน",
         reporter: "สมคิด (ฝ่ายซ่อมบำรุง)",
@@ -1550,7 +1616,10 @@ export const mockRepairRequests: RepairRequest[] = [
         documentNumber: "RR-6-68070008",
         machineId: "SS01",
         machine: "W6-เครื่องผ่า/กรอ SideSeal-01",
-        location: "โรงงาน 1 ชั้น 2",
+        location:
+            branchMaster.find(
+                (b) => b.id === (mockMachines.find((m) => m.id === "SS01")?.bchId || "")
+            )?.name || "",
         section: "ฝ่ายผลิต A",
         problem: "สายพานขาด",
         reporter: "นายสมศักดิ์ ใจดี",
@@ -1573,7 +1642,10 @@ export const mockRepairRequests: RepairRequest[] = [
         documentNumber: "RR-6-68080010",
         machineId: "CAR01",
         machine: "รถยนต์ (Car)",
-        location: "ลานจอดรถ หน้าอาคาร",
+        location:
+            branchMaster.find(
+                (b) => b.id === (mockMachines.find((m) => m.id === "CAR01")?.bchId || "")
+            )?.name || "",
         section: "ระบบไฟฟ้า",
         problem: "สตาร์ทไม่ติด แบตเตอรี่เสื่อมแรงดันตก",
         reporter: "คุณเอก ฝ่ายขนส่ง",
@@ -1597,7 +1669,10 @@ export const mockRepairRequests: RepairRequest[] = [
         documentNumber: "RR-6-68080011",
         machineId: "AC01",
         machine: "เครื่องปรับอากาศ (Air Conditioner)",
-        location: "อาคารสำนักงาน ชั้น 2",
+        location:
+            branchMaster.find(
+                (b) => b.id === (mockMachines.find((m) => m.id === "AC01")?.bchId || "")
+            )?.name || "",
         section: "ชุดคอมเพรสเซอร์",
         problem: "คอมเพรสเซอร์มีเสียงดังและไม่ทำความเย็น",
         reporter: "คุณนิด ฝ่ายธุรการ",
