@@ -212,6 +212,29 @@ export const mockMachines: Machine[] = [
         createdBy: "ระบบ",
         updatedBy: "ระบบ",
     },
+    // ตัวอย่างเพิ่ม: รถยนต์ และ เครื่องปรับอากาศ
+    {
+        id: "CAR01",
+        name: "รถยนต์ (Car)",
+        bchId: "6",
+        status: "Active",
+        sectionsCount: 0,
+        createdAt: "1/1/2567",
+        updatedAt: "1/1/2567",
+        createdBy: "ระบบ",
+        updatedBy: "ระบบ",
+    },
+    {
+        id: "AC01",
+        name: "เครื่องปรับอากาศ (Air Conditioner)",
+        bchId: "6",
+        status: "Active",
+        sectionsCount: 0,
+        createdAt: "1/1/2567",
+        updatedAt: "1/1/2567",
+        createdBy: "ระบบ",
+        updatedBy: "ระบบ",
+    },
     // { id: "LM82", name: "W6-เครื่อง METALLIZER 2", bchId: "6", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
     // { id: "LS94", name: "W6-เครื่องผ่า/กรอ SLITTER 4", bchId: "6", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
     // { id: "LS97", name: "W6-เครื่องผ่า/กรอ SLITTER 7", bchId: "6", status: "Active", sectionsCount: 0, createdAt: "1/1/2567", updatedAt: "1/1/2567", createdBy: "ระบบ", updatedBy: "ระบบ" },
@@ -289,6 +312,14 @@ export const mockSections: Section[] = [
         status: "Inactive",
         componentsCount: 1,
     },
+    // รถยนต์ (Car)
+    { id: "s1001", machineId: "CAR01", name: "เครื่องยนต์", status: "Active", componentsCount: 3 },
+    { id: "s1002", machineId: "CAR01", name: "ระบบไฟฟ้า", status: "Active", componentsCount: 3 },
+    { id: "s1003", machineId: "CAR01", name: "ระบบเบรก", status: "Active", componentsCount: 3 },
+    // เครื่องปรับอากาศ (Air Conditioner)
+    { id: "s1101", machineId: "AC01", name: "ชุดคอมเพรสเซอร์", status: "Active", componentsCount: 2 },
+    { id: "s1102", machineId: "AC01", name: "ชุดระเหย (Evaporator)", status: "Active", componentsCount: 3 },
+    { id: "s1103", machineId: "AC01", name: "ระบบควบคุมไฟฟ้า", status: "Active", componentsCount: 2 },
 ];
 
 // ข้อมูลชิ้นส่วนของเครื่องจักร
@@ -370,6 +401,24 @@ export const mockComponents: ComponentItem[] = [
         status: "Inactive",
         sparePartsCount: 2,
     },
+    // รถยนต์ (Car) components
+    { id: "c1001", sectionId: "s1001", name: "มอเตอร์สตาร์ท", status: "Active", sparePartsCount: 3 },
+    { id: "c1002", sectionId: "s1001", name: "ปั๊มน้ำ", status: "Active", sparePartsCount: 2 },
+    { id: "c1003", sectionId: "s1001", name: "ไส้กรองอากาศ", status: "Active", sparePartsCount: 1 },
+    { id: "c1004", sectionId: "s1002", name: "แบตเตอรี่", status: "Active", sparePartsCount: 2 },
+    { id: "c1005", sectionId: "s1002", name: "ไดชาร์จ", status: "Active", sparePartsCount: 2 },
+    { id: "c1006", sectionId: "s1002", name: "ฟิวส์", status: "Active", sparePartsCount: 2 },
+    { id: "c1007", sectionId: "s1003", name: "ผ้าเบรก", status: "Active", sparePartsCount: 1 },
+    { id: "c1008", sectionId: "s1003", name: "จานเบรก", status: "Active", sparePartsCount: 1 },
+    { id: "c1009", sectionId: "s1003", name: "แม่ปั๊มเบรก", status: "Active", sparePartsCount: 2 },
+    // เครื่องปรับอากาศ (Air Conditioner) components
+    { id: "c1101", sectionId: "s1101", name: "คอมเพรสเซอร์", status: "Active", sparePartsCount: 2 },
+    { id: "c1102", sectionId: "s1101", name: "คาปาซิเตอร์สตาร์ท", status: "Active", sparePartsCount: 1 },
+    { id: "c1103", sectionId: "s1102", name: "มอเตอร์พัดลม", status: "Active", sparePartsCount: 2 },
+    { id: "c1104", sectionId: "s1102", name: "ใบพัดลม", status: "Active", sparePartsCount: 1 },
+    { id: "c1105", sectionId: "s1102", name: "แผงระเหย/ตัวกรอง", status: "Active", sparePartsCount: 2 },
+    { id: "c1106", sectionId: "s1103", name: "เซ็นเซอร์อุณหภูมิ", status: "Active", sparePartsCount: 1 },
+    { id: "c1107", sectionId: "s1103", name: "แผงควบคุม (PCB)", status: "Active", sparePartsCount: 1 },
 ];
 
 // ข้อมูลอะไหล่
@@ -672,6 +721,34 @@ export const mockSpareParts: SparePart[] = [
         defaultUsage: 2,
         stock: 20,
     },
+    // รถยนต์ (Car) spare parts
+    { id: "p1001", componentId: "c1001", name: "แปรงถ่านมอเตอร์สตาร์ท", code: "CAR-STR-BRUSH-001", category: "คาร์บอน", status: "Active", qty: 12, used: 2, unit: "ชิ้น", defaultUsage: 2, stock: 10 },
+    { id: "p1002", componentId: "c1001", name: "โซลินอยด์สตาร์ท", code: "CAR-STR-SOL-002", category: "โซลินอยด์", status: "Active", qty: 6, used: 1, unit: "ชิ้น", defaultUsage: 1, stock: 5 },
+    { id: "p1003", componentId: "c1001", name: "แบริ่งมอเตอร์สตาร์ท", code: "CAR-STR-BRG-003", category: "แบริ่ง", status: "Active", qty: 10, used: 1, unit: "ตัว", defaultUsage: 2, stock: 9 },
+    { id: "p1004", componentId: "c1002", name: "ปั๊มน้ำรถยนต์", code: "CAR-WP-ASM-001", category: "ปั๊ม", status: "Active", qty: 4, used: 0, unit: "ตัว", defaultUsage: 1, stock: 4 },
+    { id: "p1005", componentId: "c1002", name: "ปะเก็นปั๊มน้ำ", code: "CAR-WP-GSK-002", category: "ปะเก็น", status: "Active", qty: 15, used: 2, unit: "แผ่น", defaultUsage: 1, stock: 13 },
+    { id: "p1006", componentId: "c1003", name: "ไส้กรองอากาศ", code: "CAR-AIR-FLT-001", category: "กรอง", status: "Active", qty: 20, used: 5, unit: "ชิ้น", defaultUsage: 1, stock: 15 },
+    { id: "p1007", componentId: "c1004", name: "แบตเตอรี่ 12V 60Ah", code: "CAR-BAT-060-12V", category: "แบตเตอรี่", status: "Active", qty: 8, used: 1, unit: "ลูก", defaultUsage: 1, stock: 7 },
+    { id: "p1008", componentId: "c1004", name: "คีมจับขั้วแบตเตอรี่", code: "CAR-BAT-CLAMP-001", category: "ขั้วแบตฯ", status: "Active", qty: 12, used: 2, unit: "ชิ้น", defaultUsage: 2, stock: 10 },
+    { id: "p1009", componentId: "c1005", name: "สายพานหน้าเครื่อง (Alternator)", code: "CAR-ALT-BELT-001", category: "สายพาน", status: "Active", qty: 10, used: 2, unit: "เส้น", defaultUsage: 1, stock: 8 },
+    { id: "p1010", componentId: "c1005", name: "เรกูเลเตอร์ไดชาร์จ", code: "CAR-ALT-REG-002", category: "อิเล็กทรอนิกส์", status: "Active", qty: 6, used: 1, unit: "ชิ้น", defaultUsage: 1, stock: 5 },
+    { id: "p1011", componentId: "c1006", name: "ฟิวส์ 10A", code: "CAR-FUSE-010A", category: "ฟิวส์", status: "Active", qty: 50, used: 5, unit: "ตัว", defaultUsage: 1, stock: 45 },
+    { id: "p1012", componentId: "c1006", name: "ฟิวส์ 20A", code: "CAR-FUSE-020A", category: "ฟิวส์", status: "Active", qty: 40, used: 4, unit: "ตัว", defaultUsage: 1, stock: 36 },
+    { id: "p1013", componentId: "c1007", name: "ผ้าเบรกชุดหน้า", code: "CAR-BRK-PAD-FR", category: "เบรก", status: "Active", qty: 10, used: 2, unit: "ชุด", defaultUsage: 1, stock: 8 },
+    { id: "p1014", componentId: "c1008", name: "จานเบรกหน้า", code: "CAR-BRK-DSC-FR", category: "เบรก", status: "Active", qty: 6, used: 1, unit: "ชิ้น", defaultUsage: 2, stock: 5 },
+    { id: "p1015", componentId: "c1009", name: "ลูกยางแม่ปั๊มเบรก", code: "CAR-MC-SEAL-001", category: "ซีล", status: "Active", qty: 20, used: 3, unit: "ชุด", defaultUsage: 1, stock: 17 },
+    { id: "p1016", componentId: "c1009", name: "น้ำมันเบรก DOT4", code: "CAR-BRK-FLD-D4", category: "น้ำมัน", status: "Active", qty: 12, used: 2, unit: "ลิตร", defaultUsage: 1, stock: 10 },
+    // เครื่องปรับอากาศ (Air Conditioner) spare parts
+    { id: "p1101", componentId: "c1101", name: "คอมเพรสเซอร์ R32", code: "AC-COMP-R32", category: "คอมเพรสเซอร์", status: "Active", qty: 3, used: 0, unit: "ตัว", defaultUsage: 1, stock: 3 },
+    { id: "p1102", componentId: "c1101", name: "น้ำมันคอมเพรสเซอร์", code: "AC-COMP-OIL", category: "น้ำมัน", status: "Active", qty: 10, used: 1, unit: "ลิตร", defaultUsage: 1, stock: 9 },
+    { id: "p1103", componentId: "c1102", name: "คาปาซิเตอร์สตาร์ท 40µF", code: "AC-CAP-040UF", category: "คาปาซิเตอร์", status: "Active", qty: 8, used: 1, unit: "ตัว", defaultUsage: 1, stock: 7 },
+    { id: "p1104", componentId: "c1103", name: "มอเตอร์พัดลม", code: "AC-FAN-MOTOR", category: "มอเตอร์", status: "Active", qty: 5, used: 1, unit: "ตัว", defaultUsage: 1, stock: 4 },
+    { id: "p1105", componentId: "c1103", name: "ลูกปืนมอเตอร์พัดลม", code: "AC-FAN-BRG", category: "แบริ่ง", status: "Active", qty: 12, used: 2, unit: "ตัว", defaultUsage: 2, stock: 10 },
+    { id: "p1106", componentId: "c1104", name: "ใบพัดลม", code: "AC-FAN-BLADE", category: "พัดลม", status: "Active", qty: 6, used: 1, unit: "ชิ้น", defaultUsage: 1, stock: 5 },
+    { id: "p1107", componentId: "c1105", name: "แผงระเหย/ตัวกรองอากาศ", code: "AC-EVAP-FILTER", category: "กรอง", status: "Active", qty: 10, used: 2, unit: "ชิ้น", defaultUsage: 1, stock: 8 },
+    { id: "p1108", componentId: "c1105", name: "น้ำยาทำความสะอาดคอยล์", code: "AC-COIL-CLEAN", category: "เคมีภัณฑ์", status: "Active", qty: 8, used: 1, unit: "ขวด", defaultUsage: 1, stock: 7 },
+    { id: "p1109", componentId: "c1106", name: "เซ็นเซอร์อุณหภูมิ NTC", code: "AC-NTC-SEN", category: "เซ็นเซอร์", status: "Active", qty: 12, used: 2, unit: "ตัว", defaultUsage: 1, stock: 10 },
+    { id: "p1110", componentId: "c1107", name: "แผงควบคุม (PCB)", code: "AC-CTRL-PCB", category: "อิเล็กทรอนิกส์", status: "Active", qty: 4, used: 0, unit: "ชุด", defaultUsage: 1, stock: 4 },
 ];
 
 // ข้อมูลระดับความสำคัญ
