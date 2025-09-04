@@ -80,6 +80,10 @@ export const getReportsAllRepairsRows = (): ReportsRepairRow[] => {
     const workMethod = r.repairDetails?.description || "-";
     const rootCause = r.repairDetails?.cause || "-";
     const prevention = r.notes || "-";
+    // ประมาณค่าใช้จ่ายจากจำนวนอะไหล่ที่ใช้ (ไม่มีราคาใน mock)
+    const partsCount = r.repairDetails?.usedParts?.reduce((sum, p) => sum + (p.quantity || 0), 0) || 0;
+    const estimatedCost = partsCount > 0 ? partsCount * 1500 : 0;
+
     return {
       id: r.id,
       machine: r.machine,
@@ -94,8 +98,7 @@ export const getReportsAllRepairsRows = (): ReportsRepairRow[] => {
       workMethod,
       rootCause,
       prevention,
-      cost: "-",
+      cost: estimatedCost > 0 ? estimatedCost.toLocaleString("th-TH") : "-",
     };
   });
 };
-

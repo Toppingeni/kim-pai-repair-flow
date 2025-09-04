@@ -107,7 +107,7 @@ export function ReportsRequests() {
                                         <TableHead className="min-w-[250px]">
                                             การป้องกันและแก้ไขที่ต้นเหตุ
                                         </TableHead>
-                                        <TableHead className="min-w-[100px]">
+                                        <TableHead className="min-w-[100px] text-right">
                                             ค่าใช้จ่าย
                                         </TableHead>
                                     </TableRow>
@@ -243,7 +243,7 @@ export function ReportsRequests() {
                                                         </Tooltip>
                                                     </TooltipProvider>
                                                 </TableCell>
-                                                <TableCell className="font-medium">
+                                                <TableCell className="font-medium text-right">
                                                     {repair.cost !== "-"
                                                         ? `฿${repair.cost}`
                                                         : "-"}
