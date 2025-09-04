@@ -14,6 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRepairActions } from "@/hooks/useRepairActions";
 import { ApprovalDialog } from "@/components/dialogs/ApprovalDialog";
 import { mockOriginalRequest } from "@/data/mockRepairData";
+import { getRepairRequestById } from "@/data/masterData";
 
 interface RepairItem {
     id: string;
@@ -278,33 +279,45 @@ export function RepairTable({
                 </CardContent>
             </Card>
 
-            {selectedRepair && (
+            {selectedRepair && (() => {
+                const req = getRepairRequestById(selectedRepair.id);
+                return (
                 <ApprovalDialog
                     open={showApprovalDialog}
                     onOpenChange={setShowApprovalDialog}
                     repairData={{
                         id: selectedRepair.id,
-                        machineId: (selectedRepair as any).machineId || (mockOriginalRequest as any).machineId,
-                        machine: selectedRepair.machine,
-                        problem: selectedRepair.problem,
+                        machineId:
+                            (selectedRepair as any).machineId ||
+                            (req as any)?.machineId ||
+                            (mockOriginalRequest as any).machineId,
+                        machine: req?.machine || selectedRepair.machine,
+                        problem: req?.problem || selectedRepair.problem,
                         date: selectedRepair.date,
                         status: selectedRepair.status,
                         documentNumber: selectedRepair.id,
-                        section: mockOriginalRequest.section,
-                        contactNumber: mockOriginalRequest.contactNumber,
-                        priority: mockOriginalRequest.priorityLabel,
-                        description: mockOriginalRequest.additionalDetails,
-                        images: mockOriginalRequest.images,
-                        location: mockOriginalRequest.location,
-                        bchId: (mockOriginalRequest as any).bchId,
-                        reportedDate: mockOriginalRequest.reportedDate,
-                        reportedTime: mockOriginalRequest.reportedTime,
-                        reporter: mockOriginalRequest.reporter,
+                        section: req?.section || mockOriginalRequest.section,
+                        contactNumber:
+                            req?.contactNumber || mockOriginalRequest.contactNumber,
+                        priority:
+                            req?.priorityLabel || mockOriginalRequest.priorityLabel,
+                        description:
+                            req?.additionalDetails ||
+                            mockOriginalRequest.additionalDetails,
+                        images: req?.images || mockOriginalRequest.images,
+                        location: req?.location || mockOriginalRequest.location,
+                        bchId: (req as any)?.bchId || (mockOriginalRequest as any).bchId,
+                        reportedDate:
+                            (req as any)?.reportedDate || mockOriginalRequest.reportedDate,
+                        reportedTime:
+                            (req as any)?.reportedTime || mockOriginalRequest.reportedTime,
+                        reporter: req?.reporter || mockOriginalRequest.reporter,
                     }}
                     onApprove={handleApproveRepair}
                     onCancel={handleCancelRepair}
                 />
-            )}
+                );
+            })()}
         </>
     );
 }

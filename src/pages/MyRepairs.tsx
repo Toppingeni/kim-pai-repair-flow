@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { RepairTable } from "@/components/dashboard/RepairTable";
-import { mockUserRepairs } from "@/data/mockRepairData";
+import { getAllRepairRequests } from "@/data/masterData";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,7 +21,20 @@ export function MyRepairs() {
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
 
-    const filteredRepairs = mockUserRepairs.filter((repair) => {
+    // แปลง mockRepairRequests -> รูปแบบที่ RepairTable ต้องการ
+    const mapStatus = (s: "pending" | "rejected"): "new" | "cancelled" =>
+        s === "pending" ? "new" : "cancelled";
+    const allRequests = getAllRepairRequests();
+    const myRepairs = allRequests.map((r) => ({
+        id: r.id,
+        machine: r.machine,
+        problem: r.problem,
+        date: r.reportDate,
+        contactNumber: r.contactNumber,
+        status: mapStatus(r.status),
+    }));
+
+    const filteredRepairs = myRepairs.filter((repair) => {
         const matchesSearch =
             repair.machine.toLowerCase().includes(searchTerm.toLowerCase()) ||
             repair.problem.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -32,11 +45,10 @@ export function MyRepairs() {
     });
 
     const getStatusCounts = () => ({
-        all: mockUserRepairs.length,
-        progress: mockUserRepairs.filter((r) => r.status === "progress").length,
-        waiting: mockUserRepairs.filter((r) => r.status === "waiting").length,
-        completed: mockUserRepairs.filter((r) => r.status === "completed")
-            .length,
+        all: myRepairs.length,
+        progress: myRepairs.filter((r) => r.status === "progress").length,
+        waiting: myRepairs.filter((r) => r.status === "waiting").length,
+        completed: myRepairs.filter((r) => r.status === "completed").length,
     });
 
     const statusCounts = getStatusCounts();

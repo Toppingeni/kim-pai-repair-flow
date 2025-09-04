@@ -332,6 +332,7 @@ export const mockCompleteRepairs: CompleteRepairData[] = [
 ];
 
 import { mockOriginalRequest, mockUserRepairs } from "@/data/mockRepairData";
+import { getRepairRequestById } from "@/data/masterData";
 
 // ข้อมูล Mock สำหรับตารางแบบย่อ (Dashboard, AllRepairs)
 export const mockSimpleRepairs: SimpleRepairData[] = mockCompleteRepairs.map(
@@ -359,7 +360,45 @@ export const getRepairById = (id: string): CompleteRepairData | undefined => {
     }
     // รองรับกรณีรหัสรูปแบบ RR-... (เช่น RR-A-68090001)
     if (id?.startsWith("RR-")) {
-        // พยายามหาข้อมูลแบบย่อจาก mockUserRepairs ก่อน
+        const req = getRepairRequestById(id);
+        // ถ้ามีข้อมูลใบร้องใน master ใช้มันเป็นหลัก
+        if (req) {
+            const simple = mockUserRepairs.find((r) => r.id === id);
+            const engineerName = simple
+                ? Array.isArray(simple.engineer)
+                    ? simple.engineer.join(", ")
+                    : (simple.engineer as string | undefined)
+                : undefined;
+            return {
+                id: req.id,
+                machine: req.machine,
+                location: req.location,
+                section: req.section,
+                problem: req.problem,
+                requestDate: req.reportDate,
+                requestTime: req.reportTime,
+                reporter: req.reporter,
+                contactNumber: req.contactNumber,
+                workType: "maintenance",
+                status: "waiting",
+                engineer: engineerName,
+                urgency: undefined,
+                priority: req.priorityLabel,
+                images: req.images,
+                notes: req.additionalDetails,
+                repairDetails: {
+                    startDate: req.reportDate,
+                    startTime: req.reportTime,
+                    endDate: null,
+                    endTime: undefined,
+                    description: "",
+                    cause: "",
+                    result: null,
+                    usedParts: [],
+                },
+            };
+        }
+        // ถ้าไม่พบใน master ให้ลองข้อมูลแบบย่อของฉัน
         const simple = mockUserRepairs.find((r) => r.id === id);
         if (simple) {
             const engineerName = Array.isArray(simple.engineer)
