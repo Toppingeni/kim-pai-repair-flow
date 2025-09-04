@@ -126,7 +126,7 @@ export interface RepairRequest {
     contactNumber?: string;
     additionalDetails?: string;
     images?: string[];
-    status: "pending" | "rejected"; // สถานะของใบร้องของงาน: pending = ใหม่, rejected = ยกเลิก
+    status: "pending" | "waiting" | "rejected"; // pending=ใหม่, waiting=รอยืนยันปิดงาน, rejected=ยกเลิก
     createdAt: string;
     updatedAt: string;
     createdBy: string;
@@ -1585,7 +1585,7 @@ export const mockRepairRequests: RepairRequest[] = [
         additionalDetails:
             "ตรวจพบไฟหน้าและระบบไฟดับเป็นบางครั้ง ควรตรวจแบตเตอรี่และไดชาร์จ",
         images: ["/src/data/imgs/car_battery.jpg"],
-        status: "pending",
+        status: "waiting",
         createdAt: "09/07/2568 09:15",
         updatedAt: "09/07/2568 09:20",
         createdBy: "คุณเอก ฝ่ายขนส่ง",

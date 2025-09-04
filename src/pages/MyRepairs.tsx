@@ -21,9 +21,14 @@ export function MyRepairs() {
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
 
-    // แปลง mockRepairRequests -> รูปแบบที่ RepairTable ต้องการ
-    const mapStatus = (s: "pending" | "rejected"): "new" | "cancelled" =>
-        s === "pending" ? "new" : "cancelled";
+    // แปลง mockRepairRequests -> รูปแบบที่ RepairTable ต้องการ แบบสอดคล้องกับ mockdata
+    const toTableStatus = (
+        s: "pending" | "waiting" | "rejected"
+    ): "new" | "waiting" | "cancelled" => {
+        if (s === "waiting") return "waiting";
+        if (s === "pending") return "new";
+        return "cancelled";
+    };
     const allRequests = getAllRepairRequests();
     const myRepairs = allRequests.map((r) => ({
         id: r.id,
@@ -31,7 +36,7 @@ export function MyRepairs() {
         problem: r.problem,
         date: r.reportDate,
         contactNumber: r.contactNumber,
-        status: mapStatus(r.status),
+        status: toTableStatus(r.status),
     }));
 
     const filteredRepairs = myRepairs.filter((repair) => {
