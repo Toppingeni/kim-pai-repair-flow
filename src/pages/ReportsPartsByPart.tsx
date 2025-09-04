@@ -23,7 +23,7 @@ type Group = {
     part: string;
     unit: string;
     qty: number; // คงเหลือของกลุ่ม ใช้แถวแรก
-    totalUsed: number; // รวมการใช้ทุกแถว
+    maxUsed: number; // ใช้งานมากสุดในกลุ่ม
     items: {
         id: string;
         component: string;
@@ -59,14 +59,14 @@ export default function ReportsPartsByPart() {
                 part: key,
                 unit: p.unit,
                 qty: p.qty,
-                totalUsed: 0,
+                maxUsed: 0,
                 items: [],
             };
             // คงเหลือของกลุ่มใช้ค่าแถวแรกเท่านั้น ถ้ามีอยู่แล้วไม่ต้องอัปเดต
             if (g.qty === undefined || g.qty === null) {
                 g.qty = p.qty;
             }
-            g.totalUsed += p.used;
+            g.maxUsed = Math.max(g.maxUsed || 0, p.used || 0);
             g.items.push({
                 id: p.id,
                 component: comp?.name || "-",
@@ -91,7 +91,7 @@ export default function ReportsPartsByPart() {
                         รายงานข้อมูลอะไหล่ (ดูตามอะไหล่)
                     </h1>
                     <p className="text-muted-foreground mt-2">
-                        จัดกลุ่มตามอะไหล่ สรุปคงเหลือ/ใช้รวม
+                        จัดกลุ่มตามอะไหล่ สรุปคงเหลือ/ใช้มากสุด
                         และแสดงตำแหน่งการใช้งาน
                     </p>
                 </div>
@@ -181,9 +181,7 @@ export default function ReportsPartsByPart() {
                                                     colSpan={4}
                                                     className="text-muted-foreground text-right whitespace-nowrap"
                                                 >
-                                                    คงเหลือ {g.qty} {g.unit} •
-                                                    จำนวนใช้รวม {g.totalUsed}{" "}
-                                                    {g.unit}
+                                                    คงเหลือ {g.qty} {g.unit} • จำนวนใช้มากสุด {g.maxUsed} {g.unit}
                                                 </TableCell>
                                             </TableRow>
                                             {g.items.map((item) => (
