@@ -37,6 +37,7 @@ export interface Part {
     supplier?: string;
     notes?: string;
     poNumber?: string;
+    tranId?: string; // เลขที่การเบิก สำหรับเบิกจาก Stock
 }
 
 interface PartsManagementProps {
@@ -319,40 +320,70 @@ export function PartsManagement({
                                                     </div>
                                                 </div>
 
-                                                <div className="space-y-1 w-32">
-                                                    <Label className="text-xs text-muted-foreground">
-                                                        ประเภท
-                                                    </Label>
-                                                    <div className="flex items-center gap-2">
-                                                        <Badge
-                                                            variant="outline"
-                                                            className="text-xs"
-                                                        >
+                                            <div className="space-y-1 w-32">
+                                                <Label className="text-xs text-muted-foreground">
+                                                    ประเภท
+                                                </Label>
+                                                <div className="flex items-center gap-2">
+                                                    <Badge
+                                                        variant="outline"
+                                                        className="text-xs"
+                                                    >
+                                                        {
+                                                            partTypeOptions.find(
+                                                                (type) =>
+                                                                    type.value ===
+                                                                    getCurrentPartType(
+                                                                        part.id
+                                                                    )
+                                                            )?.icon
+                                                        }
+                                                        <span className="ml-1">
                                                             {
                                                                 partTypeOptions.find(
-                                                                    (type) =>
+                                                                    (
+                                                                        type
+                                                                    ) =>
                                                                         type.value ===
                                                                         getCurrentPartType(
                                                                             part.id
                                                                         )
-                                                                )?.icon
+                                                                )?.label
                                                             }
-                                                            <span className="ml-1">
-                                                                {
-                                                                    partTypeOptions.find(
-                                                                        (
-                                                                            type
-                                                                        ) =>
-                                                                            type.value ===
-                                                                            getCurrentPartType(
-                                                                                part.id
-                                                                            )
-                                                                    )?.label
-                                                                }
-                                                            </span>
-                                                        </Badge>
-                                                    </div>
+                                                        </span>
+                                                    </Badge>
                                                 </div>
+                                            </div>
+
+                                            {getCurrentPartType(part.id) ===
+                                            "stock" ? (
+                                                <div className="space-y-1 w-40">
+                                                    <Label className="text-xs text-muted-foreground">
+                                                        เลขที่การเบิก
+                                                    </Label>
+                                                    <Input
+                                                        readOnly
+                                                        className="h-8"
+                                                        defaultValue={
+                                                            part.tranId || "-"
+                                                        }
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <div className="space-y-1 w-40">
+                                                    <Label className="text-xs text-muted-foreground">
+                                                        เลขที่ PO
+                                                    </Label>
+                                                    <Input
+                                                        readOnly
+                                                        className="h-8"
+                                                        defaultValue={
+                                                            part.poNumber ||
+                                                            "-"
+                                                        }
+                                                    />
+                                                </div>
+                                            )}
                                             </div>
 
                                             {/* Cost Information */}

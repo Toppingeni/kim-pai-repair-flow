@@ -150,6 +150,7 @@ export function SparePartsSelectionDialog({
                 quantity: part.defaultUsage, // ใช้ defaultUsage แทน 1
                 type: "stock",
                 status: "ใหม่",
+                tranId: part.tranId,
             };
             setTempSelectedParts((prev) => [...prev, newPart]);
         }
