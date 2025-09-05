@@ -28,6 +28,7 @@ export function Sidebar({ userRole }: SidebarProps) {
 
     const engineeringMenuItems = [
         // { title: "Dashboard", url: "/", icon: Search }, // ซ่อนไว้สำหรับ Phase 2
+        { title: "ใบร้องของงานซ่อมใหม่", url: "/new-repair", icon: Plus },
         { title: "ข้อมูล Master", url: "/master-data", icon: Database },
         {
             title: "รายการใบสั่งงานซ่อม",
