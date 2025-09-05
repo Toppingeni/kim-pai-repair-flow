@@ -25,7 +25,7 @@ import { Part } from "./PartsManagementEnhanced";
 import {
     mockSections,
     mockComponents,
-    mockSpareParts,
+    mockIssuedSpareParts,
     type Section,
     type ComponentItem,
     type SparePart,
@@ -59,7 +59,7 @@ export function SparePartsSelectionDialog({
     useEffect(() => {
         if (!open) return;
         const partsForMachine = ((): SparePart[] => {
-            if (!machineId) return mockSpareParts;
+            if (!machineId) return mockIssuedSpareParts;
             const sectionIds = new Set(
                 mockSections
                     .filter((s) => s.machineId === machineId)
@@ -70,7 +70,7 @@ export function SparePartsSelectionDialog({
                     .filter((c) => sectionIds.has(c.sectionId))
                     .map((c) => c.id)
             );
-            return mockSpareParts.filter((p) =>
+            return mockIssuedSpareParts.filter((p) =>
                 componentIds.has(p.componentId)
             );
         })();
@@ -171,7 +171,7 @@ export function SparePartsSelectionDialog({
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                         <Package className="h-5 w-5" />
-                        เลือกอะไหล่จากคลัง
+                        เลือกอะไหล่จากการเบิก
                     </DialogTitle>
                 </DialogHeader>
 
@@ -214,6 +214,9 @@ export function SparePartsSelectionDialog({
                                                 <TableHead className="w-[100px] py-2">
                                                     เลือก
                                                 </TableHead>
+                                                <TableHead className="w-[200px] py-2">
+                                                    เลขที่การเบิก
+                                                </TableHead>
                                                 <TableHead className="w-[140px] py-2">
                                                     รหัส
                                                 </TableHead>
@@ -236,7 +239,7 @@ export function SparePartsSelectionDialog({
                                                             className="h-8"
                                                         >
                                                             <TableCell
-                                                                colSpan={4}
+                                                                colSpan={5}
                                                                 className="py-1.5"
                                                             >
                                                                 <div className="text-sm font-medium">
@@ -276,6 +279,9 @@ export function SparePartsSelectionDialog({
                                                                                 )
                                                                             }
                                                                         />
+                                                                    </TableCell>
+                                                                    <TableCell className="py-1.5">
+                                                                        {part.tranId || "-"}
                                                                     </TableCell>
                                                                     <TableCell className="py-1.5">
                                                                         {

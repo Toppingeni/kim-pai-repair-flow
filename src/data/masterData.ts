@@ -63,6 +63,8 @@ export interface SparePart {
     unit: string;
     defaultUsage: number; // จำนวนใช้งานมาตรฐาน
     stock: number;
+    // เลขที่การเบิก (สำหรับ mock ข้อมูลการเบิกอะไหล่)
+    tranId?: string;
 }
 
 export interface PriorityLevel {
@@ -2031,6 +2033,27 @@ export const getBranchById = (id: string): Branch | undefined => {
 export const getAllBranches = (): Branch[] => {
     return branchMaster.filter((b) => b.status === "Active");
 };
+
+// ฟังก์ชันสร้างเลขที่การเบิกอะไหล่: IU+YY+MM+bchId+F+XXXX
+export const generateTranId = (bchId?: string): string => {
+    const now = new Date();
+    // ใช้ปี พ.ศ.  (ตัวอย่าง 2568 -> 68)
+    const buddhistYear = now.getFullYear() + 543;
+    const yy = String(buddhistYear % 100).padStart(2, "0");
+    const mm = String(now.getMonth() + 1).padStart(2, "0");
+
+    const branches = getAllBranches();
+    const chosenBchId = bchId || branches[Math.floor(Math.random() * branches.length)].id;
+
+    const seq = String(Math.floor(Math.random() * 10000)).padStart(4, "0");
+    return `IU${yy}${mm}${chosenBchId}F${seq}`;
+};
+
+// Mock อะไหล่ที่ผูกกับรายการเบิก โดยสุ่มเลขที่การเบิกจากสาขาใน branchMaster
+export const mockIssuedSpareParts: SparePart[] = mockSpareParts.map((p) => ({
+    ...p,
+    tranId: generateTranId(),
+}));
 
 // ฟังก์ชันสำหรับอัปเดตจำนวน count
 export const updateSectionCount = (
