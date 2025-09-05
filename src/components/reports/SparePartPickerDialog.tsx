@@ -223,18 +223,14 @@ export function SparePartPickerDialog({
                                                         onOpenChange(false);
                                                     }
                                                 }}
-                                                onClick={(e) => {
-                                                    // คลิกที่แถวเพื่อ toggle (ยกเว้นคลิกบน checkbox เอง)
-                                                    if (
-                                                        (e.target as HTMLElement).tagName !==
-                                                        "INPUT"
-                                                    ) {
-                                                        handleToggle(p.id);
-                                                    }
+                                                onClick={() => {
+                                                    // คลิกที่แถวเพื่อ toggle; คลิกบน checkbox จะถูก stopPropagation
+                                                    handleToggle(p.id);
                                                 }}
                                             >
                                                 <TableCell>
                                                     <Checkbox
+                                                        onClick={(e) => e.stopPropagation()}
                                                         checked={tempSelectedIds.includes(
                                                             p.id
                                                         )}
