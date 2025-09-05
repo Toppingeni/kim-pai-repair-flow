@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 
-export type UserRole = "production" | "engineering";
+export type UserRole = "production" | "engineering" | "engineeringHead";
 
 interface UserRoleContextType {
   userRole: UserRole;
@@ -17,8 +17,18 @@ export function UserRoleProvider({ children }: { children: ReactNode }) {
   const [userRole, setUserRole] = useState<UserRole>("production");
 
   const userData = {
-    name: userRole === "production" ? "คุณสมศรี" : "นายสมชาย",
-    department: userRole === "production" ? "ฝ่ายผลิต" : "ฝ่ายวิศวกรรม",
+    name:
+      userRole === "production"
+        ? "คุณสมศรี"
+        : userRole === "engineeringHead"
+        ? "หัวหน้าสมชาย"
+        : "นายสมชาย",
+    department:
+      userRole === "production"
+        ? "ฝ่ายผลิต"
+        : userRole === "engineeringHead"
+        ? "หัวหน้าฝ่ายวิศวกรรม"
+        : "ฝ่ายวิศวกรรม",
   };
 
   return (

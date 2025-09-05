@@ -22,11 +22,14 @@ import {
     getTechnicianById,
 } from "@/data/masterData";
 import { getSimpleRepairs } from "@/data/allRepairsMockData";
+import { useUserRole } from "@/contexts/UserRoleContext";
 
 // ใช้ข้อมูล Mock จากไฟล์รวม
 const mockAllRepairs = getSimpleRepairs();
 
 export function AllRepairs() {
+    const { userRole } = useUserRole();
+    const showRequestsTab = userRole === "engineeringHead"; // วิศวกรหัวหน้าเห็นทั้งสองแท็บ
     // โหลด tab ที่เลือกไว้จาก localStorage หรือใช้ "requests" เป็นค่าเริ่มต้น
     const [activeTab, setActiveTab] = useState(() => {
         return localStorage.getItem("allRepairs-activeTab") || "requests";
@@ -36,6 +39,13 @@ export function AllRepairs() {
     useEffect(() => {
         localStorage.setItem("allRepairs-activeTab", activeTab);
     }, [activeTab]);
+
+    // หากไม่มีสิทธิ์เห็นแท็บใบร้องฯ ให้บังคับไปที่แท็บใบสั่งฯ
+    useEffect(() => {
+        if (!showRequestsTab && activeTab === "requests") {
+            setActiveTab("processes");
+        }
+    }, [showRequestsTab, activeTab]);
     const repairRequests = getAllRepairRequests();
     const repairProcesses = getAllRepairProcesses();
     const [statusFilter, setStatusFilter] = useState<
@@ -65,7 +75,7 @@ export function AllRepairs() {
         }
         // เลือกการ์ดใหม่: ตั้งแท็บให้ถูกหมวด และตั้งตัวกรอง
         if (key === "new" || key === "cancelled") {
-            setActiveTab("requests");
+            setActiveTab(showRequestsTab ? "requests" : "processes");
         } else {
             setActiveTab("processes");
         }
@@ -446,16 +456,18 @@ export function AllRepairs() {
                             className="w-full"
                         >
                             <div className="border-b">
-                                <TabsList className="grid w-full grid-cols-2 h-auto rounded-none bg-transparent">
-                                    <TabsTrigger
-                                        value="requests"
-                                        className="flex items-center gap-2 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent"
-                                    >
-                                        ใบร้องของงานซ่อม
-                                        <Badge variant="secondary">
-                                            {repairRequests.length}
-                                        </Badge>
-                                    </TabsTrigger>
+                                <TabsList className={`grid w-full ${showRequestsTab ? "grid-cols-2" : "grid-cols-1"} h-auto rounded-none bg-transparent`}>
+                                    {showRequestsTab && (
+                                        <TabsTrigger
+                                            value="requests"
+                                            className="flex items-center gap-2 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent"
+                                        >
+                                            ใบร้องของงานซ่อม
+                                            <Badge variant="secondary">
+                                                {repairRequests.length}
+                                            </Badge>
+                                        </TabsTrigger>
+                                    )}
                                     <TabsTrigger
                                         value="processes"
                                         className="flex items-center gap-2 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent"
@@ -468,21 +480,23 @@ export function AllRepairs() {
                                 </TabsList>
                             </div>
 
-                            <TabsContent value="requests" className="m-0">
-                                <RepairTable
-                                    repairs={convertRequestsToTableData(
-                                        repairRequests
-                                    ).filter(
-                                        (r) =>
-                                            statusFilter === "all" ||
-                                            r.status === statusFilter
-                                    )}
-                                    userRole="engineering"
-                                    title="รายการใบร้องของานซ่อม"
-                                    showEngineerColumn={false}
-                                    showContactColumn={true}
-                                />
-                            </TabsContent>
+                            {showRequestsTab && (
+                                <TabsContent value="requests" className="m-0">
+                                    <RepairTable
+                                        repairs={convertRequestsToTableData(
+                                            repairRequests
+                                        ).filter(
+                                            (r) =>
+                                                statusFilter === "all" ||
+                                                r.status === statusFilter
+                                        )}
+                                        userRole={userRole}
+                                        title="รายการใบร้องของานซ่อม"
+                                        showEngineerColumn={false}
+                                        showContactColumn={true}
+                                    />
+                                </TabsContent>
+                            )}
 
                             <TabsContent value="processes" className="m-0">
                                 <RepairTable
@@ -493,7 +507,7 @@ export function AllRepairs() {
                                             statusFilter === "all" ||
                                             r.status === statusFilter
                                     )}
-                                    userRole="engineering"
+                                    userRole={userRole}
                                     title="รายการใบร้องของานซ่อม"
                                     showEngineerColumn={true}
                                     showContactColumn={true}

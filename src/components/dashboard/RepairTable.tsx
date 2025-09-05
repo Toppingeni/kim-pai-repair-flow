@@ -34,7 +34,7 @@ interface RepairItem {
 
 interface RepairTableProps {
     repairs: RepairItem[];
-    userRole: "production" | "engineering";
+    userRole: "production" | "engineering" | "engineeringHead";
     title: string;
     showEngineerColumn?: boolean; // เพิ่ม prop สำหรับควบคุมการแสดงคอลัมน์ผู้รับผิดชอบ
     showContactColumn?: boolean; // แสดงคอลัมน์เบอร์ติดต่อ
@@ -157,7 +157,7 @@ export function RepairTable({
         //     </Button>
         // );
 
-        if (userRole === "engineering") {
+        if (userRole === "engineering" || userRole === "engineeringHead") {
             if (repair.status === "new") {
                 buttons.push(
                     <Button

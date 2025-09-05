@@ -12,7 +12,7 @@ const Index = () => {
     // Redirect based on user role
     if (userRole === "production") {
       navigate("/new-repair", { replace: true });
-    } else if (userRole === "engineering") {
+    } else if (userRole === "engineering" || userRole === "engineeringHead") {
       navigate("/all-repairs", { replace: true });
     }
   }, [userRole, navigate]);

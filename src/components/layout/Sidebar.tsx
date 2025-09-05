@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 
 interface SidebarProps {
-    userRole: "production" | "engineering";
+    userRole: "production" | "engineering" | "engineeringHead";
 }
 
 export function Sidebar({ userRole }: SidebarProps) {
