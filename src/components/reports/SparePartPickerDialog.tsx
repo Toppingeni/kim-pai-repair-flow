@@ -36,6 +36,7 @@ interface SparePartPickerDialogProps {
     machineId?: string; // ถ้าระบุ จะ filter เฉพาะอะไหล่ของเครื่องจักรนี้
     excludeIds?: string[]; // ซ่อน id บางรายการ (เช่น ห้ามเลือกตัวเอง)
     title?: string;
+    multiple?: boolean; // ถ้า false จะเลือกได้แค่รายการเดียว
 }
 
 export function SparePartPickerDialog({
@@ -46,6 +47,7 @@ export function SparePartPickerDialog({
     machineId,
     excludeIds = [],
     title,
+    multiple = true,
 }: SparePartPickerDialogProps) {
     const [searchQuery, setSearchQuery] = useState("");
     const [tempSelectedIds, setTempSelectedIds] =
@@ -84,9 +86,16 @@ export function SparePartPickerDialog({
     }, [searchQuery, machineId, excludeIds]);
 
     const handleToggle = (id: string) => {
-        setTempSelectedIds((prev) =>
-            prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
-        );
+        setTempSelectedIds((prev) => {
+            const isSelected = prev.includes(id);
+            if (multiple) {
+                return isSelected
+                    ? prev.filter((x) => x !== id)
+                    : [...prev, id];
+            } else {
+                return isSelected ? [] : [id];
+            }
+        });
     };
 
     const handleConfirm = () => {
@@ -114,7 +123,9 @@ export function SparePartPickerDialog({
                 <DialogHeader>
                     <DialogTitle>{title || "เลือกอะไหล่จากคลัง"}</DialogTitle>
                     <DialogDescription>
-                        ค้นหาและเลือกได้หลายรายการ
+                        {multiple
+                            ? "ค้นหาและเลือกได้หลายรายการ"
+                            : "ค้นหาและเลือกได้เพียง 1 รายการ"}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -130,31 +141,37 @@ export function SparePartPickerDialog({
                     </div>
 
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <Badge variant="secondary">
-                                เลือกแล้ว: {tempSelectedIds.length}
-                            </Badge>
+                        {multiple ? (
+                            <div className="flex items-center gap-2">
+                                <Badge variant="secondary">
+                                    เลือกแล้ว: {tempSelectedIds.length}
+                                </Badge>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() =>
+                                        setTempSelectedIds(
+                                            results.map(({ p }) => p.id)
+                                        )
+                                    }
+                                    disabled={results.length === 0}
+                                >
+                                    เลือกผลลัพธ์ทั้งหมด
+                                </Button>
+                            </div>
+                        ) : (
+                            <div />
+                        )}
+                        {multiple && (
                             <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() =>
-                                    setTempSelectedIds(
-                                        results.map(({ p }) => p.id)
-                                    )
-                                }
-                                disabled={results.length === 0}
+                                onClick={() => setTempSelectedIds([])}
+                                disabled={tempSelectedIds.length === 0}
                             >
-                                เลือกผลลัพธ์ทั้งหมด
+                                ล้างการเลือก
                             </Button>
-                        </div>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setTempSelectedIds([])}
-                            disabled={tempSelectedIds.length === 0}
-                        >
-                            ล้างการเลือก
-                        </Button>
+                        )}
                     </div>
 
                     <div className="border rounded-md max-h-[420px] overflow-y-auto">
@@ -195,7 +212,27 @@ export function SparePartPickerDialog({
                                             section,
                                             machine,
                                         }) => (
-                                            <TableRow key={p.id}>
+                                            <TableRow
+                                                key={p.id}
+                                                className="cursor-pointer"
+                                                onDoubleClick={() => {
+                                                    // ในโหมด single เลือกแล้วยืนยันทันที
+                                                    if (!multiple) {
+                                                        setTempSelectedIds([p.id]);
+                                                        onConfirm([p.id]);
+                                                        onOpenChange(false);
+                                                    }
+                                                }}
+                                                onClick={(e) => {
+                                                    // คลิกที่แถวเพื่อ toggle (ยกเว้นคลิกบน checkbox เอง)
+                                                    if (
+                                                        (e.target as HTMLElement).tagName !==
+                                                        "INPUT"
+                                                    ) {
+                                                        handleToggle(p.id);
+                                                    }
+                                                }}
+                                            >
                                                 <TableCell>
                                                     <Checkbox
                                                         checked={tempSelectedIds.includes(

@@ -18,7 +18,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { type EntityStatus, type SparePart } from "@/data/masterData";
+import { type EntityStatus, type SparePart, mockSpareParts } from "@/data/masterData";
+import { Search } from "lucide-react";
+import { SparePartPickerDialog } from "@/components/reports/SparePartPickerDialog";
 
 interface EditSparePartModalProps {
   open: boolean;
@@ -54,6 +56,7 @@ export function EditSparePartModal({
     unit: "",
     description: "",
   });
+  const [showSparePicker, setShowSparePicker] = useState(false);
   
 
   // อัปเดตข้อมูลฟอร์มเมื่อ sparePart เปลี่ยน
@@ -115,6 +118,7 @@ export function EditSparePartModal({
   if (!sparePart) return null;
 
   return (
+    <>
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
@@ -142,13 +146,26 @@ export function EditSparePartModal({
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">ชื่ออะไหล่ *</Label>
-                  <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="กรอกชื่ออะไหล่"
-                    required
-                  />
+                  <div className="relative">
+                    <Input
+                      id="name"
+                      value={formData.name}
+                      onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                      placeholder="กรอกชื่ออะไหล่"
+                      required
+                      className="pr-10"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
+                      onClick={() => setShowSparePicker(true)}
+                      title="ค้นหาอะไหล่จากระบบ"
+                    >
+                      <Search className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
                 
                 <div className="space-y-2">
@@ -227,5 +244,21 @@ export function EditSparePartModal({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+    {/* Dialog ค้นหาอะไหล่ แบบเลือกได้ 1 รายการ */}
+    <SparePartPickerDialog
+      open={showSparePicker}
+      onOpenChange={setShowSparePicker}
+      selectedIds={sparePart ? [sparePart.id] : []}
+      onConfirm={(ids) => {
+        const id = ids[0];
+        const found = mockSpareParts.find(p => p.id === id);
+        if (found) {
+          setFormData(prev => ({ ...prev, name: found.name }));
+        }
+      }}
+      multiple={false}
+      title="เลือกอะไหล่จากระบบ"
+    />
+    </>
   );
 }
