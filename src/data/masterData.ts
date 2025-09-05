@@ -1450,7 +1450,9 @@ export const mockRepairRequests: RepairRequest[] = [
         machine: "เครื่องฉีดฟิล์ม Extrusion Line-COL",
         location:
             branchMaster.find(
-                (b) => b.id === (mockMachines.find((m) => m.id === "COL3")?.bchId || "")
+                (b) =>
+                    b.id ===
+                    (mockMachines.find((m) => m.id === "COL3")?.bchId || "")
             )?.name || "",
         section: "หน่วยหลอมพลาสติก (Extruder)",
         problem: "เครื่องหยุดทำงานกะทันหัน ไฟแสดงสถานะขาว",
@@ -1475,7 +1477,9 @@ export const mockRepairRequests: RepairRequest[] = [
         machine: "W6-เครื่องผ่า/กรอ SLITTER 1",
         location:
             branchMaster.find(
-                (b) => b.id === (mockMachines.find((m) => m.id === "LS91")?.bchId || "")
+                (b) =>
+                    b.id ===
+                    (mockMachines.find((m) => m.id === "LS91")?.bchId || "")
             )?.name || "",
         section: "หน่วยตัด (Cutting Unit)",
         problem: "ใบมีดตัดไม่คม ตัดฟิล์มไม่เรียบ",
@@ -1498,7 +1502,9 @@ export const mockRepairRequests: RepairRequest[] = [
         machine: "เครื่องฉีดฟิล์ม Extrusion Line-COL",
         location:
             branchMaster.find(
-                (b) => b.id === (mockMachines.find((m) => m.id === "COL3")?.bchId || "")
+                (b) =>
+                    b.id ===
+                    (mockMachines.find((m) => m.id === "COL3")?.bchId || "")
             )?.name || "",
         section: "หน่วยม้วนฟิล์ม (Winding Unit)",
         problem: "ลูกกลิ้งม้วนฟิล์มสั่นผิดปกติ",
@@ -1522,7 +1528,9 @@ export const mockRepairRequests: RepairRequest[] = [
         machine: "W6-เครื่อง METALLIZER 1",
         location:
             branchMaster.find(
-                (b) => b.id === (mockMachines.find((m) => m.id === "LM81")?.bchId || "")
+                (b) =>
+                    b.id ===
+                    (mockMachines.find((m) => m.id === "LM81")?.bchId || "")
             )?.name || "",
         section: "หน่วยพิมพ์ (Printing Unit)",
         problem: "หัวพิมพ์สีไม่ออกสี",
@@ -1546,7 +1554,9 @@ export const mockRepairRequests: RepairRequest[] = [
         machine: "W6-เครื่องผ่า/กรอ Folding",
         location:
             branchMaster.find(
-                (b) => b.id === (mockMachines.find((m) => m.id === "FD01")?.bchId || "")
+                (b) =>
+                    b.id ===
+                    (mockMachines.find((m) => m.id === "FD01")?.bchId || "")
             )?.name || "",
         section: "ฝ่ายขนส่ง",
         problem: "มอเตอร์ไม่หมุน ขาดการหล่อลื่น",
@@ -1570,7 +1580,9 @@ export const mockRepairRequests: RepairRequest[] = [
         machine: "W6-เครื่องผสมเม็ด MIX 1",
         location:
             branchMaster.find(
-                (b) => b.id === (mockMachines.find((m) => m.id === "BM01")?.bchId || "")
+                (b) =>
+                    b.id ===
+                    (mockMachines.find((m) => m.id === "BM01")?.bchId || "")
             )?.name || "",
         section: "ฝ่ายผสม",
         problem: "ใบมีดสึกหรอ",
@@ -1594,7 +1606,9 @@ export const mockRepairRequests: RepairRequest[] = [
         machine: "W6-เครื่อง METALLIZER 2",
         location:
             branchMaster.find(
-                (b) => b.id === (mockMachines.find((m) => m.id === "LM82")?.bchId || "")
+                (b) =>
+                    b.id ===
+                    (mockMachines.find((m) => m.id === "LM82")?.bchId || "")
             )?.name || "",
         section: "ฝ่ายสาธารณูปโภค",
         problem: "ปั๊มน้ำไม่ทำงาน",
@@ -1618,7 +1632,9 @@ export const mockRepairRequests: RepairRequest[] = [
         machine: "W6-เครื่องผ่า/กรอ SideSeal-01",
         location:
             branchMaster.find(
-                (b) => b.id === (mockMachines.find((m) => m.id === "SS01")?.bchId || "")
+                (b) =>
+                    b.id ===
+                    (mockMachines.find((m) => m.id === "SS01")?.bchId || "")
             )?.name || "",
         section: "ฝ่ายผลิต A",
         problem: "สายพานขาด",
@@ -1644,7 +1660,9 @@ export const mockRepairRequests: RepairRequest[] = [
         machine: "รถยนต์ (Car)",
         location:
             branchMaster.find(
-                (b) => b.id === (mockMachines.find((m) => m.id === "CAR01")?.bchId || "")
+                (b) =>
+                    b.id ===
+                    (mockMachines.find((m) => m.id === "CAR01")?.bchId || "")
             )?.name || "",
         section: "ระบบไฟฟ้า",
         problem: "สตาร์ทไม่ติด แบตเตอรี่เสื่อมแรงดันตก",
@@ -1671,7 +1689,9 @@ export const mockRepairRequests: RepairRequest[] = [
         machine: "เครื่องปรับอากาศ (Air Conditioner)",
         location:
             branchMaster.find(
-                (b) => b.id === (mockMachines.find((m) => m.id === "AC01")?.bchId || "")
+                (b) =>
+                    b.id ===
+                    (mockMachines.find((m) => m.id === "AC01")?.bchId || "")
             )?.name || "",
         section: "ชุดคอมเพรสเซอร์",
         problem: "คอมเพรสเซอร์มีเสียงดังและไม่ทำความเย็น",
@@ -1696,7 +1716,7 @@ export const mockRepairRequests: RepairRequest[] = [
 // ข้อมูลใบสั่งงานซ่อม (Process)
 export const mockRepairProcesses: RepairProcess[] = [
     {
-        id: "RO-A-24070001",
+        id: "RO-A-68070001",
         requestId: "RR-A-67070001",
         documentNumber: "PROC-2024-001",
         assignedTechnicians: ["tech1", "tech4"],
@@ -1733,9 +1753,9 @@ export const mockRepairProcesses: RepairProcess[] = [
     },
     // สำหรับใบร้อง RR-6-68070005 (มอเตอร์ไม่หมุน ขาดการหล่อลื่น)
     {
-        id: "RO-6-24070005-FD",
+        id: "RO-6-68070011",
         requestId: "RR-6-68070005",
-        documentNumber: "PROC-2024-005-FD",
+        documentNumber: "PROC-2024-0011",
         assignedTechnicians: ["tech2"],
         estimatedStartDate: "08/07/2568",
         estimatedEndDate: "08/07/2568",
@@ -1807,7 +1827,7 @@ export const mockRepairProcesses: RepairProcess[] = [
         updatedBy: "หัวหน้าแผนก สุรชัย",
     },
     {
-        id: "RO-A-24070003",
+        id: "RO-A-68070003",
         requestId: "RR-A-67070003",
         documentNumber: "PROC-2024-003",
         assignedTechnicians: ["tech2", "tech3"],
@@ -1833,7 +1853,7 @@ export const mockRepairProcesses: RepairProcess[] = [
         updatedBy: "นายวิชัย เทคนิค",
     },
     {
-        id: "RO-6-24070002",
+        id: "RO-6-68070002",
         requestId: "RR-6-67070002",
         documentNumber: "PROC-2024-002",
         assignedTechnicians: ["tech2"],
@@ -1849,7 +1869,7 @@ export const mockRepairProcesses: RepairProcess[] = [
         updatedBy: "หัวหน้าแผนก สุรชัย",
     },
     {
-        id: "RO-6-24070004",
+        id: "RO-6-68070004",
         requestId: "RR-6-67070004",
         documentNumber: "PROC-2024-004",
         assignedTechnicians: ["tech3", "tech4"],
@@ -1865,7 +1885,7 @@ export const mockRepairProcesses: RepairProcess[] = [
         updatedBy: "หัวหน้าแผนก สุรชัย",
     },
     {
-        id: "RO-6-24070005",
+        id: "RO-6-68070005",
         requestId: "RR-6-67070002",
         documentNumber: "PROC-2024-005",
         assignedTechnicians: ["tech2"],
@@ -1881,7 +1901,7 @@ export const mockRepairProcesses: RepairProcess[] = [
         updatedBy: "หัวหน้าแผนก สุรชัย",
     },
     {
-        id: "RO-A-24070006",
+        id: "RO-A-68070006",
         requestId: "RR-A-67070003",
         documentNumber: "PROC-2024-006",
         assignedTechnicians: ["tech2"],
@@ -1907,7 +1927,7 @@ export const mockRepairProcesses: RepairProcess[] = [
         updatedBy: "นายวิชัย เทคนิค",
     },
     {
-        id: "RO-6-24070007",
+        id: "RO-6-68070007",
         requestId: "RR-6-67070004",
         documentNumber: "PROC-2024-007",
         assignedTechnicians: ["tech1", "tech2"],
@@ -1943,7 +1963,7 @@ export const mockRepairProcesses: RepairProcess[] = [
         updatedBy: "นายสมชาย วิชาการ",
     },
     {
-        id: "RO-A-24070008",
+        id: "RO-A-68070008",
         requestId: "RR-A-67070001",
         documentNumber: "PROC-2024-008",
         assignedTechnicians: ["tech1"],

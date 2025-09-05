@@ -35,7 +35,13 @@ export interface CompleteRepairData {
     reporter: string;
     contactNumber?: string;
     workType?: string;
-    status: "new" | "pending" | "progress" | "waiting" | "completed" | "cancelled";
+    status:
+        | "new"
+        | "pending"
+        | "progress"
+        | "waiting"
+        | "completed"
+        | "cancelled";
     engineer?: string;
     urgency?: string;
     priority?: string;
@@ -50,7 +56,13 @@ export interface SimpleRepairData {
     machine: string;
     problem: string;
     date: string;
-    status: "new" | "pending" | "progress" | "waiting" | "completed" | "cancelled";
+    status:
+        | "new"
+        | "pending"
+        | "progress"
+        | "waiting"
+        | "completed"
+        | "cancelled";
     engineer?: string;
     reporter?: string;
 }
@@ -58,7 +70,7 @@ export interface SimpleRepairData {
 // ข้อมูล Mock สำหรับการซ่อมแบบสมบูรณ์
 export const mockCompleteRepairs: CompleteRepairData[] = [
     {
-        id: "RO-A-24070001",
+        id: "RO-A-68070001",
         machine: "เครื่องอัดฟิล์ม Extruder Line 1",
         machineCode: "EXT-001",
         location: "อาคาร A ชั้น 1",
@@ -103,7 +115,7 @@ export const mockCompleteRepairs: CompleteRepairData[] = [
         },
     },
     {
-        id: "RO-6-24070002",
+        id: "RO-6-68070002",
         machine: "เครื่องตัดฟิล์ม Slitting Machine A",
         machineCode: "SLIT-001",
         location: "อาคาร B ชั้น 2",
@@ -132,7 +144,7 @@ export const mockCompleteRepairs: CompleteRepairData[] = [
         },
     },
     {
-        id: "RO-A-24070003",
+        id: "RO-A-68070003",
         machine: "เครื่องอัดฟิล์ม Extruder Line 1",
         machineCode: "EXT-001",
         location: "อาคาร A ชั้น 1",
@@ -168,7 +180,7 @@ export const mockCompleteRepairs: CompleteRepairData[] = [
         },
     },
     {
-        id: "RO-6-24070004",
+        id: "RO-6-68070004",
         machine: "Compressor",
         machineCode: "COMP-001",
         location: "อาคาร 1, ห้องเครื่องจักร",
@@ -186,7 +198,7 @@ export const mockCompleteRepairs: CompleteRepairData[] = [
         notes: "ตรวจพบจากการตรวจสอบประจำ",
     },
     {
-        id: "RO-6-24070005",
+        id: "RO-6-68070005",
         machine: "Conveyor",
         machineCode: "CONV-002",
         location: "อาคาร 2, Line 2",
@@ -205,7 +217,7 @@ export const mockCompleteRepairs: CompleteRepairData[] = [
         notes: "รอจัดลำดับความสำคัญ",
     },
     {
-        id: "RO-A-24070006",
+        id: "RO-A-68070006",
         machine: "Mixer A",
         machineCode: "MIX-001",
         location: "อาคาร 1, Line 3",
@@ -242,7 +254,7 @@ export const mockCompleteRepairs: CompleteRepairData[] = [
         },
     },
     {
-        id: "RO-6-24070007",
+        id: "RO-6-68070007",
         machine: "Cooling Tower",
         machineCode: "COOL-001",
         location: "อาคาร 1, หลังคา",
@@ -286,7 +298,7 @@ export const mockCompleteRepairs: CompleteRepairData[] = [
         },
     },
     {
-        id: "RO-A-24070008",
+        id: "RO-A-68070008",
         machine: "Conveyor Belt #3",
         machineCode: "CONV-003",
         location: "โรงงาน 1 ชั้น 2",
@@ -332,7 +344,10 @@ export const mockCompleteRepairs: CompleteRepairData[] = [
 ];
 
 import { mockOriginalRequest, mockUserRepairs } from "@/data/mockRepairData";
-import { getRepairRequestById, getRepairProcessByRequestId } from "@/data/masterData";
+import {
+    getRepairRequestById,
+    getRepairProcessByRequestId,
+} from "@/data/masterData";
 
 // ข้อมูล Mock สำหรับตารางแบบย่อ (Dashboard, AllRepairs)
 export const mockSimpleRepairs: SimpleRepairData[] = mockCompleteRepairs.map(
@@ -377,7 +392,9 @@ export const getRepairById = (id: string): CompleteRepairData | undefined => {
                 unit: p.unit,
                 status: "ใช้แล้ว",
             }));
-            const mapProcStatus = (s: string | undefined): CompleteRepairData["status"] => {
+            const mapProcStatus = (
+                s: string | undefined
+            ): CompleteRepairData["status"] => {
                 if (s === "waiting_approval") return "waiting";
                 if (s === "waiting_parts") return "pending";
                 if (s === "assigned" || s === "in_progress") return "progress";
@@ -407,7 +424,9 @@ export const getRepairById = (id: string): CompleteRepairData | undefined => {
                 notes: req.additionalDetails,
                 repairDetails: {
                     startDate: proc?.actualStartDate || req.reportDate,
-                    startTime: proc?.actualStartDate ? undefined : req.reportTime,
+                    startTime: proc?.actualStartDate
+                        ? undefined
+                        : req.reportTime,
                     endDate: proc?.actualEndDate || null,
                     endTime: undefined,
                     description: proc?.repairMethod || "",
