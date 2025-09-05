@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Search, Plus, Link2, Edit } from "lucide-react";
+import { Search, Plus, Link2, Edit, Tag as TagIcon } from "lucide-react";
 import { AddMachineModal } from "./AddMachineModal";
 import { AddSectionModal } from "./AddSectionModal";
 import { AddComponentModal } from "./AddComponentModal";
@@ -18,6 +18,13 @@ import { EditSectionModal } from "./EditSectionModal";
 import { EditComponentModal } from "./EditComponentModal";
 import { AddSparePartModal } from "./AddSparePartModal";
 import { EditSparePartModal } from "./EditSparePartModal";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { SparePartPickerDialog } from "@/components/reports/SparePartPickerDialog";
 import {
     type EntityStatus,
     type Machine,
@@ -72,6 +79,12 @@ export function MasterDataManager() {
     const [components, setComponents] =
         useState<ComponentItem[]>(mockComponents);
     const [spareParts, setSpareParts] = useState<SparePart[]>(mockSpareParts);
+    // Tagging state: map from parent part code -> child part codes
+    const [partSubTags, setPartSubTags] = useState<Record<string, string[]>>({});
+    const [showTagDialog, setShowTagDialog] = useState(false);
+    const [taggingParentPart, setTaggingParentPart] = useState<SparePart | null>(
+        null
+    );
 
     // derived lists
     const filteredMachines = useMemo(
@@ -156,6 +169,73 @@ export function MasterDataManager() {
         selectedSectionId &&
         selectedComponentId
     );
+
+    // Lookup helpers
+    const getPartById = (id: string) => spareParts.find((p) => p.id === id);
+    const getPartsByCodesInMachine = (
+        codes: string[],
+        machineId?: string | null
+    ) => {
+        return spareParts.filter((p) => {
+            if (!codes.includes(p.code)) return false;
+            if (!machineId) return true;
+            const comp = components.find((c) => c.id === p.componentId);
+            if (!comp) return false;
+            const sec = sections.find((s) => s.id === comp.sectionId);
+            return sec?.machineId === machineId;
+        });
+    };
+    const unique = <T,>(arr: T[]) => Array.from(new Set(arr));
+
+    const handleOpenTagDialog = (parent: SparePart) => {
+        setTaggingParentPart(parent);
+        setShowTagDialog(true);
+    };
+    const getPreselectedIdsForTagDialog = () => {
+        if (!taggingParentPart) return [] as string[];
+        const codes = partSubTags[taggingParentPart.code] || [];
+        return getPartsByCodesInMachine(codes, selectedMachineId).map(
+            (p) => p.id
+        );
+    };
+    const handleConfirmTagging = (selectedIds: string[]) => {
+        if (!taggingParentPart) return;
+        const parentCode = taggingParentPart.code;
+        const selectedCodes = unique(
+            selectedIds
+                .map((id) => getPartById(id)?.code)
+                .filter((x): x is string => !!x && x !== parentCode)
+        );
+        setPartSubTags((prev) => ({ ...prev, [parentCode]: selectedCodes }));
+        setShowTagDialog(false);
+        setTaggingParentPart(null);
+    };
+
+    const getSubPartsForTooltip = (part: SparePart) => {
+        const codes = partSubTags[part.code] || [];
+        if (codes.length === 0) return [] as { code: string; name?: string }[];
+        const partsInMachine = getPartsByCodesInMachine(codes, selectedMachineId);
+        return codes.map((code) => {
+            const found = partsInMachine.find((p) => p.code === code);
+            return { code, name: found?.name };
+        });
+    };
+
+    const getParentPartsForTooltip = (part: SparePart) => {
+        const parentCodes = Object.entries(partSubTags)
+            .filter(([_, subs]) => subs.includes(part.code))
+            .map(([parent]) => parent);
+        if (parentCodes.length === 0)
+            return [] as { code: string; name?: string }[];
+        const partsInMachine = getPartsByCodesInMachine(
+            parentCodes,
+            selectedMachineId
+        );
+        return parentCodes.map((code) => {
+            const found = partsInMachine.find((p) => p.code === code);
+            return { code, name: found?.name };
+        });
+    };
 
     // Helper functions to get names for modals
     const getSelectedMachineName = () =>
@@ -672,27 +752,82 @@ export function MasterDataManager() {
                                         >
                                             <div className="flex items-center justify-between">
                                                 <div className="font-medium">
-                                                    {p.name}
+                                                    <TooltipProvider>
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <span className="cursor-default">
+                                                                    {p.name}
+                                                                </span>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent className="max-w-sm">
+                                                                {(() => {
+                                                                    const parents = getParentPartsForTooltip(p);
+                                                                    const subs = getSubPartsForTooltip(p);
+                                                                    return (
+                                                                        <div className="text-sm space-y-2">
+                                                                            <div>
+                                                                                <div className="font-medium mb-1">เป็น Sub ของ:</div>
+                                                                                {parents.length === 0 ? (
+                                                                                    <div className="text-muted-foreground">- ไม่มี -</div>
+                                                                                ) : (
+                                                                                    <ul className="list-disc pl-4 space-y-1">
+                                                                                        {parents.map((s) => (
+                                                                                            <li key={s.code}>
+                                                                                                {s.name || s.code}
+                                                                                                {!s.name ? (
+                                                                                                    <span className="text-muted-foreground"> (ไม่พบในเครื่องนี้)</span>
+                                                                                                ) : null}
+                                                                                            </li>
+                                                                                        ))}
+                                                                                    </ul>
+                                                                                )}
+                                                                            </div>
+                                                                            <div>
+                                                                                <div className="font-medium mb-1">Sub parts:</div>
+                                                                                {subs.length === 0 ? (
+                                                                                    <div className="text-muted-foreground">- ไม่มี -</div>
+                                                                                ) : (
+                                                                                    <ul className="list-disc pl-4 space-y-1">
+                                                                                        {subs.map((s) => (
+                                                                                            <li key={s.code}>
+                                                                                                {s.name || s.code}
+                                                                                                {!s.name ? (
+                                                                                                    <span className="text-muted-foreground"> (ไม่พบในเครื่องนี้)</span>
+                                                                                                ) : null}
+                                                                                            </li>
+                                                                                        ))}
+                                                                                    </ul>
+                                                                                )}
+                                                                            </div>
+                                                                        </div>
+                                                                    );
+                                                                })()}
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    </TooltipProvider>
                                                 </div>
                                                 <div className="flex items-center gap-2">
                                                     <Button
                                                         size="sm"
+                                                        variant="secondary"
+                                                        onClick={() => handleOpenTagDialog(p)}
+                                                        title="Tag sub parts"
+                                                    >
+                                                        <TagIcon className="h-4 w-4" />
+                                                    </Button>
+                                                    <Button
+                                                        size="sm"
                                                         variant="outline"
                                                         onClick={() => {
-                                                            setEditingSparePart(
-                                                                p
-                                                            );
-                                                            setShowEditSparePart(
-                                                                true
-                                                            );
+                                                            setEditingSparePart(p);
+                                                            setShowEditSparePart(true);
                                                         }}
                                                     >
                                                         <Edit className="h-4 w-4" />
                                                     </Button>
                                                     <Badge
                                                         variant={
-                                                            p.status ===
-                                                            "Active"
+                                                            p.status === "Active"
                                                                 ? "default"
                                                                 : "secondary"
                                                         }
@@ -704,8 +839,7 @@ export function MasterDataManager() {
                                                 </div>
                                             </div>
                                             <div className="text-sm text-muted-foreground mt-1">
-                                                คงเหลือ: {p.qty} {p.unit} •
-                                                ใช้งาน: {p.used} {p.unit}
+                                                คงเหลือ: {p.qty} {p.unit} • ใช้งาน: {p.used} {p.unit}
                                             </div>
                                         </div>
                                     ))
@@ -775,6 +909,24 @@ export function MasterDataManager() {
                 sectionName={getSelectedSectionName()}
                 machineName={getSelectedMachineName()}
                 onUpdate={handleUpdateComponent}
+            />
+
+            {/* Tag sub parts dialog */}
+            <SparePartPickerDialog
+                open={showTagDialog}
+                onOpenChange={(o) => {
+                    setShowTagDialog(o);
+                    if (!o) setTaggingParentPart(null);
+                }}
+                selectedIds={getPreselectedIdsForTagDialog()}
+                onConfirm={handleConfirmTagging}
+                machineId={selectedMachineId ?? undefined}
+                excludeIds={taggingParentPart ? [taggingParentPart.id] : []}
+                title={
+                    taggingParentPart
+                        ? `เลือก Sub parts สำหรับ: ${taggingParentPart.name}`
+                        : "เลือกอะไหล่"
+                }
             />
         </div>
     );

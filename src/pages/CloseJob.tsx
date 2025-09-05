@@ -116,10 +116,10 @@ export function CloseJob() {
                 <div className="container mx-auto px-4 py-8">
                     <div className="text-center">
                         <h2 className="text-2xl font-bold mb-4">
-                            ไม่พบข้อมูลใบแจ้งซ่อม
+                            ไม่พบข้อมูลใบสั่งงานซ่อม
                         </h2>
                         <p className="text-gray-600 mb-4">
-                            ไม่พบข้อมูลใบแจ้งซ่อมหมายเลข {repairId || "-"}
+                            ไม่พบข้อมูลใบสั่งงานซ่อมหมายเลข {repairId || "-"}
                         </p>
                         <Button onClick={() => navigate(-1)} variant="outline">
                             กลับ
@@ -131,7 +131,10 @@ export function CloseJob() {
     }
 
     // Utility: แปลงวันที่ไทย (พ.ศ. DD/MM/YYYY) + เวลา เป็น Date
-    const parseThaiDateTime = (dateStr?: string, timeStr?: string): Date | null => {
+    const parseThaiDateTime = (
+        dateStr?: string,
+        timeStr?: string
+    ): Date | null => {
         if (!dateStr) return null;
         // คาดว่ามาในรูปแบบ DD/MM/YYYY (พ.ศ.)
         const parts = dateStr.split("/");
@@ -142,7 +145,8 @@ export function CloseJob() {
         const by = parseInt(byStr, 10);
         if (!dd || !mm || !by) return null;
         const gy = by - 543; // แปลง พ.ศ. → ค.ศ.
-        let hh = 0, min = 0;
+        let hh = 0,
+            min = 0;
         if (timeStr && /\d{1,2}:\d{2}/.test(timeStr)) {
             const [hStr, mStr] = timeStr.split(":");
             hh = parseInt(hStr, 10) || 0;
@@ -171,16 +175,24 @@ export function CloseJob() {
             rd.endTime || "23:59"
         );
 
-        if (!notificationDateTime || !operationStartDateTime || !operationEndDateTime) {
+        if (
+            !notificationDateTime ||
+            !operationStartDateTime ||
+            !operationEndDateTime
+        ) {
             return "ไม่มีข้อมูล";
         }
 
-        const lostTime1 = operationStartDateTime.getTime() - notificationDateTime.getTime();
-        const lostTime2 = operationEndDateTime.getTime() - operationStartDateTime.getTime();
+        const lostTime1 =
+            operationStartDateTime.getTime() - notificationDateTime.getTime();
+        const lostTime2 =
+            operationEndDateTime.getTime() - operationStartDateTime.getTime();
         const totalLostTime = Math.max(0, lostTime1) + Math.max(0, lostTime2);
 
         const hours = Math.floor(totalLostTime / (1000 * 60 * 60));
-        const minutes = Math.floor((totalLostTime % (1000 * 60 * 60)) / (1000 * 60));
+        const minutes = Math.floor(
+            (totalLostTime % (1000 * 60 * 60)) / (1000 * 60)
+        );
 
         return `${hours} ชั่วโมง ${minutes} นาที`;
     };
@@ -231,7 +243,7 @@ export function CloseJob() {
                     </p>
                 </div>
 
-                {/* ข้อมูลใบแจ้งซ่อม - ใช้ RepairRequestInfo component */}
+                {/* ข้อมูลใบสั่งงานซ่อม - ใช้ RepairRequestInfo component */}
                 <RepairRequestInfo
                     request={{
                         id: mockRepairData.id,
@@ -247,7 +259,7 @@ export function CloseJob() {
                         description: mockRepairData.notes || "",
                         images: mockRepairData.images || [],
                     }}
-                    title={`ข้อมูลใบแจ้งซ่อม`}
+                    title={`ข้อมูลใบสั่งงานซ่อม`}
                     defaultExpanded={isExpanded}
                 />
 

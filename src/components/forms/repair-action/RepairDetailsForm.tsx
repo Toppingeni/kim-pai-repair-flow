@@ -32,6 +32,8 @@ interface RepairDetailsFormProps {
     onEngineerChange: (value: string) => void;
     repairResult: string;
     onRepairResultChange: (value: string) => void;
+    repairReasons: Record<string, string>;
+    onRepairReasonChange: (status: string, value: string) => void;
     engineers: Engineer[];
 }
 
@@ -76,6 +78,8 @@ export function RepairDetailsForm({
     onEngineerChange,
     repairResult,
     onRepairResultChange,
+    repairReasons,
+    onRepairReasonChange,
     engineers,
 }: RepairDetailsFormProps) {
     const [selectedWorkType, setSelectedWorkType] = useState("");
@@ -303,56 +307,66 @@ export function RepairDetailsForm({
                     </div>
                 </div>
 
-                {/* Work Result Section */}
+                {/* Status Section */}
                 <div className="space-y-3">
-                    <Label>ผลการปฏิบัติงาน</Label>
+                    <Label>สถานะ</Label>
                     <RadioGroup
                         value={repairResult}
                         onValueChange={onRepairResultChange}
                     >
                         <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="in-progress" id="in-progress" />
+                            <Label htmlFor="in-progress" className="cursor-pointer">
+                                กำลังดำเนินการซ่อม
+                            </Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="waiting-external" id="waiting-external" />
+                            <Label htmlFor="waiting-external" className="cursor-pointer">
+                                รออะไหล่/รอช่างจากภายนอก
+                            </Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="paused" id="paused" />
+                            <Label htmlFor="paused" className="cursor-pointer">
+                                หยุดงานชั่วคราว
+                            </Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
                             <RadioGroupItem value="success" id="success" />
-                            <Label
-                                htmlFor="success"
-                                className="text-status-completed cursor-pointer"
-                            >
+                            <Label htmlFor="success" className="text-status-completed cursor-pointer">
                                 ซ่อมสำเร็จ (ใช้งานได้)
                             </Label>
                         </div>
                         <div className="flex items-center space-x-2">
                             <RadioGroupItem value="failed" id="failed" />
-                            <Label
-                                htmlFor="failed"
-                                className="text-destructive cursor-pointer"
-                            >
+                            <Label htmlFor="failed" className="text-destructive cursor-pointer">
                                 ซ่อมไม่สำเร็จ (ใช้งานไม่ได้)
                             </Label>
                         </div>
                         <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="pending" id="pending" />
-                            <Label
-                                htmlFor="pending"
-                                className="text-status-pending cursor-pointer"
-                            >
-                                รออะไหล่
-                            </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
                             <RadioGroupItem value="no-repair" id="no-repair" />
-                            <Label
-                                htmlFor="no-repair"
-                                className="text-muted-foreground cursor-pointer"
-                            >
-                                ไม่ซ่อม (ระบุเหตุผล)
+                            <Label htmlFor="no-repair" className="text-muted-foreground cursor-pointer">
+                                ไม่ซ่อม
                             </Label>
                         </div>
                     </RadioGroup>
 
-                    {repairResult === "no-repair" && (
+                    {[
+                        "in-progress",
+                        "waiting-external",
+                        "paused",
+                        "failed",
+                        "no-repair",
+                    ].includes(repairResult) && (
                         <div className="mt-3">
                             <Textarea
-                                placeholder="ระบุเหตุผลที่ไม่ซ่อม"
+                                placeholder="ระบุเหตุผล"
                                 rows={2}
+                                value={repairReasons[repairResult] || ""}
+                                onChange={(e) =>
+                                    onRepairReasonChange(repairResult, e.target.value)
+                                }
                             />
                         </div>
                     )}

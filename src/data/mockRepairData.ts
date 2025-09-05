@@ -1,9 +1,13 @@
+import { branchMaster } from "@/data/masterData";
+
 export const mockOriginalRequest = {
-    id: "R24070001", // ใช้รูปแบบเดียวกับหน้าสร้างใบแจ้งซ่อมใหม่ (R{YY}{MM}{NNNN})
-    documentNumber: "R24070001",
-    machine: "เครื่องอัดฟิล์ม Extruder Line 1",
-    machineId: "m1", // เพิ่ม machineId ที่ตรงกับ masterData
-    location: "โรงงาน A - ชั้น 2", // เพิ่มสถานที่ตั้งให้ตรงกับ NewRepairForm
+    id: "RR-A-68090001", // RR-[bchId]-[YYMMXXXX] โดย bchId ของ COL3 คือ A, วันที่ตัวอย่าง 68(ปีพ.ศ.) 09(เดือน) 0001
+    documentNumber: "RR-A-68090001", // RR-[bchId]-[YYMMXXXX] โดย bchId ของ COL3 คือ A, วันที่ตัวอย่าง 68(ปีพ.ศ.) 09(เดือน) 0001
+    requestId: "RR-A-68090001", // id และ documentNumber เป็นตัวเดียวกัน
+    machine: "เครื่องฉีดฟิล์ม Extrusion Line-COL",
+    machineId: "COL3", // ให้ตรงกับ masterData ชุดใหม่
+    bchId: "A", // อ้างอิง branchMaster
+    location: branchMaster.find((b) => b.id === "A")?.name || "โรงงาน A", // อ้างอิงจาก branchMaster
     section: "หน่วยหลอมพลาสติก (Extruder)", // เพิ่มส่วนประกอบ
     problem: "มอเตอร์ทำงานผิดปกติ เสียงดังผิดปกติ และมีการสั่นสะเทือน",
     reporter: "ช่างเทคนิค สมชาย",
@@ -28,7 +32,7 @@ export const engineers = [
 // ข้อมูล mock สำหรับการอนุมัติใบสั่งงานซ่อม
 export const mockWorkOrderApproval = {
     id: "WO24070001",
-    repairRequestId: "R24070001",
+    repairRequestId: "RR-A-68090001",
     workType: "wt1", // อ้างอิงจาก masterData WorkType
     workTypeLabel: "BM (Break Down Maintenance)",
     plannedStartDate: "16/07/2567",
@@ -92,5 +96,67 @@ export const mockRepairHistory = [
         ],
         status: "ปิดงานแล้ว",
         notes: "เปลี่ยนแนวทางการซ่อม มุ่งเน้นที่ระบบขับเคลื่อน",
+    },
+];
+
+// ข้อมูล mock สำหรับหน้า "รายการใบร้องของานซ่อมของฉัน"
+import { getMachineById, getTechniciansByIds } from "@/data/masterData";
+
+const machineName = (machineId: string) =>
+    getMachineById(machineId)?.name || machineId;
+const technicianNames = (ids: string[]) =>
+    getTechniciansByIds(ids).map((t) => t.name);
+
+export const mockUserRepairs = [
+    // อิงจาก mockOriginalRequest แต่อัปเดตปัญหาให้ตรงกับเครื่องจักร
+    {
+        id: mockOriginalRequest.documentNumber,
+        machineId: "COL3",
+        machine: machineName("COL3"),
+        problem: "มอเตอร์ขับหลอมทำงานผิดปกติ มีเสียงดังและสั่น",
+        date: mockOriginalRequest.reportedDate,
+        contactNumber: mockOriginalRequest.contactNumber,
+        status: "waiting" as const,
+        engineer: technicianNames(["tech1"])[0],
+    },
+    {
+        id: "RR-A-68090002",
+        machineId: "LS91",
+        machine: machineName("LS91"),
+        problem: "ใบมีดตัดไม่คม ตัดฟิล์มไม่เรียบ ต้องเปลี่ยน",
+        date: "16/07/2567",
+        contactNumber: "081-111-2222",
+        status: "completed" as const,
+        engineer: technicianNames(["tech3"])[0],
+    },
+    {
+        id: "RR-A-68090003",
+        machineId: "LM81",
+        machine: machineName("LM81"),
+        problem: "ระบบสุญญากาศตก คุณภาพการเคลือบไม่สม่ำเสมอ",
+        date: "14/07/2567",
+        contactNumber: "081-333-4444",
+        status: "completed" as const,
+        engineer: technicianNames(["tech1"])[0],
+    },
+    {
+        id: "RR-A-68090004",
+        machineId: "COL3",
+        machine: machineName("COL3"),
+        problem: "อุณหภูมิหัวฉีดแกว่ง เซ็นเซอร์วัดอุณหภูมิผิดปกติ",
+        date: "12/07/2567",
+        contactNumber: "081-555-6666",
+        status: "completed" as const,
+        engineer: technicianNames(["tech3", "tech4"]),
+    },
+    {
+        id: "RR-A-68090005",
+        machineId: "LM81",
+        machine: machineName("LM81"),
+        problem: "ระบบความร้อนห้องเคลือบทำงานไม่เต็มประสิทธิภาพ",
+        date: "10/07/2567",
+        contactNumber: "081-777-8888",
+        status: "progress" as const,
+        engineer: technicianNames(["tech2"])[0],
     },
 ];

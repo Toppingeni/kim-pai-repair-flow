@@ -20,47 +20,56 @@ import {
 } from "@/components/ui/tooltip";
 import { Info, X } from "lucide-react";
 import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import {
     mockMachines,
     getSectionsByMachineId,
     getAllPriorityLevels,
+    getBranchById,
     type Section,
     type PriorityLevel,
 } from "@/data/masterData";
 
-// แปลงข้อมูลจาก masterData ให้มีข้อมูลสถานที่ตั้ง
+// แปลงข้อมูลจาก masterData ให้มีข้อมูลสถานที่ตั้ง และ bchId
 const machines = mockMachines
     .filter((machine) => machine.status === "Active")
     .map((machine) => ({
         id: machine.id,
         name: machine.name,
-        location: getLocationByMachineId(machine.id), // ฟังก์ชันสำหรับกำหนดสถานที่ตั้ง
+        // ดึงสถานที่จาก branchMaster โดยอ้างอิง bchId ของเครื่อง
+        location:
+            (machine.bchId && getBranchById(machine.bchId)?.name) ||
+            "ไม่ระบุสถานที่",
+        bchId: machine.bchId,
     }));
 
-// ฟังก์ชันสำหรับกำหนดสถานที่ตั้งตาม machine id
-function getLocationByMachineId(machineId: string): string {
-    const locationMap: { [key: string]: string } = {
-        m1: "อาคาร 1, Line 1", // เครื่องอัดฟิล์ม Extruder Line 1
-        m2: "อาคาร 1, Line 2", // เครื่องตัดฟิล์ม Slitting Machine A
-        m3: "อาคาร 2, Line 1", // เครื่องพิมพ์ฟิล์ม Printing Press B
-    };
-    return locationMap[machineId] || "ไม่ระบุสถานที่";
+// ยกเลิกการ map แบบ hard-coded และใช้ branchMaster แทน
+
+// ฟังก์ชันสำหรับสร้างเลขที่เอกสาร RR-[bchId]-[YYMMXXXX]
+function generateDocumentNumber(bchId?: string): string {
+    const now = new Date();
+    const beYear = now.getFullYear() + 543; // พ.ศ.
+    const yy = beYear.toString().slice(-2);
+    const mm = (now.getMonth() + 1).toString().padStart(2, "0");
+    const running = "0001"; // mock running number
+    const branch = bchId || "X"; // ถ้าไม่ทราบ bchId ให้เป็น X
+    return `RR-${branch}-${yy}${mm}${running}`;
 }
 
-// ฟังก์ชันสำหรับสร้างเลขที่เอกสาร
-function generateDocumentNumber(): string {
-    const now = new Date();
-    const year = now.getFullYear().toString().slice(-2);
-    const month = (now.getMonth() + 1).toString().padStart(2, "0");
-    const day = now.getDate().toString().padStart(2, "0");
-    const time = now.getTime().toString().slice(-4);
-    return `R${year}${month}0001`;
-}
+// ยกเลิกเวอร์ชันเดิมของ generateDocumentNumber (ใช้เวอร์ชันที่รองรับ bchId ด้านบน)
 
 // ข้อมูลระดับความสำคัญจาก masterData
 const priorityLevels: PriorityLevel[] = getAllPriorityLevels();
 
 export function NewRepairForm() {
-    const [documentNumber] = useState(generateDocumentNumber());
+    // แสดง AUTO บนฟอร์ม จนกว่าจะกดบันทึกและส่ง
+    const [documentNumber] = useState<string>("AUTO");
     const [selectedMachine, setSelectedMachine] = useState("");
     const [selectedSection, setSelectedSection] = useState("");
 
@@ -69,23 +78,20 @@ export function NewRepairForm() {
     const [selectedImages, setSelectedImages] = useState<File[]>([]);
     const [availableSections, setAvailableSections] = useState<Section[]>([]);
 
+    // Dialog แจ้งเลขที่ใบคำร้องหลังส่ง
+    const [showSubmittedDialog, setShowSubmittedDialog] = useState(false);
+    const [submittedDocNumber, setSubmittedDocNumber] = useState<string>("");
+
     const selectedMachineData = machines.find((m) => m.id === selectedMachine);
     const selectedSectionData = availableSections.find(
         (s) => s.id === selectedSection
     );
 
-    // ฟังก์ชันสำหรับจัดการ format เบอร์ติดต่อ
+    // เบอร์ติดต่อ: รับเป็นข้อความอิสระ ไม่บังคับรูปแบบ
     const handleContactNumberChange = (
         e: React.ChangeEvent<HTMLInputElement>
     ) => {
-        const value = e.target.value.replace(/\D/g, ""); // เอาตัวอักษรที่ไม่ใช่ตัวเลขออก
-        if (value.length <= 10) {
-            let formatted = value;
-            if (value.length > 3) {
-                formatted = value.slice(0, 3) + "-" + value.slice(3);
-            }
-            setContactNumber(formatted);
-        }
+        setContactNumber(e.target.value);
     };
 
     // ฟังก์ชันสำหรับจัดการการเลือกไฟล์รูปภาพ
@@ -101,6 +107,8 @@ export function NewRepairForm() {
     const removeImage = (index: number) => {
         setSelectedImages((prev) => prev.filter((_, i) => i !== index));
     };
+
+    // ไม่ต้องอัปเดตเลขที่เอกสารตามเครื่อง ให้แสดง AUTO จนกว่าจะส่ง
 
     // อัปเดตส่วนประกอบเมื่อเลือกเครื่องจักร
     useEffect(() => {
@@ -118,22 +126,17 @@ export function NewRepairForm() {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        // Handle form submission
-        console.log("Form submitted", {
-            documentNumber,
-            selectedMachine,
-            selectedSection,
-            contactNumber,
-            priority,
-            images: selectedImages,
-        });
+        const m = machines.find((x) => x.id === selectedMachine);
+        const generated = generateDocumentNumber(m?.bchId);
+        setSubmittedDocNumber(generated);
+        setShowSubmittedDialog(true);
     };
 
     return (
         <div className="max-w-4xl mx-auto p-6 space-y-1">
             <div className="mb-3">
                 <h1 className="text-2xl font-bold text-foreground">
-                    สร้างใบแจ้งซ่อมใหม่
+                    สร้างใบร้องของงานซ่อมใหม่
                 </h1>
             </div>
 
@@ -272,8 +275,7 @@ export function NewRepairForm() {
                                     id="contact"
                                     value={contactNumber}
                                     onChange={handleContactNumberChange}
-                                    placeholder="xxx-xxxxxxx"
-                                    maxLength={11}
+                                    placeholder="ระบุเบอร์ติดต่อ"
                                 />
                             </div>
                             <div className="space-y-1">
@@ -418,6 +420,28 @@ export function NewRepairForm() {
                         บันทึกและส่งแจ้งซ่อม
                     </Button>
                 </div>
+
+                {/* Dialog แจ้งเลขที่ใบคำร้องหลังส่ง */}
+                <Dialog
+                    open={showSubmittedDialog}
+                    onOpenChange={setShowSubmittedDialog}
+                >
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>ส่งใบสั่งงานซ่อมสำเร็จ</DialogTitle>
+                            <DialogDescription>
+                                เลขที่ใบคำร้องของคุณคือ {submittedDocNumber}
+                            </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter>
+                            <Button
+                                onClick={() => setShowSubmittedDialog(false)}
+                            >
+                                OK
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
             </form>
         </div>
     );

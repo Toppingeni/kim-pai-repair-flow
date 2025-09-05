@@ -1,16 +1,27 @@
-import { useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { mockSections, type Section } from "@/data/masterData";
 
 interface RepairRequestData {
     id: string;
     documentNumber?: string;
     location?: string;
     machine: string;
+    machineId?: string;
     section?: string;
+    sectionId?: string;
     reportedDate?: string;
     reportedTime?: string;
     reporter?: string;
@@ -27,15 +38,43 @@ interface RepairRequestInfoProps {
     title?: string;
     defaultExpanded?: boolean;
     className?: string;
+    editableSection?: boolean;
+    onSectionChange?: (sectionName: string, sectionId?: string) => void;
 }
 
 export function RepairRequestInfo({
     request,
-    title = "ข้อมูลใบแจ้งซ่อม",
+    title = "ข้อมูลใบสั่งงานซ่อม",
     defaultExpanded = false,
     className,
+    editableSection = false,
+    onSectionChange,
 }: RepairRequestInfoProps) {
     const [isExpanded, setIsExpanded] = useState(defaultExpanded);
+    const [sectionName, setSectionName] = useState<string | undefined>(
+        request.section
+    );
+    const [sectionId, setSectionId] = useState<string | undefined>(
+        request.sectionId
+    );
+
+    useEffect(() => {
+        setSectionName(request.section);
+        setSectionId(request.sectionId);
+    }, [request.section, request.sectionId]);
+
+    const availableSections: Section[] = useMemo(() => {
+        if (!request.machineId) return [];
+        return mockSections.filter((s) => s.machineId === request.machineId);
+    }, [request.machineId]);
+
+    const handleSelectSection = (id: string) => {
+        const found = availableSections.find((s) => s.id === id);
+        const name = found?.name || "";
+        setSectionId(id);
+        setSectionName(name);
+        onSectionChange?.(name, id);
+    };
 
     return (
         <Card className={cn("shadow-card", className)}>
@@ -89,9 +128,44 @@ export function RepairRequestInfo({
                             <Label className="text-sm font-medium text-muted-foreground">
                                 ส่วนประกอบ (Section)
                             </Label>
-                            <div className="mt-1 p-2 bg-muted rounded-md">
-                                {request.section || "ไม่ระบุ"}
-                            </div>
+                            {editableSection ? (
+                                availableSections.length > 0 ? (
+                                    <Select
+                                        value={sectionId || undefined}
+                                        onValueChange={handleSelectSection}
+                                    >
+                                        <SelectTrigger className="mt-1">
+                                            <SelectValue
+                                                placeholder={
+                                                    sectionName || "เลือกส่วนประกอบ"
+                                                }
+                                            />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {availableSections.map((s) => (
+                                                <SelectItem key={s.id} value={s.id}>
+                                                    {s.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                ) : (
+                                    <Input
+                                        className="mt-1"
+                                        placeholder="ระบุส่วนประกอบ"
+                                        value={sectionName || ""}
+                                        onChange={(e) => {
+                                            setSectionName(e.target.value);
+                                            setSectionId(undefined);
+                                            onSectionChange?.(e.target.value);
+                                        }}
+                                    />
+                                )
+                            ) : (
+                                <div className="mt-1 p-2 bg-muted rounded-md">
+                                    {sectionName || "ไม่ระบุ"}
+                                </div>
+                            )}
                         </div>
                         <div>
                             <Label className="text-sm font-medium text-muted-foreground">

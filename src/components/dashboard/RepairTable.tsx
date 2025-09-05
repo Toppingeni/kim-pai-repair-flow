@@ -14,6 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRepairActions } from "@/hooks/useRepairActions";
 import { ApprovalDialog } from "@/components/dialogs/ApprovalDialog";
 import { mockOriginalRequest } from "@/data/mockRepairData";
+import { getRepairRequestById } from "@/data/masterData";
 
 interface RepairItem {
     id: string;
@@ -92,7 +93,13 @@ const StatusBadge = ({ status }: { status: keyof typeof statusConfig }) => {
     );
 };
 
-export function RepairTable({ repairs, userRole, title, showEngineerColumn = true, showContactColumn = false }: RepairTableProps) {
+export function RepairTable({
+    repairs,
+    userRole,
+    title,
+    showEngineerColumn = true,
+    showContactColumn = false,
+}: RepairTableProps) {
     const navigate = useNavigate();
     const { acceptJob } = useRepairActions();
     const [selectedRepair, setSelectedRepair] = useState<RepairItem | null>(
@@ -208,13 +215,17 @@ export function RepairTable({ repairs, userRole, title, showEngineerColumn = tru
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>รหัสใบแจ้งซ่อม</TableHead>
+                                <TableHead>รหัสใบสั่งงานซ่อม</TableHead>
                                 <TableHead>เครื่องจักร</TableHead>
                                 <TableHead>ปัญหาเบื้องต้น</TableHead>
-                                {showContactColumn && <TableHead>เบอร์ติดต่อ</TableHead>}
+                                {showContactColumn && (
+                                    <TableHead>เบอร์ติดต่อ</TableHead>
+                                )}
                                 <TableHead>วันที่แจ้ง</TableHead>
                                 <TableHead>สถานะ</TableHead>
-                                {showEngineerColumn && <TableHead>ผู้รับผิดชอบ</TableHead>}
+                                {showEngineerColumn && (
+                                    <TableHead>ผู้รับผิดชอบ</TableHead>
+                                )}
                                 <TableHead>การดำเนินการ</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -227,27 +238,34 @@ export function RepairTable({ repairs, userRole, title, showEngineerColumn = tru
                                     <TableCell>{repair.machine}</TableCell>
                                     <TableCell>{repair.problem}</TableCell>
                                     {showContactColumn && (
-                                      <TableCell>{repair.contactNumber || '-'}</TableCell>
+                                        <TableCell>
+                                            {repair.contactNumber || "-"}
+                                        </TableCell>
                                     )}
                                     <TableCell>{repair.date}</TableCell>
                                     <TableCell>
                                         <StatusBadge status={repair.status} />
                                     </TableCell>
                                     {showEngineerColumn && (
-                                         <TableCell>
-                                             {Array.isArray(repair.engineer) ? (
-                                                 <div className="space-y-1">
-                                                     {repair.engineer.map((name, index) => (
-                                                         <div key={index} className="text-xs">
-                                                             {name}
-                                                         </div>
-                                                     ))}
-                                                 </div>
-                                             ) : (
-                                                 repair.engineer || "-"
-                                             )}
-                                         </TableCell>
-                                     )}
+                                        <TableCell>
+                                            {Array.isArray(repair.engineer) ? (
+                                                <div className="space-y-1">
+                                                    {repair.engineer.map(
+                                                        (name, index) => (
+                                                            <div
+                                                                key={index}
+                                                                className="text-xs"
+                                                            >
+                                                                {name}
+                                                            </div>
+                                                        )
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                repair.engineer || "-"
+                                            )}
+                                        </TableCell>
+                                    )}
                                     <TableCell>
                                         {getActionButtons(repair)}
                                     </TableCell>
@@ -261,31 +279,58 @@ export function RepairTable({ repairs, userRole, title, showEngineerColumn = tru
                 </CardContent>
             </Card>
 
-            {selectedRepair && (
-                <ApprovalDialog
-                    open={showApprovalDialog}
-                    onOpenChange={setShowApprovalDialog}
-                    repairData={{
-                        id: selectedRepair.id,
-                        machine: selectedRepair.machine,
-                        problem: selectedRepair.problem,
-                        date: selectedRepair.date,
-                        status: selectedRepair.status,
-                        documentNumber: selectedRepair.id,
-                        section: mockOriginalRequest.section,
-                        contactNumber: mockOriginalRequest.contactNumber,
-                        priority: mockOriginalRequest.priorityLabel,
-                        description: mockOriginalRequest.additionalDetails,
-                        images: mockOriginalRequest.images,
-                        location: mockOriginalRequest.location,
-                        reportedDate: mockOriginalRequest.reportedDate,
-                        reportedTime: mockOriginalRequest.reportedTime,
-                        reporter: mockOriginalRequest.reporter,
-                    }}
-                    onApprove={handleApproveRepair}
-                    onCancel={handleCancelRepair}
-                />
-            )}
+            {selectedRepair &&
+                (() => {
+                    const req = getRepairRequestById(selectedRepair.id);
+                    return (
+                        <ApprovalDialog
+                            open={showApprovalDialog}
+                            onOpenChange={setShowApprovalDialog}
+                            repairData={{
+                                id: selectedRepair.id,
+                                machineId:
+                                    (selectedRepair as any).machineId ||
+                                    (req as any)?.machineId ||
+                                    (mockOriginalRequest as any).machineId,
+                                machine: req?.machine || selectedRepair.machine,
+                                problem: req?.problem || selectedRepair.problem,
+                                date: selectedRepair.date,
+                                status: selectedRepair.status,
+                                documentNumber: selectedRepair.id,
+                                section:
+                                    req?.section || mockOriginalRequest.section,
+                                contactNumber:
+                                    req?.contactNumber ||
+                                    mockOriginalRequest.contactNumber,
+                                priority:
+                                    req?.priorityLabel ||
+                                    mockOriginalRequest.priorityLabel,
+                                description:
+                                    req?.additionalDetails ||
+                                    mockOriginalRequest.additionalDetails,
+                                images:
+                                    req?.images || mockOriginalRequest.images,
+                                location:
+                                    req?.location ||
+                                    mockOriginalRequest.location,
+                                bchId:
+                                    (req as any)?.bchId ||
+                                    (mockOriginalRequest as any).bchId,
+                                reportedDate:
+                                    (req as any)?.reportedDate ||
+                                    mockOriginalRequest.reportedDate,
+                                reportedTime:
+                                    (req as any)?.reportedTime ||
+                                    mockOriginalRequest.reportedTime,
+                                reporter:
+                                    req?.reporter ||
+                                    mockOriginalRequest.reporter,
+                            }}
+                            onApprove={handleApproveRepair}
+                            onCancel={handleCancelRepair}
+                        />
+                    );
+                })()}
         </>
     );
 }

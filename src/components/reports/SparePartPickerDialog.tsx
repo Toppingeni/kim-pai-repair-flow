@@ -33,6 +33,9 @@ interface SparePartPickerDialogProps {
     onOpenChange: (open: boolean) => void;
     selectedIds?: string[];
     onConfirm: (selectedIds: string[]) => void;
+    machineId?: string; // ถ้าระบุ จะ filter เฉพาะอะไหล่ของเครื่องจักรนี้
+    excludeIds?: string[]; // ซ่อน id บางรายการ (เช่น ห้ามเลือกตัวเอง)
+    title?: string;
 }
 
 export function SparePartPickerDialog({
@@ -40,6 +43,9 @@ export function SparePartPickerDialog({
     onOpenChange,
     selectedIds = [],
     onConfirm,
+    machineId,
+    excludeIds = [],
+    title,
 }: SparePartPickerDialogProps) {
     const [searchQuery, setSearchQuery] = useState("");
     const [tempSelectedIds, setTempSelectedIds] =
@@ -47,7 +53,7 @@ export function SparePartPickerDialog({
 
     const results = useMemo(() => {
         const q = searchQuery.trim().toLowerCase();
-        const list = mockSpareParts.map((p) => {
+        let list = mockSpareParts.map((p) => {
             const comp = mockComponents.find((c) => c.id === p.componentId);
             const sec = comp
                 ? mockSections.find((s) => s.id === comp.sectionId)
@@ -60,15 +66,22 @@ export function SparePartPickerDialog({
                 component: comp?.name || "-",
                 section: sec?.name || "-",
                 machine: mac?.name || "-",
+                machineId: mac?.id,
             };
         });
+        if (machineId) {
+            list = list.filter((x) => x.machineId === machineId);
+        }
+        if (excludeIds.length > 0) {
+            list = list.filter(({ p }) => !excludeIds.includes(p.id));
+        }
         if (!q) return list;
         return list.filter(({ p }) =>
             [p.name, p.code, p.category].some((field) =>
                 field.toLowerCase().includes(q)
             )
         );
-    }, [searchQuery]);
+    }, [searchQuery, machineId, excludeIds]);
 
     const handleToggle = (id: string) => {
         setTempSelectedIds((prev) =>
@@ -99,7 +112,7 @@ export function SparePartPickerDialog({
         <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogContent className="sm:max-w-[900px] max-h-[80vh] overflow-y-auto">
                 <DialogHeader>
-                    <DialogTitle>เลือกอะไหล่จากคลัง</DialogTitle>
+                    <DialogTitle>{title || "เลือกอะไหล่จากคลัง"}</DialogTitle>
                     <DialogDescription>
                         ค้นหาและเลือกได้หลายรายการ
                     </DialogDescription>

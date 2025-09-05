@@ -35,7 +35,7 @@ export interface CompleteRepairData {
     reporter: string;
     contactNumber?: string;
     workType?: string;
-    status: "new" | "pending" | "progress" | "waiting" | "completed";
+    status: "new" | "pending" | "progress" | "waiting" | "completed" | "cancelled";
     engineer?: string;
     urgency?: string;
     priority?: string;
@@ -50,7 +50,7 @@ export interface SimpleRepairData {
     machine: string;
     problem: string;
     date: string;
-    status: "new" | "pending" | "progress" | "waiting" | "completed";
+    status: "new" | "pending" | "progress" | "waiting" | "completed" | "cancelled";
     engineer?: string;
     reporter?: string;
 }
@@ -58,7 +58,7 @@ export interface SimpleRepairData {
 // ข้อมูล Mock สำหรับการซ่อมแบบสมบูรณ์
 export const mockCompleteRepairs: CompleteRepairData[] = [
     {
-        id: "P24070001",
+        id: "RO-A-24070001",
         machine: "เครื่องอัดฟิล์ม Extruder Line 1",
         machineCode: "EXT-001",
         location: "อาคาร A ชั้น 1",
@@ -103,7 +103,7 @@ export const mockCompleteRepairs: CompleteRepairData[] = [
         },
     },
     {
-        id: "P24070002",
+        id: "RO-6-24070002",
         machine: "เครื่องตัดฟิล์ม Slitting Machine A",
         machineCode: "SLIT-001",
         location: "อาคาร B ชั้น 2",
@@ -132,7 +132,7 @@ export const mockCompleteRepairs: CompleteRepairData[] = [
         },
     },
     {
-        id: "P24070003",
+        id: "RO-A-24070003",
         machine: "เครื่องอัดฟิล์ม Extruder Line 1",
         machineCode: "EXT-001",
         location: "อาคาร A ชั้น 1",
@@ -168,7 +168,7 @@ export const mockCompleteRepairs: CompleteRepairData[] = [
         },
     },
     {
-        id: "P24070004",
+        id: "RO-6-24070004",
         machine: "Compressor",
         machineCode: "COMP-001",
         location: "อาคาร 1, ห้องเครื่องจักร",
@@ -186,7 +186,7 @@ export const mockCompleteRepairs: CompleteRepairData[] = [
         notes: "ตรวจพบจากการตรวจสอบประจำ",
     },
     {
-        id: "P24070005",
+        id: "RO-6-24070005",
         machine: "Conveyor",
         machineCode: "CONV-002",
         location: "อาคาร 2, Line 2",
@@ -205,7 +205,7 @@ export const mockCompleteRepairs: CompleteRepairData[] = [
         notes: "รอจัดลำดับความสำคัญ",
     },
     {
-        id: "P24070006",
+        id: "RO-A-24070006",
         machine: "Mixer A",
         machineCode: "MIX-001",
         location: "อาคาร 1, Line 3",
@@ -242,7 +242,7 @@ export const mockCompleteRepairs: CompleteRepairData[] = [
         },
     },
     {
-        id: "P24070007",
+        id: "RO-6-24070007",
         machine: "Cooling Tower",
         machineCode: "COOL-001",
         location: "อาคาร 1, หลังคา",
@@ -286,7 +286,7 @@ export const mockCompleteRepairs: CompleteRepairData[] = [
         },
     },
     {
-        id: "P24070008",
+        id: "RO-A-24070008",
         machine: "Conveyor Belt #3",
         machineCode: "CONV-003",
         location: "โรงงาน 1 ชั้น 2",
@@ -331,6 +331,9 @@ export const mockCompleteRepairs: CompleteRepairData[] = [
     },
 ];
 
+import { mockOriginalRequest, mockUserRepairs } from "@/data/mockRepairData";
+import { getRepairRequestById, getRepairProcessByRequestId } from "@/data/masterData";
+
 // ข้อมูล Mock สำหรับตารางแบบย่อ (Dashboard, AllRepairs)
 export const mockSimpleRepairs: SimpleRepairData[] = mockCompleteRepairs.map(
     (repair) => ({
@@ -349,11 +352,137 @@ export const getRepairById = (id: string): CompleteRepairData | undefined => {
     // ตรงตัวก่อน
     let found = mockCompleteRepairs.find((repair) => repair.id === id);
     if (found) return found;
-    // รองรับกรณีส่งรหัสใบร้อง R... มา ให้แมปไปยัง P... ด้วยเลขชุดเดียวกัน
-    if (id?.startsWith("R")) {
+    // รองรับกรณีรหัสรูปแบบ R... (เช่น R24070001) ให้แมปไปยัง P... ด้วยเลขชุดเดียวกัน
+    if (id?.startsWith("R") && !id.startsWith("RR-")) {
         const converted = `P${id.slice(1)}`;
         found = mockCompleteRepairs.find((repair) => repair.id === converted);
         if (found) return found;
+    }
+    // รองรับกรณีรหัสรูปแบบ RR-... (เช่น RR-A-68090001)
+    if (id?.startsWith("RR-")) {
+        const req = getRepairRequestById(id);
+        // ถ้ามีข้อมูลใบร้องใน master ใช้มันเป็นหลัก
+        if (req) {
+            const proc = getRepairProcessByRequestId(req.id);
+            const simple = mockUserRepairs.find((r) => r.id === id);
+            const engineerName = simple
+                ? Array.isArray(simple.engineer)
+                    ? simple.engineer.join(", ")
+                    : (simple.engineer as string | undefined)
+                : undefined;
+            const usedParts = (proc?.usedParts || []).map((p) => ({
+                name: p.partName,
+                code: p.partCode,
+                quantity: p.quantity,
+                unit: p.unit,
+                status: "ใช้แล้ว",
+            }));
+            const mapProcStatus = (s: string | undefined): CompleteRepairData["status"] => {
+                if (s === "waiting_approval") return "waiting";
+                if (s === "waiting_parts") return "pending";
+                if (s === "assigned" || s === "in_progress") return "progress";
+                if (s === "completed") return "completed";
+                return req.status === "waiting"
+                    ? "waiting"
+                    : req.status === "new"
+                    ? "new"
+                    : "cancelled";
+            };
+            return {
+                id: req.id,
+                machine: req.machine,
+                location: req.location,
+                section: req.section,
+                problem: req.problem,
+                requestDate: req.reportDate,
+                requestTime: req.reportTime,
+                reporter: req.reporter,
+                contactNumber: req.contactNumber,
+                workType: "maintenance",
+                status: mapProcStatus(proc?.status),
+                engineer: engineerName,
+                urgency: undefined,
+                priority: req.priorityLabel,
+                images: req.images,
+                notes: req.additionalDetails,
+                repairDetails: {
+                    startDate: proc?.actualStartDate || req.reportDate,
+                    startTime: proc?.actualStartDate ? undefined : req.reportTime,
+                    endDate: proc?.actualEndDate || null,
+                    endTime: undefined,
+                    description: proc?.repairMethod || "",
+                    cause: "",
+                    result: null,
+                    usedParts,
+                },
+            };
+        }
+        // ถ้าไม่พบใน master ให้ลองข้อมูลแบบย่อของฉัน
+        const simple = mockUserRepairs.find((r) => r.id === id);
+        if (simple) {
+            const engineerName = Array.isArray(simple.engineer)
+                ? simple.engineer.join(", ")
+                : simple.engineer || undefined;
+            return {
+                id: simple.id,
+                machine: simple.machine,
+                location: mockOriginalRequest.location,
+                section: mockOriginalRequest.section,
+                problem: simple.problem,
+                requestDate: simple.date,
+                requestTime: mockOriginalRequest.reportedTime,
+                reporter: mockOriginalRequest.reporter,
+                contactNumber: mockOriginalRequest.contactNumber,
+                workType: "maintenance",
+                status: simple.status as CompleteRepairData["status"],
+                engineer: engineerName,
+                urgency: undefined,
+                priority: mockOriginalRequest.priorityLabel,
+                images: mockOriginalRequest.images,
+                notes: mockOriginalRequest.additionalDetails,
+                repairDetails: {
+                    startDate: simple.date,
+                    startTime: undefined,
+                    endDate: null,
+                    endTime: undefined,
+                    description: "",
+                    cause: "",
+                    result: null,
+                    usedParts: [],
+                },
+            };
+        }
+        // ถ้าไม่พบ ให้ fallback กลับไปที่ mockOriginalRequest (กรณีเป็น RR-A-68090001)
+        if (mockOriginalRequest.documentNumber === id) {
+            return {
+                id: mockOriginalRequest.documentNumber,
+                machine: mockOriginalRequest.machine,
+                location: mockOriginalRequest.location,
+                section: mockOriginalRequest.section,
+                problem: mockOriginalRequest.problem,
+                requestDate: mockOriginalRequest.reportedDate,
+                requestTime: mockOriginalRequest.reportedTime,
+                reporter: mockOriginalRequest.reporter,
+                contactNumber: mockOriginalRequest.contactNumber,
+                workType: "maintenance",
+                status: "waiting",
+                engineer: undefined,
+                urgency: undefined,
+                priority: mockOriginalRequest.priorityLabel,
+                images: mockOriginalRequest.images,
+                notes: mockOriginalRequest.additionalDetails,
+                repairDetails: {
+                    startDate: mockOriginalRequest.reportedDate,
+                    startTime: mockOriginalRequest.reportedTime,
+                    endDate: null,
+                    endTime: undefined,
+                    description: "",
+                    cause: "",
+                    result: null,
+                    usedParts: [],
+                },
+            };
+        }
     }
     return undefined;
 };
