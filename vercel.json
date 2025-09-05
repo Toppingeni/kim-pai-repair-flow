@@ -28,5 +28,11 @@
                 }
             ]
         }
-    ]
+    ],
+    "git": {
+        "deploymentEnabled": {
+            "main": false,
+            "feat/test": false
+        }
+    }
 }
