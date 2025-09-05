@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Calendar, Clock } from "lucide-react";
+import { toBEDatetimeInput, toCEDatetimeInput } from "@/lib/thaiDate";
 import {
     getAllWorkTypes,
     getAllProblemCauses,
@@ -84,23 +85,24 @@ export function RepairDetailsForm({
 }: RepairDetailsFormProps) {
     const [selectedWorkType, setSelectedWorkType] = useState("");
     const [selectedProblemCause, setSelectedProblemCause] = useState("");
-    const [actualStartDateTime, setActualStartDateTime] = useState("");
-    const [actualEndDateTime, setActualEndDateTime] = useState("");
+    // เก็บค่าเป็น ค.ศ. ภายในเสมอ แต่แสดงผล/รับอินพุตเป็น พ.ศ.
+    const [actualStartDateTimeCE, setActualStartDateTimeCE] = useState("");
+    const [actualEndDateTimeCE, setActualEndDateTimeCE] = useState("");
 
     const workTypes = getAllWorkTypes();
     const problemCauses = getAllProblemCauses();
 
     // คำนวณเวลาปฏิบัติงานจริง
     const actualDuration = calculateDuration(
-        actualStartDateTime,
-        actualEndDateTime
+        actualStartDateTimeCE,
+        actualEndDateTimeCE
     );
 
     // คำนวณเวลาสูญเสียทั้งหมด (จากวันที่แจ้งซ่อมถึงวันที่สิ้นสุดงานจริง)
-    const reportDateTime = `2024-07-15T14:30`; // จาก mockOriginalRequest
+    const reportDateTime = `2024-07-15T14:30`; // เก็บเป็น ค.ศ. สำหรับคำนวณ
     const totalLostTime = calculateTotalLostTime(
         reportDateTime,
-        actualEndDateTime
+        actualEndDateTimeCE
     );
     return (
         <Card className="shadow-card">
@@ -208,9 +210,11 @@ export function RepairDetailsForm({
                                 <Input
                                     id="actual-start"
                                     type="datetime-local"
-                                    value={actualStartDateTime}
+                                    value={toBEDatetimeInput(actualStartDateTimeCE)}
                                     onChange={(e) =>
-                                        setActualStartDateTime(e.target.value)
+                                        setActualStartDateTimeCE(
+                                            toCEDatetimeInput(e.target.value)
+                                        )
                                     }
                                 />
                                 {/* <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" /> */}
@@ -227,9 +231,11 @@ export function RepairDetailsForm({
                                 <Input
                                     id="actual-end"
                                     type="datetime-local"
-                                    value={actualEndDateTime}
+                                    value={toBEDatetimeInput(actualEndDateTimeCE)}
                                     onChange={(e) =>
-                                        setActualEndDateTime(e.target.value)
+                                        setActualEndDateTimeCE(
+                                            toCEDatetimeInput(e.target.value)
+                                        )
                                     }
                                 />
                                 {/* <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" /> */}

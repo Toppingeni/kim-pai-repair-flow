@@ -30,6 +30,7 @@ import {
     Technician,
 } from "@/data/masterData";
 import { RepairRequestInfo } from "@/components/shared/RepairRequestInfo";
+import { toBEDatetimeInput, toCEDatetimeInput } from "@/lib/thaiDate";
 
 interface RepairData {
     id: string;
@@ -183,7 +184,12 @@ export function ApprovalDialog({
         field: keyof ApprovalFormData,
         value: string
     ) => {
-        setFormData((prev) => ({ ...prev, [field]: value }));
+        // แปลง พ.ศ. -> ค.ศ. สำหรับ datetime-local
+        const v =
+            field === "startDateTime" || field === "endDateTime"
+                ? toCEDatetimeInput(value)
+                : value;
+        setFormData((prev) => ({ ...prev, [field]: v }));
     };
 
     const handleAddTechnician = (technicianId: string) => {
@@ -432,7 +438,7 @@ export function ApprovalDialog({
                                             <Input
                                                 id="startDateTime"
                                                 type="datetime-local"
-                                                value={formData.startDateTime}
+                                                value={toBEDatetimeInput(formData.startDateTime)}
                                                 onChange={(e) =>
                                                     handleInputChange(
                                                         "startDateTime",
@@ -448,7 +454,7 @@ export function ApprovalDialog({
                                             <Input
                                                 id="endDateTime"
                                                 type="datetime-local"
-                                                value={formData.endDateTime}
+                                                value={toBEDatetimeInput(formData.endDateTime)}
                                                 onChange={(e) =>
                                                     handleInputChange(
                                                         "endDateTime",

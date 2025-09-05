@@ -19,14 +19,8 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import {
-    Calendar,
-    CheckCircle,
-    FileText,
-    Plus,
-    Wrench,
-    AlertTriangle,
-} from "lucide-react";
+import { Calendar, CheckCircle, FileText, Plus, Wrench, AlertTriangle } from "lucide-react";
+import { toBEDatetimeInput, toCEDatetimeInput } from "@/lib/thaiDate";
 import { useToast } from "@/hooks/use-toast";
 
 interface PMSchedule {
@@ -165,9 +159,9 @@ export function PMExecutionForm({ pmSchedule, onClose }: PMExecutionFormProps) {
                                 <Input
                                     id="startTime"
                                     type="datetime-local"
-                                    value={startTime}
+                                    value={toBEDatetimeInput(startTime)}
                                     onChange={(e) =>
-                                        setStartTime(e.target.value)
+                                        setStartTime(toCEDatetimeInput(e.target.value))
                                     }
                                     required
                                 />
@@ -180,8 +174,10 @@ export function PMExecutionForm({ pmSchedule, onClose }: PMExecutionFormProps) {
                                 <Input
                                     id="endTime"
                                     type="datetime-local"
-                                    value={endTime}
-                                    onChange={(e) => setEndTime(e.target.value)}
+                                    value={toBEDatetimeInput(endTime)}
+                                    onChange={(e) =>
+                                        setEndTime(toCEDatetimeInput(e.target.value))
+                                    }
                                 />
                                 <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                             </div>

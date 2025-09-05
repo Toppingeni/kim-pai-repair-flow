@@ -19,6 +19,7 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Info, X } from "lucide-react";
+import { nowBEDatetimeInput } from "@/lib/thaiDate";
 import {
     Dialog,
     DialogContent,
@@ -252,9 +253,7 @@ export function NewRepairForm() {
                                     readOnly
                                     id="datetime"
                                     type="datetime-local"
-                                    defaultValue={new Date()
-                                        .toISOString()
-                                        .slice(0, 16)}
+                                    value={nowBEDatetimeInput()}
                                 />
                             </div>
                             <div className="space-y-1">
