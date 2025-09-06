@@ -259,18 +259,27 @@ export default function RepairsPage() {
 โครงสร้างมาตรฐานของโปรเจกต์ (แยก client, server, และ shared):
 
 ```
-client/                   # React SPA frontend
-├── pages/                # Route components (Index.tsx = home)
-├── components/ui/        # Pre-built UI component library
-├── App.tsx               # App entry point and with SPA routing setup
-└── global.css            # TailwindCSS 3 theming and global styles
+client/                         # React SPA frontend
+├── pages/                      # Route components (Index.tsx = home)
+├── components/ui/              # Pre-built UI component library
+├── App.tsx                     # App entry point and SPA routing setup
+└── global.css                  # TailwindCSS theming and global styles
 
-server/                   # Express API backend
-├── index.ts              # Main server setup (express config + routes)
-└── routes/               # API handlers
+server/                         # Express API backend (Node)
+├── index.ts                    # Main server bootstrap (express config + route mounting)
+├── migrations/                 # DB migration scripts
+├── connection/                 # Low-level DB driver/connection setup
+├── controller/                 # HTTP controllers for API routes
+├── middleware/                 # Common middlewares (headers, logging, validation)
+├── model/                      # TS domain/DTO interfaces and schemas
+├── service/                    # Business logic layer
+│   └── dbService/              # DB helpers/wrappers (oracle, logger, pooling)
+└──routes
+│ └──routes/                    # API handlers
+└── utils/                      # General utilities (data transform, files, numeric/SQL helpers)
 
-shared/                   # Types used by both client & server
-└── api.ts                # Example of how to share api interfaces
+shared/                         # Types shared by client & server
+└── api.ts                      # Example of how to share API interfaces
 ```
 
 ### Express Server Integration
@@ -278,6 +287,15 @@ shared/                   # Types used by both client & server
 -   Development: ใช้พอร์ตเดียว (8080) สำหรับทั้ง frontend/backend
 -   Hot reload: ทั้งโค้ดฝั่ง client และ server
 -   API endpoints: ต้องมี prefix `/api/`
+
+Server routing guideline
+
+-   controller: จัดเส้นทาง/แปลง input → เรียก service → ส่ง output/สถานะ
+-   service: ธุรกิจหลัก ไม่รู้จัก HTTP (เรียก model/connection ผ่าน dbService)
+-   middleware: ใช้สำหรับ cross-cutting concerns (auth, validation, logging)
+-   model: รวม types/DTO/schema (ถ้า validate ด้วย zod ให้ไว้นี่หรือ middleware)
+-   utils: ฟังก์ชันช่วยเหลือที่ไม่ผูกกับโดเมนเฉพาะ
+-   connection/dbService: รวมการเชื่อมต่อฐานข้อมูลและ helper ใช้ซ้ำทั้งแอป
 
 ตัวอย่างเส้นทาง API
 
