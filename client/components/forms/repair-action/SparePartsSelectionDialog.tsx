@@ -282,7 +282,8 @@ export function SparePartsSelectionDialog({
                                                                         />
                                                                     </TableCell>
                                                                     <TableCell className="py-1.5">
-                                                                        {part.tranId || "-"}
+                                                                        {part.tranId ||
+                                                                            "-"}
                                                                     </TableCell>
                                                                     <TableCell className="py-1.5">
                                                                         {
