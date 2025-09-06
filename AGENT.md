@@ -455,3 +455,131 @@ export { default as PrivateRoute } from './PrivateRoute'
 export { default as LoginPage } from './LoginPage'
 export { default as TokenLogin } from './TokenLogin'
 ```
+
+## 18) Code Quality
+
+- Import Order: นำเข้า alias (`@/*`, `@shared/*`) ก่อน ตามด้วย relative imports; ลดการใช้ path ลึกแบบ `../../../` ด้วยการมี `index.ts` รวม exports
+- Public API: โฟลเดอร์สำคัญมี `index.ts` เพื่อลด deep import และควบคุม surface area
+- ESLint เป็นหลัก: ใช้ `npm run lint` เป็นเกณฑ์ ไม่เพิ่มเครื่องมือฟอร์แมตซ้ำซ้อนโดยไม่จำเป็น
+
+## 19) API/Data
+
+- RTK Query Tags: ระบุ `tagTypes` และใช้ `providesTags`/`invalidatesTags` อย่างสม่ำเสมอเมื่อมีการเปลี่ยนข้อมูล
+- Error UX: ทำ helper แปลง error -> ข้อความ อ่านง่าย และแสดงผ่าน toast/sonner
+- Ownership: ข้อมูลจาก server อยู่ใน cache ของ RTK Query; UI state ไว้ใน component/hook
+
+## 20) Forms
+
+- Validation: ใช้ `zod` + `@hookform/resolvers/zod` สำหรับฟอร์มที่มี validation
+- Reusable Fields: สร้าง input ห่อ `Controller` เพื่อใช้ซ้ำกับ shadcn/ui และลด boilerplate
+- Submit UX: ปุ่ม submit แสดงสถานะกำลังบันทึก กัน double-submit และมี error summary ด้านบนฟอร์มเมื่อจำเป็น
+
+## 21) Routing
+
+- Page Title: ใช้ helper เช่น `usePageTitle(title)` ตั้ง `document.title` ต่อหน้า
+- Scroll: ฟื้น/รีเซ็ตตำแหน่งการเลื่อนเมื่อนำทางตามความเหมาะสม
+- Guards: ใช้ `PrivateRoute` กับหน้าที่ต้องล็อกอินเสมอ
+
+## 22) Auth/Security
+
+- Token Scope: ค่าเริ่มต้นใช้ `sessionStorage` สำหรับเครื่องสาธารณะ; ผู้ใช้เลือก “จำฉันไว้” เพื่อใช้ `localStorage`
+- Logout Hygiene: เมื่อ logout ให้ล้าง cache/query ที่สำคัญ (เช่นรีเซ็ต RTK Query) เพื่อป้องกันข้อมูลค้าง
+- Secrets: ห้าม hardcode URL/token; เพิ่มตัวแปรใน `.env.example` ทุกครั้งที่ใช้
+
+## 23) UX/Accessibility
+
+- Loading Pattern: ส่วนย่อยใช้ skeleton; ระดับหน้าใช้ Page Loader เต็มจอ (ดูข้อ 26)
+- Focus Management: หลังนำทาง/submit โฟกัสที่ heading หรือ error ที่เหมาะสม
+- Keyboard/ARIA: ทุกปุ่ม/ลิงก์เข้าถึงได้ด้วยคีย์บอร์ด; ใส่ `aria-label` ที่จำเป็น
+
+## 24) Git/PR
+
+- Squash Merge: ใช้ squash merge; อัปเดต branch จาก `main` ก่อน merge
+- Small PRs: จำกัดขอบเขตต่อ PR; ถ้าเกิน ~400 LOC ให้พิจารณาแยก PR
+- Commit Scope: ระบุ scope ชัด เช่น `feat(repair-history): ...`
+
+## 25) Documentation
+
+- ADR แบบย่อ: บันทึกการตัดสินใจสำคัญไว้ที่ `docs/adr/DATE-title.md`
+- Changelog: ใช้ Conventional Commits สำหรับ release notes (เมื่อพร้อมตั้งค่า)
+
+## 26) Global Loading Pattern (useLoading + LoadingProvider)
+
+ต้องการให้ทุกหน้าใช้ Page Loader เต็มจอแบบเดียวกัน และแสดงเพียงหนึ่ง overlay แม้มีหลายคำขอพร้อมกัน โดยหายเมื่อทุกคำขอเสร็จ
+
+- แนวคิด: `LoadingProvider` รวมสถานะจากหลายแหล่งผ่าน id ต่อหน้า/คอมโพเนนต์, `useLoading(id, flags)` ผูก `isLoading/isFetching` ผ่าน `useEffect`
+- พฤติกรรม: ถ้าแหล่งใดกำลังโหลด -> แสดง overlay; เมื่อทุกแหล่งเสร็จ -> ซ่อน
+
+ตัวอย่างโค้ดมาตรฐาน:
+
+```tsx
+// client/loading/context.tsx
+import React, { createContext, useContext, useMemo, useRef, useState } from 'react'
+
+type Ctx = { setSource: (id: string, active: boolean) => void; isLoading: boolean }
+const LoadingContext = createContext<Ctx | null>(null)
+
+export function LoadingProvider({ children }: { children: React.ReactNode }) {
+  const sourcesRef = useRef<Map<string, boolean>>(new Map())
+  const [, force] = useState({})
+  const setSource = (id: string, active: boolean) => {
+    const prev = sourcesRef.current.get(id)
+    if (prev === active) return
+    if (active) sourcesRef.current.set(id, true)
+    else sourcesRef.current.delete(id)
+    force({})
+  }
+  const value = useMemo(() => ({ setSource, isLoading: false }), [])
+  return (
+    <LoadingContext.Provider value={{ setSource, isLoading: sourcesRef.current.size > 0 }}>
+      {children}
+    </LoadingContext.Provider>
+  )
+}
+
+export function useLoading(id: string, flags?: Array<boolean>) {
+  const ctx = useContext(LoadingContext)
+  if (!ctx) throw new Error('useLoading must be used within LoadingProvider')
+  const active = Array.isArray(flags) ? flags.some(Boolean) : false
+  React.useEffect(() => {
+    ctx.setSource(id, active)
+    return () => ctx.setSource(id, false)
+  }, [id, active])
+  return ctx
+}
+
+export function GlobalLoadingOverlay() {
+  const ctx = useContext(LoadingContext)
+  if (!ctx?.isLoading) return null
+  return (
+    <div className="fixed inset-0 z-[1000] grid place-items-center bg-black/40">
+      <div className="rounded-md bg-white px-4 py-3 shadow">Loading...</div>
+    </div>
+  )
+}
+```
+
+การใช้งานในแอป:
+
+```tsx
+// src/main.tsx
+import { LoadingProvider, GlobalLoadingOverlay } from '@/loading/context'
+
+<LoadingProvider>
+  <App />
+  <GlobalLoadingOverlay />
+</LoadingProvider>
+```
+
+การใช้งานในหน้า/คอมโพเนนต์ (รวมหลายโหลดเป็น overlay เดียว):
+
+```tsx
+import { useLoading } from '@/loading/context'
+import { useGetRepairsQuery } from '@/store/api'
+
+export default function RepairsPage(){
+  const { isLoading, isFetching } = useGetRepairsQuery()
+  useLoading('repairs-page', [isLoading, isFetching])
+  return <div>{/* เนื้อหา */}</div>
+}
+```
